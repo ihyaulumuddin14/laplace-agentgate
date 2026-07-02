@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: check types
+      run: npx tsc --noEmit
+      glob: "*.{ts,tsx}"
+
+    - name: format with biome
+      run: npx biome format --write {staged_files}
+      glob: "*.{js,ts,jsx,tsx,json}"
+      stage_fixed: true
+
+    - name: lint with biome
+      run: npx biome check {staged_files}
+      glob: "*.{js,ts,jsx,tsx,json}"

@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentGate Frontend
+
+Frontend application for **AgentGate**, a framework-agnostic AI Guardrail Engine that evaluates AI agent actions before execution.
+This repository contains the public marketing website, technical documentation, and the AgentGate Demo Console for the MVP.
+
+## Tech Stack
+
+- Next.js 16 with App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- shadcn/ui
+- Recharts
+- MDX
+- Biome for linting and formatting
+- Zustand
+- Tanstack Query
+
+## Requirements
+
+- Node.js >=24 <25
+- npm
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### `npm run dev`
 
-## Learn More
+Start the local development server.
 
-To learn more about Next.js, take a look at the following resources:
+### `npm run build`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Build the project for production.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### `npm run start`
 
-## Deploy on Vercel
+Run the production build locally.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### `npm run lint`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Check code quality with Biome.
+
+### `npm run format`
+
+Format the codebase with Biome.
+
+## Project Structure
+
+This project follows a domain-based structure:
+
+- `src/app` contains routes, layouts, and page composition.
+- `src/features` contains feature-specific UI and business logic.
+- `src/shared` contains reusable components, hooks, providers, utilities, global schemas, and shared types.
+- `src/content` contains static MDX documentation.
+- `public` contains static assets served by Next.js.
+
+For more complete folder rules and examples, read `.agents/docs/architecture.md`.
+
+## Development Notes
+
+- Use TypeScript strictly.
+- Follow the folder rules in `AGENTS.md` before changing code.
+- Keep business logic outside `src/app`.
+- Keep feature-specific logic inside the corresponding feature module.
+- Prefer reusable components from `src/shared`.
+- Use mock data until the backend API is available.
+- The frontend only consumes `ActionRequest` and `DecisionResponse` from the backend.
+
+## Frontend Scope
+
+This repository includes:
+
+- Landing Page
+- Documentation
+- AgentGate Demo Console
+  - Web Chat
+  - Scenario Runner
+  - Proposed Action Preview
+  - Decision Card
+  - Approval Queue
+  - Audit Log
+  - Risk Dashboard
+  - Latency Report
+
+## Out of Scope
+
+The following components are handled by the Data Science (DS) and Data Engineering (DE) teams:
+
+- AgentGate Core
+- LLM Planner
+- Policy Engine
+- Risk Scoring
+- Playwright Executor
+- API Connectors
+- Browser Extension
+- MCP / LangGraph Adapters
+
+## Production Notes
+
+The frontend communicates with the AgentGate backend through HTTP APIs and streaming endpoints (when available). During MVP development, mock APIs may be used to enable parallel frontend and backend development.
+
+## Documentation
+
+Technical documentation is written using native MDX and stored under `src/content/docs`.
+Shared MDX components are registered through `src/mdx-components.tsx`, allowing documentation pages to use reusable React components such as callouts, tabs, and code blocks.
+
+## State Management
+
+Global UI state is managed using Zustand.
+Server data should not be stored in Zustand and should instead be fetched directly from the backend (or mocked during MVP development).

@@ -24,5 +24,9 @@
     "lefthook": "^2.1.9",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "lefthook@2.1.9": true,
+    "sharp@0.34.5": true
   }
 }

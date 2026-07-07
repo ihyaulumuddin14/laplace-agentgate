@@ -12,7 +12,8 @@
   "dependencies": {
     "next": "16.2.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-icons": "^5.7.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
@@ -24,5 +25,9 @@
     "lefthook": "^2.1.9",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "lefthook@2.1.9": true,
+    "sharp@0.34.5": true
   }
 }

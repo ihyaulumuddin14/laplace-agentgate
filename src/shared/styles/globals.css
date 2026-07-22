@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #12091f;
+  --foreground: #efe6fc;
 }
 
 @theme inline {
@@ -14,6 +14,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-poppins: var(--font-poppins);
+  --font-inter: var(--font-inter);
 
   /* gradient */
   --background-image-gradient-linear-1: linear-gradient(
@@ -33,6 +34,16 @@
     #6200ee 25%,
     #4600a9 60%,
     #290064 100%
+  );
+  --background-image-gradient-cta: linear-gradient(
+    172deg,
+    #27005f -22.46%,
+    #8133f1 66.77%
+  );
+  --background-image-gradient-footer: linear-gradient(
+    0deg,
+    #2b0e4e 0%,
+    #371664 100%
   );
 }
 
@@ -58,17 +69,125 @@
   --color-gray: #868686;
 
   --color-documentation-stroke: #8d5bff;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* landing surfaces */
+  --color-surface: #12091f;
+  --color-surface-raised: #190e2b;
+  --color-surface-card: #1b1030;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------
+   Brand gradient text — used by navbar wordmark, footer & hero
+   --------------------------------------------------------------- */
+.brand-gradient-text {
+  background: linear-gradient(
+    173deg,
+    #27005f -122.91%,
+    #8133f1 -4.39%,
+    #efe6fd 95.3%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.hero-gradient-text {
+  background: linear-gradient(
+    180deg,
+    #27005f -106.77%,
+    #8133f1 6.98%,
+    #efe6fd 102.66%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.accent-gradient-text {
+  background: linear-gradient(180deg, #b48af1 0%, #7d33e7 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.danger-gradient-text {
+  background: linear-gradient(180deg, #ff6b6b 0%, #ff0c0c 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------
+   Orbit animation (integration section)
+   Items travel counter-clockwise: paths are authored clockwise,
+   so offset-distance runs from 100% back to 0%.
+   --------------------------------------------------------------- */
+@keyframes orbit-ccw {
+  from {
+    offset-distance: 100%;
+  }
+  to {
+    offset-distance: 0%;
+  }
+}
+
+@keyframes ring-ccw {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes ring-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.orbit-item {
+  offset-rotate: 0deg;
+  animation: orbit-ccw var(--orbit-duration, 44s) linear infinite;
+  animation-delay: var(--orbit-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-item {
+    animation-name: none;
+    offset-distance: var(--orbit-static, 0%);
+  }
 }

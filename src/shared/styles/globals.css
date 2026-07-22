@@ -50,14 +50,14 @@
   --color-purple-800: #33007c;
   --color-purple-900: #27005f;
 
-  --color-yellow: #FFF600;
-  --color-red: #FF0C0C;
-  --color-green: #4DFF0C;
-  --color-blue: #00D4FF;
-  --color-orange: #FF9900;
+  --color-yellow: #fff600;
+  --color-red: #ff0c0c;
+  --color-green: #4dff0c;
+  --color-blue: #00d4ff;
+  --color-orange: #ff9900;
   --color-gray: #868686;
-  
-  --color-documentation-stroke: #8D5BFF;
+
+  --color-documentation-stroke: #8d5bff;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -3,10 +3,8 @@ import type { IconType } from "react-icons";
 
 export type DecisionCardProps = {
   Icon: IconType;
-  /** Decision name exactly as the engine returns it, e.g. `need_approval`. */
   name: string;
   description: string;
-  /** Accent colour taken from the design system palette. */
   accent: string;
 };
 

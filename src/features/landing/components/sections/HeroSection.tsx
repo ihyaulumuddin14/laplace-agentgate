@@ -7,7 +7,6 @@ export function HeroSection() {
       id="hero"
       className="relative overflow-hidden px-6 pt-32 pb-10 sm:px-10 sm:pt-40 lg:pt-48"
     >
-      {/* Ambient light — broad glow washing down from the top of the page */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-64 left-1/2 h-[620px] w-[min(1100px,140vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.42)_0%,rgba(92,0,225,0.16)_42%,transparent_70%)]"

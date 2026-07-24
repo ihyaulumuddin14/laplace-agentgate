@@ -1,23 +1,16 @@
 import type { CSSProperties, ReactNode } from "react";
 
 export type OrbitRing = {
-  /** Ring width in canvas units. */
   w: number;
-  /** Ring height in canvas units. */
   h: number;
-  /** Corner radius in canvas units. */
   r: number;
-  /** Seconds for one full revolution. */
   duration: number;
 };
 
 export type OrbitTraveller = {
   id: string;
-  /** Index into the `rings` array. */
   ring: number;
-  /** Starting position along the path, 0 → 1. */
   offset: number;
-  /** Hit box for the travelling chip, in canvas units. */
   w: number;
   h: number;
   node: ReactNode;
@@ -26,7 +19,6 @@ export type OrbitTraveller = {
 type OrbitCanvasProps = {
   width: number;
   height: number;
-  /** Ordered outermost → innermost. */
   rings: OrbitRing[];
   travellers: OrbitTraveller[];
   center: ReactNode;
@@ -35,11 +27,6 @@ type OrbitCanvasProps = {
   className?: string;
 };
 
-/**
- * Builds a clockwise rounded-rectangle path centred on (cx, cy).
- * Travellers animate `offset-distance` from 100% → 0%, which walks the
- * clockwise path backwards, i.e. counter-clockwise on screen.
- */
 function roundedRectPath(
   cx: number,
   cy: number,
@@ -64,7 +51,6 @@ function roundedRectPath(
   ].join(" ");
 }
 
-/** Inner rings sit closer to the light source, so they read brighter. */
 const RING_SURFACE = [
   { fill: "rgba(255,255,255,0.012)", stroke: "rgba(255,255,255,0.07)" },
   { fill: "rgba(255,255,255,0.028)", stroke: "rgba(255,255,255,0.10)" },
@@ -72,13 +58,6 @@ const RING_SURFACE = [
   { fill: "rgba(255,255,255,0.075)", stroke: "rgba(255,255,255,0.18)" },
 ];
 
-/**
- * Renders the concentric "solar system" used by the integration section.
- *
- * Geometry lives inside an SVG `viewBox`, so the whole diagram — rings,
- * travelling chips and their type — scales proportionally with the width it
- * is given, without any JavaScript measuring.
- */
 export function OrbitCanvas({
   width,
   height,
@@ -94,7 +73,6 @@ export function OrbitCanvas({
 
   return (
     <div className={`relative w-full ${className}`}>
-      {/* Glow behind the core */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-3/5 w-3/5 -translate-x-1/2 -translate-y-1/2 animate-[pulse-glow_6s_ease-in-out_infinite] rounded-full bg-[radial-gradient(circle,rgba(146,84,235,0.5)_0%,rgba(92,0,225,0.16)_45%,transparent_72%)]"
@@ -126,7 +104,6 @@ export function OrbitCanvas({
           );
         })}
 
-        {/* Travellers — CSS motion path runs in SVG user units */}
         {travellers.map((traveller) => {
           const ring = rings[traveller.ring];
           if (!ring) return null;

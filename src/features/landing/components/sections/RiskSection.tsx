@@ -47,7 +47,6 @@ const RISK_CARDS: RiskCardProps[] = [
 export function RiskSection() {
   return (
     <section className="relative overflow-hidden px-6 py-16 sm:px-10 lg:py-24">
-      {/* Ambient light drifting in from the left */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -left-40 top-1/3 h-[420px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.22)_0%,transparent_70%)]"

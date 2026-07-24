@@ -11,7 +11,6 @@ export type RiskCardProps = {
 export function RiskCard({ Icon, title, description, risks }: RiskCardProps) {
   return (
     <article className="group relative flex h-full flex-col gap-4 rounded-2xl border border-purple-200/12 bg-surface-card/80 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-orange/40 hover:shadow-[0_20px_50px_-20px_rgba(255,153,0,0.45)]">
-      {/* Hover wash */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_left,rgba(255,153,0,0.12),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"

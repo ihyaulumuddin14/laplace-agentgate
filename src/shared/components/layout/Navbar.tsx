@@ -9,8 +9,8 @@ import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 
 const NAV_ITEMS = [
   { label: "Home", href: "#hero" },
-  { label: "Documentation", href: "#documentation" },
-  { label: "Demo Console", href: "#demo-console" },
+  { label: "Documentation", href: "#" },
+  { label: "Demo Console", href: "#" },
 ] as const;
 
 export function Navbar() {

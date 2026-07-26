@@ -24,7 +24,7 @@ const SOCIAL_LINKS = [
 export function Footer() {
   return (
     <footer className="border-t-[5px] border-purple-400 bg-gradient-footer">
-      <div className="mx-auto w-full max-w-7xl px-6 py-10 sm:px-10 lg:py-12">
+      <div className="w-full px-6 py-10 sm:px-10 lg:px-16 lg:py-12 xl:px-24">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
           {/* Brand */}
           <div className="flex flex-col gap-3">
@@ -68,7 +68,7 @@ export function Footer() {
 
         <hr className="my-8 border-purple-200/25" />
 
-        <div className="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:gap-8 md:text-left">
+        <div className="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:gap-8">
           <p className="font-poppins text-sm font-bold leading-[150%] text-purple-100 sm:text-base xl:text-xl">
             © 2026 AgentGate. All rights reserved.
           </p>

@@ -1,29 +1,31 @@
 import type { IconType } from "react-icons";
 import {
   MdOutlineAutoAwesome,
+  MdOutlineBlurOn,
   MdOutlineCalendarMonth,
-  MdOutlineGridView,
+  MdOutlineFlare,
+  MdOutlineHub,
+  MdOutlineInventory2,
   MdOutlineMail,
   MdOutlineSend,
-  MdOutlineSettings,
-  MdOutlineShare,
-  MdOutlineTune,
 } from "react-icons/md";
 import {
   OrbitCanvas,
   type OrbitRing,
   type OrbitTraveller,
 } from "@/features/landing/components/misc/OrbitCanvas";
+import { Reveal } from "@/shared/components/ui/Reveal";
 
+// Eight chips spaced around the outer track, matching the Figma reference.
 const ORBIT_ICONS: IconType[] = [
-  MdOutlineSend,
+  MdOutlineFlare,
   MdOutlineMail,
-  MdOutlineCalendarMonth,
-  MdOutlineSettings,
+  MdOutlineBlurOn,
+  MdOutlineHub,
+  MdOutlineInventory2,
   MdOutlineAutoAwesome,
-  MdOutlineGridView,
-  MdOutlineShare,
-  MdOutlineTune,
+  MdOutlineSend,
+  MdOutlineCalendarMonth,
 ];
 
 const DECISION_LABELS = [
@@ -37,7 +39,7 @@ const DECISION_LABELS = [
 function IconChip({ Icon, size }: { Icon: IconType; size: number }) {
   return (
     <div
-      className="grid shrink-0 place-items-center rounded-2xl border border-white/15 bg-white/[0.07] text-purple-100 shadow-[0_6px_24px_-8px_rgba(129,51,241,0.7)]"
+      className="grid shrink-0 place-items-center rounded-2xl border border-white/15 bg-white/[0.07] text-white shadow-[0_6px_24px_-8px_rgba(129,51,241,0.7)] backdrop-blur-md"
       style={{ width: size, height: size }}
     >
       <Icon size={Math.round(size * 0.46)} />
@@ -48,7 +50,7 @@ function IconChip({ Icon, size }: { Icon: IconType; size: number }) {
 function LabelChip({ label, fontSize }: { label: string; fontSize: number }) {
   return (
     <span
-      className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.12] px-3 py-1 font-poppins font-medium text-white"
+      className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.12] px-3 py-1 font-poppins font-medium text-white backdrop-blur-md"
       style={{ fontSize, lineHeight: 1.6 }}
     >
       {label}
@@ -67,12 +69,12 @@ function Core({
 }) {
   return (
     <div
-      className="rounded-2xl border border-white/20 bg-white/[0.10] shadow-[0_10px_50px_-12px_rgba(146,84,235,0.95)]"
+      className="rounded-[1.9rem] border border-white/25 bg-white/[0.08] shadow-[0_20px_70px_-20px_rgba(146,84,235,0.95)] backdrop-blur-md"
       style={{ padding: `${paddingY}px ${paddingX}px` }}
     >
       <span
-        className="font-poppins font-semibold text-white"
-        style={{ fontSize, lineHeight: 1.3 }}
+        className="font-poppins font-bold text-white"
+        style={{ fontSize, lineHeight: 1.2 }}
       >
         Integration
       </span>
@@ -116,75 +118,85 @@ function buildTravellers(
   return [...iconTravellers, ...labelTravellers];
 }
 
+// Figma layout — 6 orbit rings + the Integration core = 7 borders:
+// borders 1-4 (outer) carry icons, border 5 is empty, border 6 carries the
+// decision labels, border 7 is the Integration core itself.
 const DESKTOP_RINGS: OrbitRing[] = [
-  { w: 960, h: 580, r: 92, duration: 72 },
-  { w: 780, h: 460, r: 78, duration: 58 },
-  { w: 600, h: 340, r: 62, duration: 48 },
-  { w: 430, h: 212, r: 46, duration: 38 },
+  { w: 1120, h: 676, r: 112, duration: 92 }, // border 1 — icons
+  { w: 940, h: 562, r: 96, duration: 78 }, // border 2 — icons
+  { w: 760, h: 448, r: 82, duration: 64 }, // border 3 — icons
+  { w: 580, h: 334, r: 68, duration: 52 }, // border 4 — icons
+  { w: 468, h: 276, r: 60, duration: 44 }, // border 5 — empty
+  { w: 372, h: 224, r: 54, duration: 36 }, // border 6 — labels (clears core)
 ];
 
+// Mobile keeps it tidy: icons on the outer ring, one hidden empty line, labels
+// around the core.
 const MOBILE_RINGS: OrbitRing[] = [
-  { w: 364, h: 556, r: 80, duration: 62 },
-  { w: 296, h: 444, r: 68, duration: 52 },
-  { w: 236, h: 340, r: 56, duration: 44 },
-  { w: 200, h: 220, r: 46, duration: 34 },
+  { w: 356, h: 556, r: 100, duration: 74 }, // icons, shown
+  { w: 268, h: 396, r: 66, duration: 58, draw: false }, // empty, hidden
+  { w: 236, h: 268, r: 56, duration: 44 }, // labels, shown (clears core)
 ];
 
 export function IntegrationSection() {
   return (
-    <section className="relative overflow-hidden px-4 pt-4 pb-16 sm:px-8 lg:pb-24">
+    <section className="relative overflow-hidden px-4 py-12 sm:px-8 lg:py-20">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[min(900px,120vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,0,225,0.28)_0%,transparent_68%)]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[640px] w-[min(1100px,120vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.26)_0%,rgba(92,0,225,0.12)_45%,transparent_72%)]"
+      />
+      {/* Purple light spilling over the top edge of the panel */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[16%] h-[320px] w-[min(760px,80vw)] -translate-x-1/2 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(146,84,235,0.45)_0%,rgba(92,0,225,0.12)_50%,transparent_78%)]"
       />
 
-      <div className="relative mx-auto max-w-6xl">
+      <Reveal className="relative mx-auto max-w-7xl">
         {/* Desktop / tablet */}
         <OrbitCanvas
           className="hidden sm:block"
-          width={1000}
-          height={620}
+          width={1200}
+          height={744}
           rings={DESKTOP_RINGS}
           travellers={buildTravellers(
             [
-              { ring: 0, icons: ORBIT_ICONS.slice(0, 4), from: 0 },
-              { ring: 1, icons: ORBIT_ICONS.slice(4, 8), from: 0.12 },
+              { ring: 0, icons: ORBIT_ICONS.slice(0, 2), from: 0 },
+              { ring: 1, icons: ORBIT_ICONS.slice(2, 4), from: 0.12 },
+              { ring: 2, icons: ORBIT_ICONS.slice(4, 6), from: 0.24 },
+              { ring: 3, icons: ORBIT_ICONS.slice(6, 8), from: 0.36 },
             ],
-            3,
+            5,
             {
-              iconSize: 56,
-              labelFontSize: 15,
-              labelBox: { w: 190, h: 46 },
+              iconSize: 54,
+              labelFontSize: 13,
+              labelBox: { w: 116, h: 38 },
             },
           )}
-          center={<Core fontSize={28} paddingX={34} paddingY={16} />}
-          centerW={320}
-          centerH={96}
+          center={<Core fontSize={30} paddingX={36} paddingY={19} />}
+          centerW={196}
+          centerH={84}
         />
 
         {/* Mobile */}
         <OrbitCanvas
           className="sm:hidden"
-          width={380}
-          height={580}
+          width={400}
+          height={620}
           rings={MOBILE_RINGS}
           travellers={buildTravellers(
-            [
-              { ring: 0, icons: ORBIT_ICONS.slice(0, 4), from: 0 },
-              { ring: 1, icons: ORBIT_ICONS.slice(4, 6), from: 0.2 },
-            ],
-            3,
+            [{ ring: 0, icons: ORBIT_ICONS.slice(0, 4), from: 0 }],
+            2,
             {
-              iconSize: 38,
-              labelFontSize: 11,
-              labelBox: { w: 140, h: 34 },
+              iconSize: 30,
+              labelFontSize: 9,
+              labelBox: { w: 86, h: 24 },
             },
           )}
-          center={<Core fontSize={18} paddingX={20} paddingY={10} />}
-          centerW={210}
-          centerH={62}
+          center={<Core fontSize={14} paddingX={13} paddingY={8} />}
+          centerW={116}
+          centerH={50}
         />
-      </div>
+      </Reveal>
     </section>
   );
 }

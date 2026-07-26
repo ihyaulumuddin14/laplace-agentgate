@@ -119,8 +119,9 @@ body {
   color: transparent;
 }
 
-.danger-gradient-text {
-  background: linear-gradient(180deg, #ff6b6b 0%, #ff0c0c 100%);
+/* Shared heading highlight — "Powerful.", "Dangerous.", "Five Decisions" */
+.heading-gradient-text {
+  background: linear-gradient(90deg, #8133f1 36.06%, #ceb0fa 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -185,9 +186,81 @@ body {
   animation-delay: var(--orbit-delay, 0s);
 }
 
+/* The border line itself lights up where a traveller passes.
+   A short bright dash rides the ring path, perfectly synced (same
+   duration/delay/direction) with its traveller, leaving a glowing
+   "wake" just behind the moving chip. */
+@keyframes orbit-dash {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 1;
+  }
+}
+
+.orbit-glow {
+  animation: orbit-dash var(--orbit-duration, 44s) linear infinite;
+  animation-delay: var(--orbit-delay, 0s);
+  filter: drop-shadow(0 0 5px rgba(146, 84, 235, 0.9));
+  will-change: stroke-dashoffset;
+}
+
+/* Sparks flung off a traveller as it "scratches" the border line. */
+@keyframes orbit-spark {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--sx, 0), var(--sy, 0)) scale(0);
+    opacity: 0;
+  }
+}
+
+.orbit-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 9999px;
+  background: rgba(232, 220, 255, 1);
+  box-shadow:
+    0 0 10px 2px rgba(178, 138, 241, 0.95),
+    0 0 18px 4px rgba(146, 84, 235, 0.55);
+  animation: orbit-spark var(--spark-duration, 1.5s) ease-out infinite;
+  animation-delay: var(--spark-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .orbit-item {
+  .orbit-spark {
     animation-name: none;
+    opacity: 0;
+  }
+}
+
+/* Hide scrollbar for mobile card carousels while keeping scroll/snap. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-item,
+  .orbit-glow {
+    animation-name: none;
+  }
+
+  .orbit-item {
     offset-distance: var(--orbit-static, 0%);
   }
 }

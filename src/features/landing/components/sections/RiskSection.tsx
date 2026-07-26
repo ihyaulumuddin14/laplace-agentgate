@@ -78,7 +78,6 @@ export function RiskSection() {
           </header>
         </Reveal>
 
-        {/* Mobile: coverflow carousel */}
         <Reveal delay={120}>
           <CoverflowCarousel
             className="mt-14 md:hidden"
@@ -88,7 +87,6 @@ export function RiskSection() {
             }))}
           />
 
-          {/* Desktop: grid */}
           <div className="mt-14 hidden gap-7 md:grid md:grid-cols-2 lg:grid-cols-3">
             {RISK_CARDS.map((card) => (
               <RiskCard key={card.title} {...card} />

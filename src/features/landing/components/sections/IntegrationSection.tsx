@@ -16,7 +16,6 @@ import {
 } from "@/features/landing/components/misc/OrbitCanvas";
 import { Reveal } from "@/shared/components/ui/Reveal";
 
-// Eight chips spaced around the outer track, matching the Figma reference.
 const ORBIT_ICONS: IconType[] = [
   MdOutlineFlare,
   MdOutlineMail,
@@ -118,9 +117,6 @@ function buildTravellers(
   return [...iconTravellers, ...labelTravellers];
 }
 
-// Figma layout — 6 orbit rings + the Integration core = 7 borders:
-// borders 1-4 (outer) carry icons, border 5 is empty, border 6 carries the
-// decision labels, border 7 is the Integration core itself.
 const DESKTOP_RINGS: OrbitRing[] = [
   { w: 1120, h: 676, r: 112, duration: 92 }, // border 1 — icons
   { w: 940, h: 562, r: 96, duration: 78 }, // border 2 — icons
@@ -130,12 +126,10 @@ const DESKTOP_RINGS: OrbitRing[] = [
   { w: 372, h: 224, r: 54, duration: 36 }, // border 6 — labels (clears core)
 ];
 
-// Mobile keeps it tidy: icons on the outer ring, one hidden empty line, labels
-// around the core.
 const MOBILE_RINGS: OrbitRing[] = [
-  { w: 356, h: 556, r: 100, duration: 74 }, // icons, shown
-  { w: 268, h: 396, r: 66, duration: 58, draw: false }, // empty, hidden
-  { w: 236, h: 268, r: 56, duration: 44 }, // labels, shown (clears core)
+  { w: 356, h: 556, r: 100, duration: 74 },
+  { w: 268, h: 396, r: 66, duration: 58, draw: false },
+  { w: 236, h: 268, r: 56, duration: 44 },
 ];
 
 export function IntegrationSection() {
@@ -145,14 +139,12 @@ export function IntegrationSection() {
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-[640px] w-[min(1100px,120vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.26)_0%,rgba(92,0,225,0.12)_45%,transparent_72%)]"
       />
-      {/* Purple light spilling over the top edge of the panel */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-[16%] h-[320px] w-[min(760px,80vw)] -translate-x-1/2 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(146,84,235,0.45)_0%,rgba(92,0,225,0.12)_50%,transparent_78%)]"
       />
 
       <Reveal className="relative mx-auto max-w-7xl">
-        {/* Desktop / tablet */}
         <OrbitCanvas
           className="hidden sm:block"
           width={1200}
@@ -177,7 +169,6 @@ export function IntegrationSection() {
           centerH={84}
         />
 
-        {/* Mobile */}
         <OrbitCanvas
           className="sm:hidden"
           width={400}

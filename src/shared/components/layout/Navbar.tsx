@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdClose, MdMenu } from "react-icons/md";
 import githubMark from "@/assets/profil.png";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
@@ -16,14 +16,34 @@ const NAV_ITEMS = [
 export function Navbar() {
   const [activeItem, setActiveItem] = useState<string>("Home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Floating navbar: wide when pinned to the top, compact once scrolled down.
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6 sm:px-6">
+    <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6 sm:px-6 lg:px-10">
       <nav
         aria-label="Main navigation"
-        className="mx-auto w-full max-w-6xl rounded-[2rem] border border-purple-200/15 bg-[#150a24]/60 shadow-[0_8px_40px_-12px_rgba(93,0,225,0.45)] backdrop-blur-xl sm:rounded-full"
+        className={`mx-auto w-full rounded-[2rem] border border-purple-200/15 backdrop-blur-xl transition-all duration-500 ease-out sm:rounded-full ${
+          isScrolled
+            ? "max-w-5xl bg-[#150a24]/80 shadow-[0_6px_28px_-14px_rgba(93,0,225,0.55)]"
+            : "max-w-[1700px] bg-[#150a24]/55 shadow-[0_10px_44px_-12px_rgba(93,0,225,0.45)]"
+        }`}
       >
-        <div className="flex items-center justify-between gap-4 px-5 py-3 sm:px-7 sm:py-3.5">
+        <div
+          className={`flex items-center justify-between gap-4 transition-all duration-500 ease-out ${
+            isScrolled
+              ? "px-4 py-2 sm:px-5 sm:py-2.5"
+              : "px-5 py-3 sm:px-7 sm:py-3.5"
+          }`}
+        >
           <Link
             href="#hero"
             onClick={() => setActiveItem("Home")}

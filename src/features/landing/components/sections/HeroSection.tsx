@@ -25,7 +25,7 @@ export function HeroSection() {
         className="pointer-events-none absolute right-[8%] top-[52%] h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle,rgba(146,84,235,0.18)_0%,transparent_70%)]"
       />
 
-      <Reveal className="relative mx-auto flex max-w-5xl flex-col items-center text-center">
+      <Reveal className="relative mx-auto flex max-w-6xl flex-col items-center text-center">
         <h1 className="hero-gradient-text font-poppins text-6xl font-bold leading-[1.05] tracking-tight sm:text-7xl lg:text-8xl xl:text-[8.5rem]">
           AgentGate
         </h1>

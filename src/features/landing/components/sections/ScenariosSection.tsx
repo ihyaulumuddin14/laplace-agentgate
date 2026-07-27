@@ -65,7 +65,7 @@ export function ScenariosSection() {
         className="pointer-events-none absolute -right-40 top-1/4 h-[520px] w-[640px] rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.22)_0%,transparent_70%)]"
       />
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-[1680px]">
         <Reveal>
           <header className="mx-auto max-w-3xl text-center">
             <h2 className="font-poppins text-4xl font-bold leading-tight tracking-tight text-purple-50 sm:text-5xl lg:text-[54px]">

@@ -144,7 +144,7 @@ export function IntegrationSection() {
         className="pointer-events-none absolute left-1/2 top-[16%] h-[320px] w-[min(760px,80vw)] -translate-x-1/2 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(146,84,235,0.45)_0%,rgba(92,0,225,0.12)_50%,transparent_78%)]"
       />
 
-      <Reveal className="relative mx-auto max-w-7xl">
+      <Reveal className="relative mx-auto max-w-[1680px]">
         <OrbitCanvas
           className="hidden sm:block"
           width={1200}

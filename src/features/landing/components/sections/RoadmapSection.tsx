@@ -55,7 +55,7 @@ export function RoadmapSection() {
         className="pointer-events-none absolute -left-32 top-1/3 h-[440px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.24)_0%,transparent_70%)]"
       />
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-[1680px]">
         <Reveal>
           <header className="mx-auto max-w-3xl text-center">
             <h2 className="font-poppins text-4xl font-bold leading-tight tracking-tight text-purple-50 sm:text-5xl lg:text-[54px]">
@@ -66,7 +66,6 @@ export function RoadmapSection() {
         </Reveal>
 
         <Reveal delay={120}>
-          {/* Desktop: left-to-right · Mobile: top-to-bottom, arrows follow */}
           <div className="mt-14 flex flex-col items-stretch gap-4 lg:flex-row lg:items-center">
             {ROADMAP.map((item, i) => (
               <Fragment key={item.index}>

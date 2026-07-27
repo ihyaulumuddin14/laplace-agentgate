@@ -40,7 +40,7 @@ export function FlowSection() {
         className="pointer-events-none absolute left-1/2 top-1/3 h-[440px] w-[min(1000px,110vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.2)_0%,transparent_70%)]"
       />
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-[1680px]">
         <Reveal>
           <header className="mx-auto max-w-3xl text-center">
             <h2 className="font-poppins text-4xl font-bold leading-tight tracking-tight text-purple-50 sm:text-5xl lg:text-[54px]">

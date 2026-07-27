@@ -15,7 +15,7 @@ export function CtaSection() {
         className="pointer-events-none absolute left-1/2 top-1/2 h-[460px] w-[min(820px,95vw)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(146,84,235,0.22)_0%,transparent_70%)]"
       />
 
-      <Reveal className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
+      <Reveal className="relative mx-auto flex max-w-5xl flex-col items-center text-center">
         <h2 className="font-poppins text-4xl font-bold leading-[1.1] tracking-tight text-purple-50 sm:text-5xl lg:text-6xl">
           Ready to See It In <span className="hero-gradient-text">Action?</span>
         </h2>

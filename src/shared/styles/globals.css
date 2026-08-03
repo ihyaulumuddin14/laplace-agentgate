@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+:root {
+  --background: #12091f;
+  --foreground: #efe6fc;
+}
+
+@theme inline {
+  /* base color */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* font type */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-poppins: var(--font-poppins);
+  --font-inter: var(--font-inter);
+
+  /* gradient */
+  --background-image-gradient-linear-1: linear-gradient(
+    to bottom,
+    var(--color-purple-900) 0%,
+    #8133f1 51%,
+    var(--color-purple-50) 100%
+  );
+  --background-image-gradient-linear-2: linear-gradient(
+    to bottom,
+    var(--color-purple-900) 0%,
+    #8133f1 69%
+  );
+  --background-image-gradient-background: linear-gradient(
+    to bottom,
+    #8133f1 0%,
+    #6200ee 25%,
+    #4600a9 60%,
+    #290064 100%
+  );
+  --background-image-gradient-cta: linear-gradient(
+    172deg,
+    #27005f -22.46%,
+    #8133f1 66.77%
+  );
+  --background-image-gradient-footer: linear-gradient(
+    0deg,
+    #2b0e4e 0%,
+    #371664 100%
+  );
+}
+
+/* Design system — Purple scale (Figma) */
+@theme {
+  /* primary */
+  --color-purple-50: #efe6fc;
+  --color-purple-100: #ccb0f6;
+  --color-purple-200: #b48af1;
+  --color-purple-300: #9254eb;
+  --color-purple-400: #7d33e7;
+  --color-purple-500: #5c00e1;
+  --color-purple-600: #5400cd;
+  --color-purple-700: #4100a0;
+  --color-purple-800: #33007c;
+  --color-purple-900: #27005f;
+
+  --color-yellow: #fff600;
+  --color-red: #ff0c0c;
+  --color-green: #4dff0c;
+  --color-blue: #00d4ff;
+  --color-orange: #ff9900;
+  --color-gray: #868686;
+
+  --color-documentation-stroke: #8d5bff;
+
+  /* landing surfaces */
+  --color-surface: #12091f;
+  --color-surface-raised: #190e2b;
+  --color-surface-card: #1b1030;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------
+   Brand gradient text — used by navbar wordmark, footer & hero
+   --------------------------------------------------------------- */
+.brand-gradient-text {
+  background: linear-gradient(
+    173deg,
+    #27005f -122.91%,
+    #8133f1 -4.39%,
+    #efe6fd 95.3%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.hero-gradient-text {
+  background: linear-gradient(
+    180deg,
+    #27005f -106.77%,
+    #8133f1 6.98%,
+    #efe6fd 102.66%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.accent-gradient-text {
+  background: linear-gradient(180deg, #b48af1 0%, #7d33e7 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Shared heading highlight — "Powerful.", "Dangerous.", "Five Decisions" */
+.heading-gradient-text {
+  background: linear-gradient(90deg, #8133f1 36.06%, #ceb0fa 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------
+   Orbit animation (integration section)
+   Items travel counter-clockwise: paths are authored clockwise,
+   so offset-distance runs from 100% back to 0%.
+   --------------------------------------------------------------- */
+@keyframes orbit-ccw {
+  from {
+    offset-distance: 100%;
+  }
+  to {
+    offset-distance: 0%;
+  }
+}
+
+@keyframes ring-ccw {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes ring-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.orbit-item {
+  offset-rotate: 0deg;
+  animation: orbit-ccw var(--orbit-duration, 44s) linear infinite;
+  animation-delay: var(--orbit-delay, 0s);
+}
+
+/* The border line itself lights up where a traveller passes.
+   A short bright dash rides the ring path, perfectly synced (same
+   duration/delay/direction) with its traveller, leaving a glowing
+   "wake" just behind the moving chip. */
+@keyframes orbit-dash {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 1;
+  }
+}
+
+.orbit-glow {
+  animation: orbit-dash var(--orbit-duration, 44s) linear infinite;
+  animation-delay: var(--orbit-delay, 0s);
+  filter: drop-shadow(0 0 5px rgba(146, 84, 235, 0.9));
+  will-change: stroke-dashoffset;
+}
+
+/* Sparks flung off a traveller as it "scratches" the border line. */
+@keyframes orbit-spark {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--sx, 0), var(--sy, 0)) scale(0);
+    opacity: 0;
+  }
+}
+
+.orbit-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 9999px;
+  background: rgba(232, 220, 255, 1);
+  box-shadow:
+    0 0 10px 2px rgba(178, 138, 241, 0.95),
+    0 0 18px 4px rgba(146, 84, 235, 0.55);
+  animation: orbit-spark var(--spark-duration, 1.5s) ease-out infinite;
+  animation-delay: var(--spark-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-spark {
+    animation-name: none;
+    opacity: 0;
+  }
+}
+
+/* Hide scrollbar for mobile card carousels while keeping scroll/snap. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-item,
+  .orbit-glow {
+    animation-name: none;
+  }
+
+  .orbit-item {
+    offset-distance: var(--orbit-static, 0%);
+  }
+}

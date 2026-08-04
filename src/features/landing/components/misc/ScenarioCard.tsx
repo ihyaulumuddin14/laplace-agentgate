@@ -34,10 +34,10 @@ export function ScenarioCard({
       />
 
       <div className="relative flex items-start justify-between gap-3">
-        <div className="grid size-11 place-items-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-[var(--accent)] transition-transform duration-300 group-hover:scale-110">
+        <div className="grid size-11 place-items-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-(--accent) transition-transform duration-300 group-hover:scale-110">
           <Icon size={22} />
         </div>
-        <span className="rounded-full border border-[color-mix(in_srgb,var(--accent)_45%,transparent)] px-3 py-1 font-poppins text-xs font-semibold text-[var(--accent)]">
+        <span className="rounded-full border border-[color-mix(in_srgb,var(--accent)_45%,transparent)] px-3 py-1 font-poppins text-xs font-semibold text-(--accent)">
           {tag}
         </span>
       </div>
@@ -57,7 +57,7 @@ export function ScenarioCard({
             className="flex items-start gap-2 font-inter text-[13px] leading-snug text-purple-50 font-light"
           >
             <MdWarningAmber
-              className="mt-0.5 shrink-0 text-[var(--accent)]"
+              className="mt-0.5 shrink-0 text-(--accent)"
               size={15}
             />
             <span>{risk}</span>
@@ -72,7 +72,7 @@ export function ScenarioCard({
         }}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="rounded-full border border-[color-mix(in_srgb,var(--accent)_45%,transparent)] px-3 py-1 font-poppins text-xs font-semibold text-[var(--accent)]">
+          <span className="rounded-full border border-[color-mix(in_srgb,var(--accent)_45%,transparent)] px-3 py-1 font-poppins text-xs font-semibold text-(--accent)">
             {decision}
           </span>
           <span className="font-inter text-xs text-purple-100/55">

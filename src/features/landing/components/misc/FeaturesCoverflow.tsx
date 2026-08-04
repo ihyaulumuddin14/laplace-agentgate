@@ -72,7 +72,7 @@ export function FeaturesCoverflow({ items }: { items: CoverflowItem[] }) {
   return (
     <div
       ref={containerRef}
-      className="relative mx-auto h-[300px] w-full max-w-md touch-pan-y select-none [perspective:1200px]"
+      className="relative mx-auto h-75 w-full max-w-md touch-pan-y select-none perspective-distant"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -84,7 +84,7 @@ export function FeaturesCoverflow({ items }: { items: CoverflowItem[] }) {
           ref={(el) => {
             cardRefs.current[i] = el;
           }}
-          className="absolute left-1/2 top-1/2 h-[248px] w-[64%] [transform-style:preserve-3d] will-change-transform"
+          className="absolute left-1/2 top-1/2 h-62 w-[64%] transform-3d will-change-transform"
         >
           {item.node}
         </div>

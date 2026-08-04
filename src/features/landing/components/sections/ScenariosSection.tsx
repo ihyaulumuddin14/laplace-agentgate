@@ -59,7 +59,7 @@ export function ScenariosSection() {
     <section className="relative overflow-hidden px-6 py-20 sm:px-10 lg:py-28">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-40 top-1/4 h-[520px] w-[640px] rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.22)_0%,transparent_70%)]"
+        className="pointer-events-none absolute -right-40 top-1/4 h-130 w-160 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.22)_0%,transparent_70%)]"
       />
 
       <div className="relative mx-auto max-w-[1680px]">

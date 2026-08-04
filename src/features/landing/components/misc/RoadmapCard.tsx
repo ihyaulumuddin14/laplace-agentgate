@@ -26,7 +26,7 @@ export function RoadmapCard({
         {index}
       </span>
 
-      <div className="relative grid size-11 place-items-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-[var(--accent)] transition-transform duration-300 group-hover:scale-110">
+      <div className="relative grid size-11 place-items-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-(--accent) transition-transform duration-300 group-hover:scale-110">
         <Icon size={22} />
       </div>
 

@@ -46,7 +46,7 @@ function IconChip({ Icon, size }: { Icon: IconType; size: number }) {
 function LabelChip({ label, fontSize }: { label: string; fontSize: number }) {
   return (
     <span
-      className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.12] px-3 py-1 font-poppins font-light text-white backdrop-blur-md"
+      className="whitespace-nowrap rounded-full border border-white/20 bg-white/12 px-3 py-1 font-poppins font-light text-white backdrop-blur-md"
       style={{ fontSize, lineHeight: 1.6 }}
     >
       {label}
@@ -65,7 +65,7 @@ function Core({
 }) {
   return (
     <div
-      className="rounded-full border border-white/25 bg-white/[0.08] shadow-[0_20px_70px_-20px_rgba(146,84,235,0.95)] backdrop-blur-md"
+      className="rounded-full border border-white/25 bg-white/8 shadow-[0_20px_70px_-20px_rgba(146,84,235,0.95)] backdrop-blur-md"
       style={{ padding: `${paddingY}px ${paddingX}px` }}
     >
       <span

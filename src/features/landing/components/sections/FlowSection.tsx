@@ -32,7 +32,7 @@ export function FlowSection() {
     <section className="relative overflow-hidden px-6 py-20 sm:px-10 lg:py-28">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/3 h-[440px] w-[min(1000px,110vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.2)_0%,transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-1/3 h-110 w-[min(1000px,110vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.2)_0%,transparent_70%)]"
       />
 
       <div className="relative mx-auto max-w-[1680px]">

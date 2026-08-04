@@ -2,21 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdClose, MdMenu } from "react-icons/md";
 import githubMark from "@/assets/profil.png";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "#hero" },
-  { label: "Documentation", href: "#" },
-  { label: "Demo Console", href: "#" },
+  { label: "Home", href: "/" },
+  { label: "Documentation", href: "/docs" },
+  { label: "Demo Console", href: "/demo" },
 ] as const;
 
 export function Navbar() {
-  const [activeItem, setActiveItem] = useState<string>("Home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Floating navbar: wide when pinned to the top, compact once scrolled down.
   useEffect(() => {
@@ -31,7 +32,7 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6 sm:px-6 lg:px-10">
       <nav
         aria-label="Main navigation"
-        className={`mx-auto w-full rounded-4xl border border-purple-200/15 backdrop-blur-xl transition-all duration-500 ease-out sm:rounded-full ${
+        className={`mx-auto w-full rounded-4xl border border-purple-200/15 backdrop-blur-xl transition-all duration-500 ease-out lg:rounded-full ${
           isScrolled
             ? "max-w-5xl bg-[#150a24]/80 shadow-[0_6px_28px_-14px_rgba(93,0,225,0.55)]"
             : "max-w-[1700px] bg-[#150a24]/55 shadow-[0_10px_44px_-12px_rgba(93,0,225,0.45)]"
@@ -42,25 +43,20 @@ export function Navbar() {
             isScrolled ? "px-5 sm:px-14" : "px-5 sm:px-14"
           }`}
         >
-          <Link
-            href="#hero"
-            onClick={() => setActiveItem("Home")}
-            className="transition-opacity hover:opacity-80"
-          >
+          <Link href="#hero" className="transition-opacity hover:opacity-80">
             <BrandWordmark logoSize={30} textClassName="text-base sm:text-lg" />
           </Link>
 
           {/* Desktop navigation */}
           <ul className="hidden items-center gap-8 lg:flex xl:gap-12">
             {NAV_ITEMS.map((item) => {
-              const isActive = activeItem === item.label;
+              const isActive = pathname === item.href;
 
               return (
                 <li key={item.label}>
                   <Link
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    onClick={() => setActiveItem(item.label)}
                     className={`relative block pb-1 font-poppins font-semibold leading-[100%] text-base transition-colors duration-200 ${
                       isActive
                         ? "text-purple-300"
@@ -113,7 +109,7 @@ export function Navbar() {
         {isMenuOpen && (
           <ul className="flex flex-col gap-1 border-t border-purple-200/10 px-5 py-3 lg:hidden">
             {NAV_ITEMS.map((item) => {
-              const isActive = activeItem === item.label;
+              const isActive = pathname === item.href;
 
               return (
                 <li key={item.label}>
@@ -121,7 +117,6 @@ export function Navbar() {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => {
-                      setActiveItem(item.label);
                       setIsMenuOpen(false);
                     }}
                     className={`block rounded-xl px-3 py-2 font-poppins text-base font-semibold transition-colors ${

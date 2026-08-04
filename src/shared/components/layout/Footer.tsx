@@ -8,10 +8,10 @@ import {
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 
 const FOOTER_LINKS = [
-  { label: "Demo Console", href: "#demo-console" },
-  { label: "Documentation", href: "#documentation" },
+  { label: "Demo Console", href: "/demo" },
+  { label: "Documentation", href: "/docs" },
   { label: "Github Repository", href: "#github" },
-  { label: "PRD/Report", href: "#prd-report" },
+  { label: "PRD/Report", href: "#report" },
 ] as const;
 
 const SOCIAL_LINKS = [

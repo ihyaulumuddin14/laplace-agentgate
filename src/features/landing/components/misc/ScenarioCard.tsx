@@ -46,7 +46,7 @@ export function ScenarioCard({
         {title}
       </h3>
 
-      <p className="relative font-inter text-sm leading-relaxed text-purple-100/70">
+      <p className="relative font-inter text-sm leading-relaxed text-purple-50 font-light">
         {description}
       </p>
 
@@ -54,7 +54,7 @@ export function ScenarioCard({
         {risks.map((risk) => (
           <li
             key={risk}
-            className="flex items-start gap-2 font-inter text-[13px] leading-snug text-[color-mix(in_srgb,var(--accent)_88%,white)]"
+            className="flex items-start gap-2 font-inter text-[13px] leading-snug text-purple-50 font-light"
           >
             <MdWarningAmber
               className="mt-0.5 shrink-0 text-[var(--accent)]"

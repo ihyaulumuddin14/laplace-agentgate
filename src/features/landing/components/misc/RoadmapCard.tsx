@@ -34,7 +34,7 @@ export function RoadmapCard({
         {title}
       </h3>
 
-      <p className="relative font-inter text-sm leading-relaxed text-purple-100/70">
+      <p className="relative font-inter text-sm leading-relaxed text-purple-50">
         {description}
       </p>
     </article>

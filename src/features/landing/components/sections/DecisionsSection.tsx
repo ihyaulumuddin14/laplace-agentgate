@@ -1,10 +1,8 @@
-import {
-  MdOutlineBlock,
-  MdOutlineCheckCircle,
-  MdOutlineForum,
-  MdOutlineHowToReg,
-  MdOutlineLoop,
-} from "react-icons/md";
+import { CgCloseO } from "react-icons/cg";
+import { CiChat2 } from "react-icons/ci";
+import { FiRepeat } from "react-icons/fi";
+import { HiOutlineUsers } from "react-icons/hi2";
+import { MdOutlineCheckCircle } from "react-icons/md";
 import {
   DecisionCard,
   type DecisionCardProps,
@@ -15,38 +13,38 @@ import { Reveal } from "@/shared/components/ui/Reveal";
 const DECISIONS: DecisionCardProps[] = [
   {
     Icon: MdOutlineCheckCircle,
-    name: "allow",
+    name: "Allow",
     description:
       "Action is safe. Execute immediately through the API or the browser executor.",
     accent: "#4dff0c",
   },
   {
-    Icon: MdOutlineBlock,
-    name: "block",
+    Icon: CgCloseO,
+    name: "Block",
     description:
       "Action violates policy or is far too risky. Stop immediately. No execution.",
     accent: "#ff0c0c",
   },
   {
-    Icon: MdOutlineHowToReg,
-    name: "need_approval",
+    Icon: HiOutlineUsers,
+    name: "Need_Approval",
     description:
       "High risk action requires human reviewer approval before proceeding.",
     accent: "#fff600",
   },
   {
-    Icon: MdOutlineForum,
-    name: "ask_user",
-    description:
-      "AgentGate needs additional confirmation or clarification from the user.",
-    accent: "#00d4ff",
-  },
-  {
-    Icon: MdOutlineLoop,
-    name: "sanitize",
+    Icon: FiRepeat,
+    name: "Sanitize",
     description:
       "Sensitive data detected. The payload is redacted and a safe version is available.",
     accent: "#ff9900",
+  },
+  {
+    Icon: CiChat2,
+    name: "Ask_User",
+    description:
+      "AgentGate needs additional confirmation or clarification from the user.",
+    accent: "#00d4ff",
   },
 ];
 
@@ -86,7 +84,12 @@ export function DecisionsSection() {
           />
 
           {/* Desktop: three on top, two centered below */}
-          <div className="mt-14 hidden gap-7 md:grid md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 hidden gap-7 md:flex flex-wrap justify-center w-full max-w-[1280px] mx-auto">
+            {DECISIONS.map((decision) => (
+              <DecisionCard key={decision.name} {...decision} />
+            ))}
+          </div>
+          {/* <div className="mt-14 hidden gap-7 md:grid md:grid-cols-2 lg:grid-cols-3">
             {firstRow.map((decision) => (
               <DecisionCard key={decision.name} {...decision} />
             ))}
@@ -96,7 +99,7 @@ export function DecisionsSection() {
             {secondRow.map((decision) => (
               <DecisionCard key={decision.name} {...decision} />
             ))}
-          </div>
+          </div> */}
         </Reveal>
       </div>
     </section>

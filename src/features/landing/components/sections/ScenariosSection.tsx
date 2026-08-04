@@ -1,8 +1,5 @@
-import {
-  MdLockOutline,
-  MdOutlineChatBubbleOutline,
-  MdOutlineMarkEmailUnread,
-} from "react-icons/md";
+import { BsArchive } from "react-icons/bs";
+import { MdLockOutline, MdOutlineChatBubbleOutline } from "react-icons/md";
 import {
   ScenarioCard,
   type ScenarioCardProps,
@@ -41,7 +38,7 @@ const SCENARIOS: ScenarioCardProps[] = [
     accent: "#ff0c0c",
   },
   {
-    Icon: MdOutlineMarkEmailUnread,
+    Icon: BsArchive,
     title: "Productivity Assistant Safety",
     tag: "productivity",
     description:

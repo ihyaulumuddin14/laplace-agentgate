@@ -1,14 +1,11 @@
 import type { IconType } from "react-icons";
-import {
-  MdOutlineAutoAwesome,
-  MdOutlineBlurOn,
-  MdOutlineCalendarMonth,
-  MdOutlineFlare,
-  MdOutlineHub,
-  MdOutlineInventory2,
-  MdOutlineMail,
-  MdOutlineSend,
-} from "react-icons/md";
+import { BsOpenai } from "react-icons/bs";
+import { LiaTelegram } from "react-icons/lia";
+import { MdOutlineCalendarMonth, MdOutlineMail } from "react-icons/md";
+import { PiCodesandboxLogoLight } from "react-icons/pi";
+import { SiAsana } from "react-icons/si";
+import { TbSparkles2 } from "react-icons/tb";
+import { VscClaude } from "react-icons/vsc";
 import {
   OrbitCanvas,
   type OrbitRing,
@@ -17,14 +14,14 @@ import {
 import { Reveal } from "@/shared/components/ui/Reveal";
 
 const ORBIT_ICONS: IconType[] = [
-  MdOutlineFlare,
+  LiaTelegram,
+  VscClaude,
+  PiCodesandboxLogoLight,
+  BsOpenai,
+  TbSparkles2,
   MdOutlineMail,
-  MdOutlineBlurOn,
-  MdOutlineHub,
-  MdOutlineInventory2,
-  MdOutlineAutoAwesome,
-  MdOutlineSend,
   MdOutlineCalendarMonth,
+  SiAsana,
 ];
 
 const DECISION_LABELS = [
@@ -49,7 +46,7 @@ function IconChip({ Icon, size }: { Icon: IconType; size: number }) {
 function LabelChip({ label, fontSize }: { label: string; fontSize: number }) {
   return (
     <span
-      className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.12] px-3 py-1 font-poppins font-medium text-white backdrop-blur-md"
+      className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.12] px-3 py-1 font-poppins font-light text-white backdrop-blur-md"
       style={{ fontSize, lineHeight: 1.6 }}
     >
       {label}
@@ -68,11 +65,11 @@ function Core({
 }) {
   return (
     <div
-      className="rounded-[1.9rem] border border-white/25 bg-white/[0.08] shadow-[0_20px_70px_-20px_rgba(146,84,235,0.95)] backdrop-blur-md"
+      className="rounded-full border border-white/25 bg-white/[0.08] shadow-[0_20px_70px_-20px_rgba(146,84,235,0.95)] backdrop-blur-md"
       style={{ padding: `${paddingY}px ${paddingX}px` }}
     >
       <span
-        className="font-poppins font-bold text-white"
+        className="font-poppins font-semibold text-white"
         style={{ fontSize, lineHeight: 1.2 }}
       >
         Integration
@@ -135,15 +132,6 @@ const MOBILE_RINGS: OrbitRing[] = [
 export function IntegrationSection() {
   return (
     <section className="relative overflow-hidden px-4 py-12 sm:px-8 lg:py-20">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[640px] w-[min(1100px,120vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(129,51,241,0.26)_0%,rgba(92,0,225,0.12)_45%,transparent_72%)]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[16%] h-[320px] w-[min(760px,80vw)] -translate-x-1/2 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(146,84,235,0.45)_0%,rgba(92,0,225,0.12)_50%,transparent_78%)]"
-      />
-
       <Reveal className="relative mx-auto max-w-[1680px]">
         <OrbitCanvas
           className="hidden sm:block"
@@ -159,12 +147,12 @@ export function IntegrationSection() {
             ],
             5,
             {
-              iconSize: 54,
-              labelFontSize: 13,
+              iconSize: 50,
+              labelFontSize: 10,
               labelBox: { w: 116, h: 38 },
             },
           )}
-          center={<Core fontSize={30} paddingX={36} paddingY={19} />}
+          center={<Core fontSize={24} paddingX={36} paddingY={19} />}
           centerW={196}
           centerH={84}
         />

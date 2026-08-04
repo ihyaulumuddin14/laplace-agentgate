@@ -23,13 +23,13 @@ const SOCIAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t-[5px] border-purple-400 bg-gradient-footer">
+    <footer className="border-t-[5px] border-purple-800 bg-purple-900">
       <div className="w-full px-6 py-10 sm:px-10 lg:px-16 lg:py-12 xl:px-24">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
           {/* Brand */}
-          <div className="flex flex-col gap-3">
-            <BrandWordmark logoSize={44} textClassName="text-3xl sm:text-4xl" />
-            <p className="font-poppins text-base font-semibold leading-[150%] text-purple-50 sm:text-lg xl:text-xl">
+          <div className="flex flex-col gap-6">
+            <BrandWordmark logoSize={38} textClassName="text-xl sm:text-2xl" />
+            <p className="font-poppins text-sm font-semibold leading-[150%] text-purple-50 sm:text-base xl:text-lg">
               Guardrails for AI Agent Actions
             </p>
           </div>
@@ -41,7 +41,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-inter text-base font-normal leading-[150%] text-purple-50 transition-colors duration-200 hover:text-purple-200 sm:text-lg xl:text-xl"
+                    className="font-inter text-sm font-normal leading-[150%] text-purple-50 transition-colors duration-200 hover:text-purple-200 sm:text-base xl:text-lg"
                   >
                     {link.label}
                   </Link>
@@ -57,7 +57,7 @@ export function Footer() {
                 <Link
                   href={href}
                   aria-label={label}
-                  className="grid size-9 place-items-center rounded-full bg-purple-50 text-purple-800 transition-all duration-200 hover:-translate-y-0.5 hover:bg-purple-200"
+                  className="grid size-8 place-items-center rounded-full bg-purple-50 text-purple-800 transition-all duration-200 hover:-translate-y-0.5 hover:bg-purple-200"
                 >
                   <Icon size={17} />
                 </Link>
@@ -69,10 +69,10 @@ export function Footer() {
         <hr className="my-8 border-purple-200/25" />
 
         <div className="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:gap-8">
-          <p className="font-poppins text-sm font-bold leading-[150%] text-purple-100 sm:text-base xl:text-xl">
+          <p className="font-poppins text-sm font-bold leading-[150%] text-purple-100 sm:text-base xl:text-lg">
             © 2026 AgentGate. All rights reserved.
           </p>
-          <p className="font-poppins text-sm font-bold leading-[150%] text-purple-100 sm:text-base xl:text-xl">
+          <p className="font-poppins text-sm font-bold leading-[150%] text-purple-100 sm:text-base xl:text-lg">
             Developed with ♡ by the Laplace Team, BCC Filkom, University of
             Brawijaya
           </p>

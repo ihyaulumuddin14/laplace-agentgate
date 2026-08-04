@@ -1,8 +1,6 @@
-import {
-  MdOutlineDescription,
-  MdOutlineMail,
-  MdOutlineWeb,
-} from "react-icons/md";
+import { FaCode } from "react-icons/fa6";
+import { MdOutlineMail } from "react-icons/md";
+import { RxCursorArrow } from "react-icons/rx";
 import {
   RiskCard,
   type RiskCardProps,
@@ -24,19 +22,19 @@ const RISK_CARDS: RiskCardProps[] = [
     ],
   },
   {
-    Icon: MdOutlineWeb,
+    Icon: RxCursorArrow,
     title: "Browser & Forms",
     accent: "#ffa629",
     description:
       "Agents can click submit buttons, fill forms, cancel bookings, or make purchases irreversible actions with a single wrong command.",
     risks: [
-      "Click cancel booking",
+      "Click 'Cancel Booking'",
       "Submit payment forms",
       "Trigger destructive actions",
     ],
   },
   {
-    Icon: MdOutlineDescription,
+    Icon: FaCode,
     title: "Files & APIs",
     accent: "#ff0c0c",
     description:

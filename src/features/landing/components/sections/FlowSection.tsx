@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  MdArrowForward,
-  MdOutlineAccountTree,
-  MdOutlineGroups,
-  MdOutlineLanguage,
-  MdOutlineMemory,
-  MdOutlineShield,
-  MdOutlineStorage,
-} from "react-icons/md";
+import { FaArrowRight, FaCodeBranch } from "react-icons/fa6";
+import { FiDatabase } from "react-icons/fi";
+import { HiOutlineCpuChip, HiOutlineUsers } from "react-icons/hi2";
+import { MdOutlineLanguage, MdOutlineShield } from "react-icons/md";
 import { FlowAccordion } from "@/features/landing/components/misc/FlowAccordion";
 import type { FlowStep } from "@/features/landing/components/misc/FlowCard";
 import { FlowSwipeStack } from "@/features/landing/components/misc/FlowSwipeStack";
@@ -19,17 +14,17 @@ const LOREM =
 
 const STEPS: FlowStep[] = [
   {
-    Icon: MdOutlineGroups,
+    Icon: HiOutlineUsers,
     title: "User Task",
     description:
       "Natural language goal provided by the user to begin the requested workflow.",
   },
-  { Icon: MdOutlineMemory, title: "LLM Planner", description: LOREM },
-  { Icon: MdArrowForward, title: "Action Request", description: LOREM },
+  { Icon: HiOutlineCpuChip, title: "LLM Planner", description: LOREM },
+  { Icon: FaArrowRight, title: "Action Request", description: LOREM },
   { Icon: MdOutlineShield, title: "Agent Gate", description: LOREM },
-  { Icon: MdOutlineAccountTree, title: "Decision Router", description: LOREM },
+  { Icon: FaCodeBranch, title: "Decision Router", description: LOREM },
   { Icon: MdOutlineLanguage, title: "Executor", description: LOREM },
-  { Icon: MdOutlineStorage, title: "Audit Log", description: LOREM },
+  { Icon: FiDatabase, title: "Audit Log", description: LOREM },
 ];
 
 export function FlowSection() {

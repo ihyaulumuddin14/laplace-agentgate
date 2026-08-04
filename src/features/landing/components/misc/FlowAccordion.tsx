@@ -9,7 +9,7 @@ export function FlowAccordion({ steps }: { steps: FlowStep[] }) {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="flex h-[360px] gap-4">
+    <div className="flex h-90 gap-4">
       {steps.map((step, index) => {
         const isActive = index === active;
         const Icon = step.Icon;

@@ -31,7 +31,7 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6 sm:px-6 lg:px-10">
       <nav
         aria-label="Main navigation"
-        className={`mx-auto w-full rounded-[2rem] border border-purple-200/15 backdrop-blur-xl transition-all duration-500 ease-out sm:rounded-full ${
+        className={`mx-auto w-full rounded-4xl border border-purple-200/15 backdrop-blur-xl transition-all duration-500 ease-out sm:rounded-full ${
           isScrolled
             ? "max-w-5xl bg-[#150a24]/80 shadow-[0_6px_28px_-14px_rgba(93,0,225,0.55)]"
             : "max-w-[1700px] bg-[#150a24]/55 shadow-[0_10px_44px_-12px_rgba(93,0,225,0.45)]"
@@ -70,7 +70,7 @@ export function Navbar() {
                     {item.label}
                     <span
                       aria-hidden="true"
-                      className={`absolute inset-x-0 bottom-0 h-[1px] origin-center rounded-full bg-linear-to-r from-purple-400 to-purple-200 transition-transform duration-300 ${
+                      className={`absolute inset-x-0 bottom-0 h-px origin-center rounded-full bg-linear-to-r from-purple-400 to-purple-200 transition-transform duration-300 ${
                         isActive ? "scale-x-100" : "scale-x-0"
                       }`}
                     />
@@ -93,7 +93,7 @@ export function Navbar() {
                 alt="github-logo"
                 width={34}
                 height={34}
-                className="h-[30px] w-[30px] sm:h-[34px] sm:w-[34px]"
+                className="h-7.5 w-7.5 sm:h-8.5 sm:w-8.5"
               />
             </Link>
 

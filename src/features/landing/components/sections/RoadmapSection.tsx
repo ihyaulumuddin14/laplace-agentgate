@@ -49,7 +49,7 @@ export function RoadmapSection() {
     <section className="relative overflow-visible px-6 py-20 sm:px-10 lg:py-28">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-1/3 h-[440px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.24)_0%,transparent_70%)]"
+        className="pointer-events-none absolute -left-32 top-1/3 h-110 w-140 rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.24)_0%,transparent_70%)]"
       />
 
       <div className="relative mx-auto max-w-[1680px]">

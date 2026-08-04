@@ -81,7 +81,7 @@ export function FeaturesSection() {
     <section className="relative overflow-hidden px-6 py-20 sm:px-10 lg:py-28">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/4 h-[480px] w-[min(1000px,110vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,0,225,0.2)_0%,transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-1/4 h-120 w-[min(1000px,110vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(92,0,225,0.2)_0%,transparent_70%)]"
       />
 
       <div className="relative mx-auto max-w-[1680px]">

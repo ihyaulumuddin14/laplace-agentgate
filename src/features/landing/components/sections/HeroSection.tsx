@@ -7,7 +7,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-[100svh] items-center overflow-visible px-6 pt-28 pb-16 sm:px-10 sm:pt-32"
+      className="relative flex min-h-svh items-center overflow-visible px-6 pt-28 pb-16 sm:px-10 sm:pt-32"
     >
       <HeroBackgroundAccent />
       <Reveal className="relative mx-auto flex max-w-6xl flex-col items-center text-center">
@@ -52,19 +52,19 @@ const HeroBackgroundAccent = () => {
     <>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-48 left-1/2 h-[1100px] w-[min(1700px,170vw)] -translate-x-1/2 bg-[radial-gradient(ellipse_56%_52%_at_50%_0%,rgba(129,51,241,0.55)_0%,rgba(92,0,225,0.22)_36%,rgba(39,0,95,0.08)_58%,transparent_78%)]"
+        className="pointer-events-none absolute -top-48 left-1/2 h-275 w-[min(1700px,170vw)] -translate-x-1/2 bg-[radial-gradient(ellipse_56%_52%_at_50%_0%,rgba(129,51,241,0.55)_0%,rgba(92,0,225,0.22)_36%,rgba(39,0,95,0.08)_58%,transparent_78%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[680px] w-[min(1000px,110vw)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(146,84,235,0.34)_0%,rgba(92,0,225,0.12)_46%,transparent_72%)]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-170 w-[min(1000px,110vw)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(146,84,235,0.34)_0%,rgba(92,0,225,0.12)_46%,transparent_72%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[8%] top-[38%] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(125,51,231,0.20)_0%,transparent_70%)]"
+        className="pointer-events-none absolute left-[8%] top-[38%] h-105 w-105 rounded-full bg-[radial-gradient(circle,rgba(125,51,231,0.20)_0%,transparent_70%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[8%] top-[52%] h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle,rgba(146,84,235,0.18)_0%,transparent_70%)]"
+        className="pointer-events-none absolute right-[8%] top-[52%] h-115 w-115 rounded-full bg-[radial-gradient(circle,rgba(146,84,235,0.18)_0%,transparent_70%)]"
       />
     </>
   );

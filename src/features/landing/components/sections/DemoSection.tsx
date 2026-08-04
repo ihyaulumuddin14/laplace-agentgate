@@ -9,10 +9,10 @@ export function DemoSection() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/4 h-[440px] w-[620px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.20)_0%,transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-1/4 h-110 w-155 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.20)_0%,transparent_70%)]"
       />
 
-      <div className="relative mx-auto max-w-[1400px]">
+      <div className="relative mx-auto max-w-350">
         <Reveal>
           <header className="mx-auto max-w-3xl text-center">
             <h2 className="font-poppins text-4xl font-bold leading-tight tracking-tight text-purple-50 sm:text-5xl lg:text-[54px]">

@@ -27,7 +27,7 @@ export function RiskCard({
         className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_left,color-mix(in_srgb,var(--accent)_14%,transparent),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
 
-      <div className="relative grid size-12 place-items-center rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-[var(--accent)] transition-transform duration-300 group-hover:scale-110">
+      <div className="relative grid size-12 place-items-center rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-(--accent) transition-transform duration-300 group-hover:scale-110">
         <Icon size={24} />
       </div>
 
@@ -45,10 +45,7 @@ export function RiskCard({
             key={risk}
             className="flex items-start gap-2 font-inter text-sm leading-snug text-purple-50 font-light"
           >
-            <CgCloseO
-              className="mt-0.5 shrink-0 text-[var(--accent)]"
-              size={16}
-            />
+            <CgCloseO className="mt-0.5 shrink-0 text-(--accent)" size={16} />
             <span>{risk}</span>
           </li>
         ))}

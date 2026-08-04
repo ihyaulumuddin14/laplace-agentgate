@@ -24,11 +24,11 @@ export function DecisionCard({
         className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_left,color-mix(in_srgb,var(--accent)_14%,transparent),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
 
-      <div className="relative grid size-12 place-items-center rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-[var(--accent)] transition-transform duration-300 group-hover:scale-110">
+      <div className="relative grid size-12 place-items-center rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-(--accent) transition-transform duration-300 group-hover:scale-110">
         <Icon size={24} />
       </div>
 
-      <span className="relative w-full max-w-36 rounded-xl border-2 border-[color-mix(in_srgb,var(--accent)_40%,transparent)] px-3 py-1 font-poppins text-sm font-normal text-[var(--accent)]">
+      <span className="relative w-full max-w-36 rounded-xl border-2 border-[color-mix(in_srgb,var(--accent)_40%,transparent)] px-3 py-1 font-poppins text-sm font-normal text-(--accent)">
         {name}
       </span>
 

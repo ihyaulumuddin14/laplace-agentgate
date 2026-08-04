@@ -10,7 +10,7 @@ export function CtaSection() {
     <section className="relative overflow-visible px-6 py-24 sm:px-10 lg:py-32">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[460px] w-[min(820px,95vw)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(146,84,235,0.22)_0%,transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-115 w-[min(820px,95vw)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(146,84,235,0.22)_0%,transparent_70%)]"
       />
 
       <Reveal className="relative mx-auto flex max-w-5xl flex-col items-center text-center">

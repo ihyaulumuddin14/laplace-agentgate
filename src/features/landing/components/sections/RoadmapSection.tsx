@@ -1,11 +1,8 @@
 import { Fragment } from "react";
-import {
-  MdArrowForward,
-  MdOutlineAccountTree,
-  MdOutlineExtension,
-  MdOutlineHub,
-  MdOutlineLayers,
-} from "react-icons/md";
+import { AiOutlineChrome } from "react-icons/ai";
+import { LuHistory } from "react-icons/lu";
+import { MdArrowForward } from "react-icons/md";
+import { RiGitBranchFill, RiServerLine } from "react-icons/ri";
 import {
   RoadmapCard,
   type RoadmapCardProps,
@@ -15,7 +12,7 @@ import { Reveal } from "@/shared/components/ui/Reveal";
 const ROADMAP: RoadmapCardProps[] = [
   {
     index: "01",
-    Icon: MdOutlineExtension,
+    Icon: AiOutlineChrome,
     title: "Chrome/Browser Extension",
     description:
       "Active page snapshot, element highlight, and extension based browser control without Playwright.",
@@ -23,7 +20,7 @@ const ROADMAP: RoadmapCardProps[] = [
   },
   {
     index: "02",
-    Icon: MdOutlineHub,
+    Icon: RiServerLine,
     title: "MCP Compatible Path",
     description:
       "Server / client adapter reusing ActionRequest and DecisionResponse contracts over MCP protocol.",
@@ -31,7 +28,7 @@ const ROADMAP: RoadmapCardProps[] = [
   },
   {
     index: "03",
-    Icon: MdOutlineAccountTree,
+    Icon: RiGitBranchFill,
     title: "LangGraph Adapter",
     description:
       "Workflow graph integration after the core evaluation engine is stable, fast, and well benchmarked.",
@@ -39,7 +36,7 @@ const ROADMAP: RoadmapCardProps[] = [
   },
   {
     index: "04",
-    Icon: MdOutlineLayers,
+    Icon: LuHistory,
     title: "OpenClaw Adapter",
     description:
       "Optional integration after framework agnostic engine quality is fully proven in production. Incrementally.",
@@ -49,7 +46,7 @@ const ROADMAP: RoadmapCardProps[] = [
 
 export function RoadmapSection() {
   return (
-    <section className="relative overflow-hidden px-6 py-20 sm:px-10 lg:py-28">
+    <section className="relative overflow-visible px-6 py-20 sm:px-10 lg:py-28">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -left-32 top-1/3 h-[440px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.24)_0%,transparent_70%)]"
@@ -73,7 +70,7 @@ export function RoadmapSection() {
                 {i < ROADMAP.length - 1 && (
                   <span
                     aria-hidden="true"
-                    className="grid shrink-0 place-items-center self-center text-purple-200/50"
+                    className="grid shrink-0 place-items-center self-center text-purple-50"
                   >
                     <MdArrowForward
                       className="rotate-90 lg:rotate-0"

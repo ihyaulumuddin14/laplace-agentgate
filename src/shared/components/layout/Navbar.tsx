@@ -38,10 +38,8 @@ export function Navbar() {
         }`}
       >
         <div
-          className={`flex items-center justify-between gap-4 transition-all duration-500 ease-out ${
-            isScrolled
-              ? "px-4 py-2 sm:px-5 sm:py-2.5"
-              : "px-5 py-3 sm:px-7 sm:py-3.5"
+          className={`flex items-center justify-between gap-4 py-4 sm:py-4.5 transition-all duration-500 ease-out ${
+            isScrolled ? "px-5 sm:px-14" : "px-5 sm:px-14"
           }`}
         >
           <Link
@@ -49,10 +47,7 @@ export function Navbar() {
             onClick={() => setActiveItem("Home")}
             className="transition-opacity hover:opacity-80"
           >
-            <BrandWordmark
-              logoSize={30}
-              textClassName="text-lg sm:text-xl md:text-[22px]"
-            />
+            <BrandWordmark logoSize={30} textClassName="text-base sm:text-lg" />
           </Link>
 
           {/* Desktop navigation */}
@@ -66,7 +61,7 @@ export function Navbar() {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => setActiveItem(item.label)}
-                    className={`relative block pb-1 font-poppins text-lg font-semibold leading-[150%] transition-colors duration-200 xl:text-xl ${
+                    className={`relative block pb-1 font-poppins font-semibold leading-[100%] text-base transition-colors duration-200 ${
                       isActive
                         ? "text-purple-300"
                         : "text-purple-50 hover:text-purple-200"
@@ -75,7 +70,7 @@ export function Navbar() {
                     {item.label}
                     <span
                       aria-hidden="true"
-                      className={`absolute inset-x-0 -bottom-0.5 h-[3px] origin-center rounded-full bg-gradient-to-r from-purple-400 to-purple-200 transition-transform duration-300 ${
+                      className={`absolute inset-x-0 bottom-0 h-[1px] origin-center rounded-full bg-linear-to-r from-purple-400 to-purple-200 transition-transform duration-300 ${
                         isActive ? "scale-x-100" : "scale-x-0"
                       }`}
                     />
@@ -95,7 +90,7 @@ export function Navbar() {
             >
               <Image
                 src={githubMark}
-                alt=""
+                alt="github-logo"
                 width={34}
                 height={34}
                 className="h-[30px] w-[30px] sm:h-[34px] sm:w-[34px]"

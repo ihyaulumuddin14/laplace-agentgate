@@ -1,15 +1,12 @@
-import {
-  MdOutlineAssignmentTurnedIn,
-  MdOutlineBugReport,
-  MdOutlineChat,
-  MdOutlineInsertChart,
-  MdOutlinePreview,
-  MdOutlineReceiptLong,
-  MdOutlineShield,
-  MdOutlineSpeed,
-  MdOutlineTerminal,
-  MdOutlineViewList,
-} from "react-icons/md";
+import { CiChat2 } from "react-icons/ci";
+import { FaRegChartBar } from "react-icons/fa";
+import { FaRegCircleCheck } from "react-icons/fa6";
+import { FiClock } from "react-icons/fi";
+import { GoPackageDependents } from "react-icons/go";
+import { HiOutlineCpuChip } from "react-icons/hi2";
+import { IoEyeOutline } from "react-icons/io5";
+import { MdOutlineReceiptLong, MdOutlineShield } from "react-icons/md";
+import { RiTerminalFill } from "react-icons/ri";
 import {
   FeatureCard,
   type FeatureCardProps,
@@ -19,25 +16,25 @@ import { Reveal } from "@/shared/components/ui/Reveal";
 
 const FEATURES: FeatureCardProps[] = [
   {
-    Icon: MdOutlineTerminal,
+    Icon: RiTerminalFill,
     title: "Demo Console",
     description:
       "Main MVP product interface for running scenarios and viewing decisions",
   },
   {
-    Icon: MdOutlineChat,
+    Icon: CiChat2,
     title: "Web Chat",
     description:
       "Natural language task input with run, loading, and error states",
   },
   {
-    Icon: MdOutlineViewList,
+    Icon: GoPackageDependents,
     title: "Scenario Runner",
     description:
       "Predefined Booking, code protection, and productivity scenarios",
   },
   {
-    Icon: MdOutlinePreview,
+    Icon: IoEyeOutline,
     title: "Action Preview",
     description:
       "Tool name, target system, target element, and payload summary",
@@ -48,7 +45,7 @@ const FEATURES: FeatureCardProps[] = [
     description: "Decision badge, risk score, reasons, entities, and next step",
   },
   {
-    Icon: MdOutlineAssignmentTurnedIn,
+    Icon: FaRegCircleCheck,
     title: "Approval Queue",
     description:
       "Approve, reject, edit, pending, and resolved states for reviewers",
@@ -60,19 +57,19 @@ const FEATURES: FeatureCardProps[] = [
       "Table with timestamp, action, decision, risk, status, and detail view",
   },
   {
-    Icon: MdOutlineInsertChart,
+    Icon: FaRegChartBar,
     title: "Risk Dashboard",
     description:
       "Decision distribution, high risk count, blocked and approval metrics",
   },
   {
-    Icon: MdOutlineSpeed,
+    Icon: FiClock,
     title: "Latency Report",
     description:
       "P50/P95 latency, raw vs guarded overhead percentage, slow paths",
   },
   {
-    Icon: MdOutlineBugReport,
+    Icon: HiOutlineCpuChip,
     title: "CLI Demo",
     description:
       "Developer scenario replay, detector debugging, and benchmark runs",

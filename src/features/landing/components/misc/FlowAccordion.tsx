@@ -29,21 +29,21 @@ export function FlowAccordion({ steps }: { steps: FlowStep[] }) {
             {isActive ? (
               <div className="flex h-full flex-col justify-center gap-5 p-8">
                 <div className="grid size-14 place-items-center rounded-2xl border border-purple-200/25 bg-purple-500/12 text-purple-100">
-                  <Icon size={26} />
+                  <Icon size={26} className="text-purple-50" />
                 </div>
                 <h3 className="font-poppins text-2xl font-semibold text-purple-50">
                   {step.title}
                 </h3>
-                <p className="max-w-sm font-inter text-sm leading-relaxed text-purple-100/70">
+                <p className="max-w-sm font-inter text-sm leading-relaxed text-purple-50">
                   {step.description}
                 </p>
               </div>
             ) : (
-              <div className="flex h-full flex-col items-center gap-4 py-8">
-                <div className="grid size-11 shrink-0 place-items-center rounded-2xl border border-purple-200/25 bg-purple-500/12 text-purple-100 transition-transform duration-300 group-hover:scale-110">
-                  <Icon size={22} />
+              <div className="flex h-full flex-col items-center justify-center gap-6 py-8">
+                <div className="grid size-11 shrink-0 place-items-center rounded-2xl border border-purple-200/25 bg-purple-500/12 text-purple-50 transition-transform duration-300 group-hover:scale-110">
+                  <Icon size={22} className="text-purple-50" />
                 </div>
-                <span className="mt-1 px-1 text-center font-poppins text-sm font-semibold leading-tight text-purple-100">
+                <span className="mt-1 px-1 text-center font-poppins text-sm font-semibold leading-tight text-purple-50">
                   {step.title}
                 </span>
               </div>

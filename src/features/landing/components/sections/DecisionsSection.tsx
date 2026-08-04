@@ -49,8 +49,6 @@ const DECISIONS: DecisionCardProps[] = [
 ];
 
 export function DecisionsSection() {
-  const [firstRow, secondRow] = [DECISIONS.slice(0, 3), DECISIONS.slice(3)];
-
   return (
     <section className="relative overflow-hidden px-6 py-20 sm:px-10 lg:py-28">
       <div
@@ -83,23 +81,12 @@ export function DecisionsSection() {
             }))}
           />
 
-          {/* Desktop: three on top, two centered below */}
+          {/* Desktop */}
           <div className="mt-14 hidden gap-7 md:flex flex-wrap justify-center w-full max-w-[1280px] mx-auto">
             {DECISIONS.map((decision) => (
               <DecisionCard key={decision.name} {...decision} />
             ))}
           </div>
-          {/* <div className="mt-14 hidden gap-7 md:grid md:grid-cols-2 lg:grid-cols-3">
-            {firstRow.map((decision) => (
-              <DecisionCard key={decision.name} {...decision} />
-            ))}
-          </div>
-
-          <div className="mx-auto mt-7 hidden max-w-[calc(66.666%-0.583rem)] gap-7 md:grid md:grid-cols-2 max-lg:max-w-none">
-            {secondRow.map((decision) => (
-              <DecisionCard key={decision.name} {...decision} />
-            ))}
-          </div> */}
         </Reveal>
       </div>
     </section>

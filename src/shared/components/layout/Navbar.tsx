@@ -2,21 +2,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdClose, MdMenu } from "react-icons/md";
 import githubMark from "@/assets/profil.png";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "#hero" },
-  { label: "Documentation", href: "#" },
-  { label: "Demo Console", href: "#" },
+  { label: "Home", href: "/" },
+  { label: "Documentation", href: "/documentation" },
+  { label: "Demo Console", href: "/#demo-console" },
 ] as const;
 
 export function Navbar() {
+  const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string>("Home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Keep the active nav item in sync with the current route.
+  useEffect(() => {
+    setActiveItem(
+      pathname.startsWith("/documentation") ? "Documentation" : "Home",
+    );
+  }, [pathname]);
 
   // Floating navbar: wide when pinned to the top, compact once scrolled down.
   useEffect(() => {

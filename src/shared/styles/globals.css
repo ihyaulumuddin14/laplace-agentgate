@@ -254,6 +254,25 @@ body {
   display: none;
 }
 
+/* Thin purple scrollbar for the documentation sidebar. */
+.doc-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(146, 84, 235, 0.5) transparent;
+}
+
+.doc-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.doc-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: rgba(146, 84, 235, 0.5);
+}
+
+.doc-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(146, 84, 235, 0.7);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .orbit-item,
   .orbit-glow {

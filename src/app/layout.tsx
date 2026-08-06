@@ -53,8 +53,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-surface">
         <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        { children }
       </body>
     </html>
   );

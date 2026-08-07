@@ -27,7 +27,7 @@ export default function MobileDemoContainer() {
             <MobileTab key={tab} handleSwitchTab={handleSwitchTab} tab={tab} />
           ))}
           <span
-            className="absolute bottom-0 left-0 h-[2px] w-1/3 bg-purple-50 transition-transform duration-300 ease-in-out"
+            className="absolute bottom-0 left-0 h-0.5 w-1/3 bg-purple-50 transition-transform duration-300 ease-in-out"
             style={{
               transform: `translateX(${currentIndex * 100}%)`,
             }}

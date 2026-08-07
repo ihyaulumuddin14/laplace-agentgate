@@ -1,15 +1,21 @@
 "use client";
 
+import { AnimatePresence } from "motion/react";
 import Image from "next/image";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useEffect, useRef } from "react";
 import { TbSend } from "react-icons/tb";
 import logo from "@/assets/logo.png";
+import FadeWrapperMotion from "@/shared/components/FadeWrapperMotion";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 import { Input } from "@/shared/components/ui/input";
 import { SCENARIOS } from "../../constants/scenario";
-import type { ScenarioRunnerOptionType } from "../../types";
+import { runScenario } from "../../services/chat-services";
+import { useChatStore } from "../../stores/chat-stores";
+import type { ChatEvent, ScenarioRunnerOptionType } from "../../types";
 
 const ChatSection = () => {
+  const events = useChatStore((state) => state.events);
+
   return (
     <div className="w-full h-full relative flex flex-col">
       {/* HEADER */}
@@ -18,8 +24,14 @@ const ChatSection = () => {
       </header>
 
       {/* BUBBLE CHAT CONTENT */}
-      <main className="flex-1 relative">
-        <EmptyChatFallback />
+      <main className="flex-1 relative flex flex-col p-0 lg:p-4 lg:pr-0 gap-4 overflow-y-auto mask-y-from-90% minimal-scrollbar">
+        <AnimatePresence mode="popLayout">
+          {events.length === 0 ? (
+            <EmptyChatFallback />
+          ) : (
+            <EventList events={events} />
+          )}
+        </AnimatePresence>
       </main>
 
       {/* SCENARIO FORM */}
@@ -59,11 +71,38 @@ const ScenarioRunnerOption = ({
   description,
   Icon,
   accent,
+  variants,
 }: ScenarioRunnerOptionType) => {
+  const addEvent = useChatStore((state) => state.addEvent);
+  const clearEvents = useChatStore((state) => state.clearEvents);
+
+  async function handleClick() {
+    clearEvents();
+
+    try {
+      const task = variants?.[0]?.taskText || "list calendar events";
+      const expectedDecision =
+        variants?.[0]?.expectedDecision || "NEED_APPROVAL";
+
+      await runScenario(task, expectedDecision, (event) => {
+        addEvent(event);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <li
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
       style={{ "--accent": accent } as CSSProperties}
-      className="flex items-center gap-2 w-50 border border-white/40 bg-white/5 backdrop-blur-xl p-3 rounded-lg"
+      className="flex items-center gap-2 w-50 border border-white/40 bg-white/5 backdrop-blur-xl p-3 rounded-lg cursor-pointer hover:bg-white/20 active:scale-95 transition-all ease-in-out"
     >
       <div className="relative grid size-8 aspect-square place-items-center rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-accent transition-transform duration-300 group-hover:scale-110">
         <Icon size={16} />
@@ -78,7 +117,7 @@ const ScenarioRunnerOption = ({
 
 const EmptyChatFallback = () => {
   return (
-    <div className="absolute w-full h-full flex flex-col gap-4 justify-center items-center">
+    <FadeWrapperMotion className="absolute inset-0 flex flex-col gap-4 justify-center items-center">
       <Image
         src={logo}
         alt="AgentGate logo"
@@ -91,6 +130,37 @@ const EmptyChatFallback = () => {
       <span className="text-xs text-purple-50 font-semibold">
         Pick a scenario above or type a task
       </span>
-    </div>
+    </FadeWrapperMotion>
+  );
+};
+
+const EventList = ({ events }: { events: ChatEvent[] }) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (events.length === 0) return;
+
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [events]);
+
+  return (
+    <FadeWrapperMotion className="w-full h-fit overflow-y-auto flex flex-col gap-3 lg:pr-3">
+      {events.map((event, index) => (
+        <div
+          key={`${event.type}-${index}`}
+          className="bg-white/5 border border-white/20 p-3 rounded-lg text-sm font-mono wrap-break-word whitespace-pre-wrap text-white"
+        >
+          <span className="text-accent font-bold mb-1 block">
+            [{event.type?.toUpperCase() || "UNKNOWN"}]
+          </span>
+          {JSON.stringify(event.data, null, 2)}
+        </div>
+      ))}
+
+      <div ref={bottomRef} />
+    </FadeWrapperMotion>
   );
 };

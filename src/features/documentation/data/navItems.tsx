@@ -1,28 +1,27 @@
 import type { IconType } from "react-icons";
 import {
+  MdOutlineAccountTree,
   MdOutlineCheckCircle,
   MdOutlineCode,
   MdOutlineDataObject,
   MdOutlineDescription,
   MdOutlineLanguage,
   MdOutlineLayers,
+  MdOutlineLeaderboard,
+  MdOutlineMemory,
   MdOutlineMenuBook,
+  MdOutlineSettings,
   MdOutlineShield,
   MdOutlineTerminal,
   MdOutlineWarningAmber,
 } from "react-icons/md";
 
 export type DocNavItem = {
-  /** Stable slug — also used as the in-page anchor id. */
   id: string;
   label: string;
   Icon: IconType;
 };
 
-/**
- * Placeholder documentation navigation. Real content / final ordering is
- * filled in later — the components read from this list so nothing is hardcoded.
- */
 export const DOC_NAV_ITEMS: DocNavItem[] = [
   { id: "introduction", label: "Introduction", Icon: MdOutlineMenuBook },
   { id: "core-concept", label: "Core Concept", Icon: MdOutlineShield },
@@ -46,4 +45,25 @@ export const DOC_NAV_ITEMS: DocNavItem[] = [
   },
   { id: "policy-packs", label: "Policy Packs", Icon: MdOutlineWarningAmber },
   { id: "demo-scenarios", label: "Demo Scenarios", Icon: MdOutlineTerminal },
+  {
+    id: "demo-console-guide",
+    label: "Demo Console Guide",
+    Icon: MdOutlineTerminal,
+  },
+  {
+    id: "demo-console-ui-states",
+    label: "Demo Console UI States",
+    Icon: MdOutlineSettings,
+  },
+  { id: "cli-demo-guide", label: "CLI Demo Guide", Icon: MdOutlineMemory },
+  {
+    id: "benchmark-evaluation",
+    label: "Benchmark & Evaluation",
+    Icon: MdOutlineLeaderboard,
+  },
+  {
+    id: "roadmap-upcoming-feature",
+    label: "Roadmap / Upcoming Feature",
+    Icon: MdOutlineAccountTree,
+  },
 ];

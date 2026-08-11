@@ -1,14 +1,11 @@
 "use client";
 
 import { AnimatePresence } from "motion/react";
-import Image from "next/image";
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { TbSend } from "react-icons/tb";
 import { useShallow } from "zustand/react/shallow";
-import logo from "@/assets/logo.png";
 import FadeWrapperMotion from "@/shared/components/FadeWrapperMotion";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
-import { Bubble, BubbleContent } from "@/shared/components/ui/bubble";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Spinner } from "@/shared/components/ui/spinner";
@@ -19,7 +16,9 @@ import { useAskUserDecision } from "../../hooks/useAskUserDecision";
 import { useTaskRunner } from "../../hooks/useTaskRunner";
 import { useActionStore } from "../../stores/action-stores";
 import { useChatStore } from "../../stores/chat-stores";
-import type { ChatMessage, ScenarioRunnerOptionType } from "../../types";
+import { EmptyChatFallback } from "../misc/EmptyChatFallback";
+import { EventList } from "../misc/EventList";
+import { ScenarioRunnerOption } from "../misc/ScenarioRunnerOption";
 
 const ChatSection = () => {
   const { chats, status } = useChatStore(
@@ -188,161 +187,3 @@ const ChatSection = () => {
 };
 
 export default ChatSection;
-
-const ScenarioRunnerOption = ({
-  title,
-  description,
-  Icon,
-  accent,
-  variants,
-}: ScenarioRunnerOptionType) => {
-  const { handleRunTask, isStreaming } = useTaskRunner();
-
-  async function handleClick() {
-    const taskText = variants[0]?.taskText || "list calendar events";
-    const expectedDecision = variants[0]?.expectedDecision || "NEED_APPROVAL";
-    handleRunTask(taskText, expectedDecision);
-  }
-
-  return (
-    <li
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          if (isStreaming) return;
-          e.preventDefault();
-          handleClick();
-        }
-      }}
-      style={{ "--accent": accent } as CSSProperties}
-      className={cn(
-        "flex items-center gap-2 w-50 border border-white/40 bg-white/5 backdrop-blur-xl p-3 rounded-lg cursor-pointer hover:bg-white/20 active:scale-95 transition-all ease-in-out",
-        isStreaming && "pointer-events-none opacity-50",
-      )}
-    >
-      <div className="relative grid size-8 aspect-square place-items-center rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-accent transition-transform duration-300 group-hover:scale-110">
-        <Icon size={16} />
-      </div>
-      <div className="flex flex-col gap-1">
-        <h2 className="text-xs font-semibold line-clamp-1">{title}</h2>
-        <p className="text-[10px] line-clamp-1">{description}</p>
-      </div>
-    </li>
-  );
-};
-
-const EmptyChatFallback = () => {
-  return (
-    <FadeWrapperMotion
-      key="empty"
-      className="absolute inset-0 flex flex-col gap-4 justify-center items-center"
-    >
-      <Image
-        src={logo}
-        alt="AgentGate logo"
-        width={30}
-        height={30}
-        priority
-        className="shrink-0"
-        style={{ width: "30px", height: "auto" }}
-      />
-      <span className="text-xs text-purple-50 font-semibold">
-        Pick a scenario above or type a task
-      </span>
-    </FadeWrapperMotion>
-  );
-};
-
-const EventList = ({ chats }: { chats: ChatMessage[] }) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const { isStreaming, currentActiveMessageId } = useChatStore(
-    useShallow((state) => ({
-      isStreaming: state.isStreaming,
-      currentActiveMessageId: state.currentActiveMessageId,
-    })),
-  );
-
-  useEffect(() => {
-    if (chats.length === 0) return;
-
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [chats]);
-
-  return (
-    <FadeWrapperMotion
-      key="event-list"
-      className="w-full h-fit overflow-y-auto flex flex-col gap-3 lg:pr-3"
-    >
-      {chats.map((chat) => {
-        const isUser = chat.role === "user";
-
-        return (
-          <Bubble
-            variant={chat.status === "error" ? "destructive" : "secondary"}
-            key={chat.id}
-            align={isUser || chat.status === "error" ? "end" : "start"}
-          >
-            <BubbleContent>
-              {chat.status === "error" ? (
-                <span className="text-sm text-red-400">{chat.content}</span>
-              ) : isUser ? (
-                <span className="text-sm font-medium text-white">
-                  {chat.content}
-                </span>
-              ) : chat.isStreaming &&
-                isStreaming &&
-                currentActiveMessageId === chat.id ? (
-                <div className="flex items-start gap-2">
-                  <span className="relative flex h-2.5 w-2.5 mt-1">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-purple-500" />
-                  </span>
-                  <span className="text-sm font-medium capitalize text-purple-200">
-                    {chat.content}
-                  </span>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-purple-300">
-                      Action Result
-                    </span>
-
-                    {chat.data?.decision && (
-                      <span
-                        className={cn(
-                          "rounded-full border px-2 py-0.5 text-xs font-bold",
-                          chat.data.decision === "ALLOW"
-                            ? "border-green-500/20 bg-green-500/10 text-green-400"
-                            : chat.data.decision === "BLOCK"
-                              ? "border-red-500/20 bg-red-500/10 text-red-400"
-                              : "border-yellow-500/20 bg-yellow-500/10 text-yellow-400",
-                        )}
-                      >
-                        {chat.data.decision}
-                      </span>
-                    )}
-                  </div>
-
-                  {chat.data?.reasons?.length ? (
-                    <p className="mt-0.5 text-xs italic text-white/70">
-                      "{chat.data.reasons[0]}"
-                    </p>
-                  ) : (
-                    <span className="text-sm text-white/80">
-                      {chat.content}
-                    </span>
-                  )}
-                </div>
-              )}
-            </BubbleContent>
-          </Bubble>
-        );
-      })}
-      <div ref={bottomRef} />
-    </FadeWrapperMotion>
-  );
-};

@@ -22,7 +22,7 @@ export default function MobileDemoContainer() {
   return (
     <div className="w-full h-full block lg:hidden text-purple-50">
       <nav className="w-full h-fit sticky top-25 border">
-        <ul className="w-full grid grid-cols-3 py-3 relative">
+        <ul className="w-full grid grid-cols-3 h-11 relative">
           {Object.values(DemoTabs).map((tab) => (
             <MobileTab key={tab} handleSwitchTab={handleSwitchTab} tab={tab} />
           ))}
@@ -66,11 +66,11 @@ const MobileTab = ({
   tab: DemoTab;
 }) => {
   return (
-    <li className="text-center text-sm">
+    <li className="h-full text-center text-sm hover:bg-purple-500/50 hover:text-white">
       <button
         type="button"
         onClick={() => handleSwitchTab(tab)}
-        className="w-full h-full capitalize cursor-pointer hover:bg-purple-500 hover:text-white active:scale-95 transition-all duration-200"
+        className="w-full h-full capitalize cursor-pointer! active:scale-95 transition-all duration-200"
       >
         {tab}
       </button>

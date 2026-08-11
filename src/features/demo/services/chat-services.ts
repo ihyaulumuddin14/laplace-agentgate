@@ -28,7 +28,38 @@ export async function runScenario(
     for (const part of parts) {
       if (!part.startsWith("data: ")) continue;
       const event = JSON.parse(part.replace("data: ", "")) as ChatEvent;
+      if (event.type === "error") {
+        throw new Error("Something went wrong");
+      }
       onEvent(event);
     }
   }
+}
+
+export async function handleApproveDecision(
+  actionId: string,
+  decision: "approved" | "rejected",
+  onEvent: (event: ChatEvent) => void,
+) {
+  const res = await fetch("/api/agent/approve", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action_id: actionId, decision }),
+  });
+  const event: ChatEvent = await res.json();
+  onEvent(event);
+}
+
+export async function handleAskUserDecision(
+  actionId: string,
+  response: string,
+  onEvent: (event: ChatEvent) => void,
+) {
+  const res = await fetch("/api/agent/respond", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action_id: actionId, response }),
+  });
+  const event: ChatEvent = await res.json();
+  onEvent(event);
 }

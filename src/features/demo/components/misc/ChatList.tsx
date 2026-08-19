@@ -8,7 +8,7 @@ import { cn } from "@/shared/lib/utils";
 import { useChatStore } from "../../stores/chat-stores";
 import type { ChatMessage } from "../../types";
 
-export const EventList = ({ chats }: { chats: ChatMessage[] }) => {
+export const ChatList = ({ chats }: { chats: ChatMessage[] }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const { isStreaming, currentActiveChatId } = useChatStore(
     useShallow((state) => ({
@@ -16,15 +16,18 @@ export const EventList = ({ chats }: { chats: ChatMessage[] }) => {
       currentActiveChatId: state.currentActiveChatId,
     })),
   );
+  const isFirstMount = useRef(true);
 
   useEffect(() => {
     if (chats.length === 0) return;
 
     bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
+      behavior: isFirstMount.current ? "instant" : "smooth",
       block: "end",
     });
-  }, [chats]);
+
+    isFirstMount.current = false;
+  }, [chats.length]);
 
   return (
     <FadeWrapperMotion

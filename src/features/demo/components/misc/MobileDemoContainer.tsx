@@ -41,7 +41,7 @@ export default function MobileDemoContainer() {
         </ul>
       </nav>
 
-      <main className="relative w-full h-[calc(100%-62px)]">
+      <main className="relative w-full h-[calc(100%-62px)] overflow-hidden">
         <AnimatePresence custom={direction}>
           {currentTab === DemoTabs.chat && (
             <DemoCardWrapperMotion

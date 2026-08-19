@@ -19,8 +19,8 @@ import { useAskUserDecision } from "../../hooks/useAskUserDecision";
 import { useTaskRunner } from "../../hooks/useTaskRunner";
 import { useChatStore } from "../../stores/chat-stores";
 import { useStateStore } from "../../stores/state-stores";
+import { ChatList } from "../misc/ChatList";
 import { EmptyChatFallback } from "../misc/EmptyChatFallback";
-import { EventList } from "../misc/EventList";
 import { ScenarioRunnerOption } from "../misc/ScenarioRunnerOption";
 
 const ChatSection = () => {
@@ -60,10 +60,10 @@ const ChatSection = () => {
   };
 
   return (
-    <div className="w-full h-full relative flex flex-col rounded-b-[20px] overflow-hidden">
+    <div className="w-full h-full relative flex flex-col rounded-[20px] overflow-hidden">
       <ResizablePanelGroup orientation="vertical" className=" h-full">
         <ResizablePanel defaultSize={"60%"} minSize={200}>
-          <div className="w-full h-full flex flex-col justify-start items-start p-3 pt-5 gap-3 border max-lg:border-y-0">
+          <div className="w-full h-full flex flex-col justify-start items-start p-3 pt-5 gap-3">
             <span className="text-sm">Scenario Runner</span>
 
             <div className="w-full overflow-y-auto pb-2 minimal-scrollbar max-lg:mask-y-from-90%">
@@ -83,7 +83,7 @@ const ChatSection = () => {
                 {chats.length === 0 ? (
                   <EmptyChatFallback />
                 ) : (
-                  <EventList chats={chats} />
+                  <ChatList chats={chats} />
                 )}
               </AnimatePresence>
             </main>

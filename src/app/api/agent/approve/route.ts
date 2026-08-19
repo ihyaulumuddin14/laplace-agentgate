@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { EXECUTION_RESPONSE_DUMMY } from "@/features/demo/constants/scenario";
-import type { ExecutionResponseSchema } from "@/features/demo/schema/chat-schema";
+import type { ExecutionResultResponseSchema } from "@/features/demo/schema/chat-schema";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -15,10 +15,13 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const executionResponse: ExecutionResponseSchema = {
+  const executionResultResponse: ExecutionResultResponseSchema = {
     ...EXECUTION_RESPONSE_DUMMY,
     result_summary: "Action approved and executed successfully",
   };
 
-  return Response.json({ type: "execution", data: executionResponse });
+  return Response.json({
+    type: "execution_result",
+    data: executionResultResponse,
+  });
 }

@@ -1,99 +1,35 @@
 "use client";
 
 import { useShallow } from "zustand/react/shallow";
+import { deriveChatDisplay } from "../lib/deriveChatDisplay";
 import { runScenario } from "../services/chat-services";
-import { useActionStore } from "../stores/action-stores";
 import { useChatStore } from "../stores/chat-stores";
-import type {
-  ChatEvent,
-  ChatMessage,
-  DecisionType,
-  TurnStatus,
-} from "../types";
-
-export function getContentForEvent(event: ChatEvent): string {
-  switch (event.type) {
-    case "planning":
-      return event.data.message;
-
-    case "proposed_action": {
-      return `Preparing action: ${event.data.payload_summary}`;
-    }
-
-    case "evaluating":
-      return event.data.message;
-
-    case "decision": {
-      const decision = event.data.decision;
-      switch (decision) {
-        case "ALLOW":
-          return "✅ Action allowed — continuing to execution";
-        case "BLOCK":
-          return `🚫 Action blocked — ${event.data.reasons[0] ?? "policy violation"}`;
-        case "NEED_APPROVAL":
-          return "⏳ This action needs your approval — check the panel →";
-        case "SANITIZE":
-          return "🧹 Sensitive content detected — sanitizing before continuing";
-        case "ASK_USER":
-          return "🤔 I need more information before continuing";
-        default:
-          return "Decision received";
-      }
-    }
-
-    case "waiting_approval":
-      return event.data.message;
-
-    case "ask_user": {
-      return event.data.question;
-    }
-
-    case "executing":
-      return event.data.message;
-
-    case "execution": {
-      if (event.data.status === "FAILED") {
-        return `❌ Execution failed — ${event.data.error ?? "unknown error"}`;
-      }
-      return `✅ ${event.data.result_summary}`;
-    }
-
-    case "rejected":
-      return "❌ Action rejected by reviewer";
-
-    case "error":
-      return "⚠️ Something went wrong, please try again";
-
-    default:
-      return "Processing...";
-  }
-}
+import { useStateStore } from "../stores/state-stores";
+import type { ChatMessage, DecisionType, TurnStatus } from "../types";
 
 export const useTaskRunner = () => {
   const {
-    addMessage,
-    updateLastMessage,
+    addChat,
+    updateLastChat,
     isStreaming,
     setStreaming,
     setStatus,
-    status,
-    setCurrentActiveMessageId,
+    setCurrentActiveChatId,
   } = useChatStore(
     useShallow((state) => ({
-      addMessage: state.addMessage,
-      updateLastMessage: state.updateLastMessage,
+      addChat: state.addChat,
+      updateLastChat: state.updateLastChat,
       isStreaming: state.isStreaming,
       setStreaming: state.setStreaming,
       setStatus: state.setStatus,
-      status: state.status,
-      setCurrentActiveMessageId: state.setCurrentActiveMessageId,
+      setCurrentActiveChatId: state.setCurrentActiveChatId,
     })),
   );
 
-  const { addEvent, clearEvents } = useActionStore(
+  const { addState, clearStates } = useStateStore(
     useShallow((state) => ({
-      addEvent: state.addEvent,
-      clearEvents: state.clearEvents,
+      addState: state.addState,
+      clearStates: state.clearStates,
     })),
   );
 
@@ -102,51 +38,81 @@ export const useTaskRunner = () => {
     expectedDecision: DecisionType = "NEED_APPROVAL",
   ) => {
     if (isStreaming) return;
-    clearEvents();
+    clearStates();
 
+    // create user chat
     const userMsgId = `user-${Date.now()}`;
-    addMessage({
+    addChat({
       id: userMsgId,
       role: "user",
       content: taskText,
     });
 
+    // init global state
     setStreaming(true);
     setStatus("planning");
 
+    // create assistant chat
     const assistantMsgId = `assistant-active-${Date.now()}`;
-    addMessage({
+    addChat({
       id: assistantMsgId,
       role: "assistant",
       content: "planning",
-      status,
+      status: useChatStore.getState().status,
     });
-    setCurrentActiveMessageId(assistantMsgId);
+
+    setCurrentActiveChatId(assistantMsgId);
+
+    const finishTask = (updates: Partial<ChatMessage> = {}) => {
+      setStreaming(false);
+      setStatus("idle");
+      setCurrentActiveChatId(null);
+      updateLastChat((chat) => {
+        if (chat.id === assistantMsgId) {
+          return {
+            ...chat,
+            id: `msg-${Date.now()}`,
+            ...updates,
+          };
+        }
+        return chat;
+      });
+    };
 
     try {
-      await runScenario(taskText, expectedDecision, (event) => {
-        addEvent(event);
+      await runScenario(taskText, expectedDecision, (state) => {
+        addState(state);
 
-        const statusVal: TurnStatus = event.type as TurnStatus;
-        const contentVal = getContentForEvent(event);
+        const statusVal: TurnStatus = state.type as TurnStatus;
+        const badgeDisplay = deriveChatDisplay(state);
 
-        setStatus(statusVal);
+        if (statusVal === "execution_result") {
+          finishTask({
+            isStreaming: false,
+            content: badgeDisplay.content,
+            badge: badgeDisplay.badge,
+            data: state.data as ChatMessage["data"],
+          });
+        } else {
+          setStatus(statusVal);
 
-        updateLastMessage((msg: ChatMessage) => {
-          if (msg.id === assistantMsgId) {
-            return {
-              ...msg,
-              status: statusVal,
-              content: contentVal,
-              isStreaming: true,
-              data: event.data as ChatMessage["data"],
-            };
-          }
-          return msg;
-        });
+          updateLastChat((chat: ChatMessage) => {
+            if (chat.id === assistantMsgId) {
+              return {
+                ...chat,
+                status: statusVal,
+                content: badgeDisplay.content,
+                isStreaming: true,
+                badge: badgeDisplay.badge,
+                data: state.data as ChatMessage["data"],
+              };
+            }
+            return chat;
+          });
+        }
       });
     } catch (error) {
-      addMessage({
+      addChat({
         id: `msg-${Date.now()}`,
         role: "assistant",
         content: `Failed to process request: ${(error as Error).message}`,
@@ -154,22 +120,13 @@ export const useTaskRunner = () => {
       });
     } finally {
       const currentStatus = useChatStore.getState().status;
+
       if (
         currentStatus !== "waiting_approval" &&
-        currentStatus !== "ask_user"
+        currentStatus !== "ask_user" &&
+        currentStatus !== "execution_result"
       ) {
-        setStreaming(false);
-        setStatus("idle");
-        setCurrentActiveMessageId(null);
-        updateLastMessage((msg) => {
-          if (msg.id === assistantMsgId) {
-            return {
-              ...msg,
-              id: `msg-${Date.now()}`,
-            };
-          }
-          return msg;
-        });
+        finishTask();
       }
     }
   };

@@ -1,9 +1,9 @@
-import type { ChatEvent, DecisionType } from "../types";
+import type { DecisionType, EventState } from "../types";
 
 export async function runScenario(
   task: string,
   expectedDecision: DecisionType,
-  onEvent: (event: ChatEvent) => void,
+  onEvent: (event: EventState) => void,
 ) {
   const response = await fetch("/api/agent/run", {
     method: "POST",
@@ -27,7 +27,7 @@ export async function runScenario(
 
     for (const part of parts) {
       if (!part.startsWith("data: ")) continue;
-      const event = JSON.parse(part.replace("data: ", "")) as ChatEvent;
+      const event = JSON.parse(part.replace("data: ", "")) as EventState;
       if (event.type === "error") {
         throw new Error("Something went wrong");
       }
@@ -39,27 +39,27 @@ export async function runScenario(
 export async function handleApproveDecision(
   actionId: string,
   decision: "approved" | "rejected",
-  onEvent: (event: ChatEvent) => void,
+  onEvent: (event: EventState) => void,
 ) {
   const res = await fetch("/api/agent/approve", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action_id: actionId, decision }),
   });
-  const event: ChatEvent = await res.json();
+  const event: EventState = await res.json();
   onEvent(event);
 }
 
 export async function handleAskUserDecision(
   actionId: string,
   response: string,
-  onEvent: (event: ChatEvent) => void,
+  onEvent: (event: EventState) => void,
 ) {
   const res = await fetch("/api/agent/respond", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action_id: actionId, response }),
   });
-  const event: ChatEvent = await res.json();
+  const event: EventState = await res.json();
   onEvent(event);
 }

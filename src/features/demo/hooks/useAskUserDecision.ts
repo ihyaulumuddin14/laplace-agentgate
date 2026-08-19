@@ -2,34 +2,34 @@
 
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { deriveChatDisplay } from "../lib/deriveChatDisplay";
 import { handleAskUserDecision } from "../services/chat-services";
-import { useActionStore } from "../stores/action-stores";
 import { useChatStore } from "../stores/chat-stores";
+import { useStateStore } from "../stores/state-stores";
 import type { ChatMessage, TurnStatus } from "../types";
-import { getContentForEvent } from "./useTaskRunner";
 
 export const useAskUserDecision = () => {
   const [isAskProcessing, setIsAskProcessing] = useState(false);
 
   const {
-    updateLastMessage,
+    updateLastChat,
     setStreaming,
     setStatus,
-    setCurrentActiveMessageId,
-    currentActiveMessageId,
+    setCurrentActiveChatId,
+    currentActiveChatId,
   } = useChatStore(
     useShallow((state) => ({
-      updateLastMessage: state.updateLastMessage,
+      updateLastChat: state.updateLastChat,
       setStreaming: state.setStreaming,
       setStatus: state.setStatus,
-      setCurrentActiveMessageId: state.setCurrentActiveMessageId,
-      currentActiveMessageId: state.currentActiveMessageId,
+      setCurrentActiveChatId: state.setCurrentActiveChatId,
+      currentActiveChatId: state.currentActiveChatId,
     })),
   );
 
-  const { addEvent } = useActionStore(
+  const { addState } = useStateStore(
     useShallow((state) => ({
-      addEvent: state.addEvent,
+      addState: state.addState,
     })),
   );
 
@@ -37,27 +37,52 @@ export const useAskUserDecision = () => {
     if (isAskProcessing) return;
     setIsAskProcessing(true);
 
+    const finishTask = (updates: Partial<ChatMessage> = {}) => {
+      setStreaming(false);
+      setStatus("idle");
+      setCurrentActiveChatId(null);
+      updateLastChat((msg) => {
+        if (msg.id === currentActiveChatId) {
+          return {
+            ...msg,
+            id: `msg-${Date.now()}`,
+            ...updates,
+          };
+        }
+        return msg;
+      });
+    };
+
     try {
-      await handleAskUserDecision(actionId, responseText, (event) => {
-        addEvent(event);
+      await handleAskUserDecision(actionId, responseText, (state) => {
+        addState(state);
 
-        const statusVal: TurnStatus = event.type as TurnStatus;
-        const contentVal = getContentForEvent(event);
+        const statusVal: TurnStatus = state.type as TurnStatus;
+        const badgeDisplay = deriveChatDisplay(state);
 
-        setStatus(statusVal);
+        if (statusVal === "execution_result") {
+          finishTask({
+            isStreaming: false,
+            content: badgeDisplay.content,
+            badge: badgeDisplay.badge,
+            data: state.data as ChatMessage["data"],
+          });
+        } else {
+          setStatus(statusVal);
 
-        updateLastMessage((msg: ChatMessage) => {
-          if (msg.id === currentActiveMessageId) {
-            return {
-              ...msg,
-              status: statusVal,
-              content: contentVal,
-              isStreaming: true,
-              data: event.data as ChatMessage["data"],
-            };
-          }
-          return msg;
-        });
+          updateLastChat((msg: ChatMessage) => {
+            if (msg.id === currentActiveChatId) {
+              return {
+                ...msg,
+                status: statusVal,
+                content: badgeDisplay.content,
+                isStreaming: true,
+                data: state.data as ChatMessage["data"],
+              };
+            }
+            return msg;
+          });
+        }
       });
     } catch (error) {
       console.error("Failed to process response:", error);
@@ -65,19 +90,11 @@ export const useAskUserDecision = () => {
       setIsAskProcessing(false);
 
       const currentStatus = useChatStore.getState().status;
-      if (currentStatus !== "ask_user") {
-        setStreaming(false);
-        setStatus("idle");
-        setCurrentActiveMessageId(null);
-        updateLastMessage((msg) => {
-          if (msg.id === currentActiveMessageId) {
-            return {
-              ...msg,
-              id: `msg-${Date.now()}`,
-            };
-          }
-          return msg;
-        });
+      if (
+        currentStatus !== "ask_user" &&
+        currentStatus !== "execution_result"
+      ) {
+        finishTask();
       }
     }
   };

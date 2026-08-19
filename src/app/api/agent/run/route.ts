@@ -2,9 +2,9 @@ import type { NextRequest } from "next/server";
 import type {
   ActionRequestSchema,
   DecisionResponseSchema,
-  ExecutionResponseSchema,
+  ExecutionResultResponseSchema,
 } from "@/features/demo/schema/chat-schema";
-import type { ChatEvent, DecisionType } from "@/features/demo/types";
+import type { DecisionType, EventState } from "@/features/demo/types";
 
 function getScenarioEvents(decision: DecisionType) {
   const proposedAction: ActionRequestSchema = {
@@ -48,7 +48,7 @@ function getScenarioEvents(decision: DecisionType) {
     created_at: "2026-08-07T07:18:59.587430Z",
   };
 
-  const executionResponse: ExecutionResponseSchema = {
+  const executionResultResponse: ExecutionResultResponseSchema = {
     schema_version: "0.1",
     run_id: "run_709c199e5cd6",
     action_id: "act_9d916fa9e390",
@@ -107,7 +107,7 @@ function getScenarioEvents(decision: DecisionType) {
     execution_status: "SUCCESS",
   };
 
-  const events: ChatEvent[] = [
+  const events: EventState[] = [
     { type: "planning", data: { message: "LLM planner is processing..." } },
     { type: "proposed_action", data: proposedAction },
     { type: "evaluating", data: { message: "Running detectors..." } },
@@ -140,7 +140,7 @@ function getScenarioEvents(decision: DecisionType) {
         type: "executing",
         data: { message: "Executing action..." },
       });
-      events.push({ type: "execution", data: executionResponse });
+      events.push({ type: "execution_result", data: executionResultResponse });
       return events;
     }
 

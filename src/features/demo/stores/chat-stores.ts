@@ -1,29 +1,29 @@
 import { create } from "zustand";
 import type { ChatMessage, TurnStatus } from "../types";
 
-interface ChatState {
+interface ChatStore {
   chats: ChatMessage[];
   isStreaming: boolean;
   status: TurnStatus;
-  currentActiveMessageId: string | null;
-  addMessage: (message: ChatMessage) => void;
-  updateLastMessage: (updater: (msg: ChatMessage) => ChatMessage) => void;
+  currentActiveChatId: string | null;
+  addChat: (message: ChatMessage) => void;
+  updateLastChat: (updater: (msg: ChatMessage) => ChatMessage) => void;
   clearChats: () => void;
-  setCurrentActiveMessageId: (id: string | null) => void;
+  setCurrentActiveChatId: (id: string | null) => void;
   setStreaming: (isStreaming: boolean) => void;
   setStatus: (status: TurnStatus) => void;
 }
 
-export const useChatStore = create<ChatState>((set) => ({
+export const useChatStore = create<ChatStore>((set) => ({
   chats: [],
   isStreaming: false,
   status: "idle",
-  currentActiveMessageId: null,
-  addMessage: (message) =>
+  currentActiveChatId: null,
+  addChat: (chat) =>
     set((state) => ({
-      chats: [...state.chats, message],
+      chats: [...state.chats, chat],
     })),
-  updateLastMessage: (updater) =>
+  updateLastChat: (updater) =>
     set((state) => {
       if (state.chats.length === 0) return state;
       const updatedChats = [...state.chats];
@@ -31,7 +31,7 @@ export const useChatStore = create<ChatState>((set) => ({
       updatedChats[lastIndex] = updater(updatedChats[lastIndex]);
       return { chats: updatedChats };
     }),
-  setCurrentActiveMessageId: (id) => set({ currentActiveMessageId: id }),
+  setCurrentActiveChatId: (id) => set({ currentActiveChatId: id }),
   clearChats: () => set({ chats: [] }),
   setStreaming: (isStreaming) => set({ isStreaming }),
   setStatus: (status) => set({ status }),

@@ -7,7 +7,6 @@ import type { ScenarioRunnerOptionType } from "../../types";
 
 export const ScenarioRunnerOption = ({
   title,
-  description,
   Icon,
   accent,
   variants,
@@ -32,7 +31,7 @@ export const ScenarioRunnerOption = ({
       }}
       style={{ "--accent": accent } as CSSProperties}
       className={cn(
-        "flex items-center gap-2 w-50 border border-white/40 bg-white/5 backdrop-blur-xl p-3 rounded-lg cursor-pointer hover:bg-white/20 active:scale-95 transition-all ease-in-out",
+        "flex items-center gap-2 w-full border border-white/40 bg-white/5 backdrop-blur-xl p-3 rounded-lg cursor-pointer hover:bg-white/20 active:scale-95 transition-all ease-in-out",
         isStreaming && "pointer-events-none opacity-50",
       )}
     >
@@ -40,8 +39,9 @@ export const ScenarioRunnerOption = ({
         <Icon size={16} />
       </div>
       <div className="flex flex-col gap-1">
-        <h2 className="text-xs font-semibold line-clamp-1">{title}</h2>
-        <p className="text-[10px] line-clamp-1">{description}</p>
+        <h2 className="text-xs sm:text-sm lg:text-base font-semibold line-clamp-1">
+          {title}
+        </h2>
       </div>
     </li>
   );

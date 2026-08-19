@@ -9,21 +9,22 @@ import { Spinner } from "@/shared/components/ui/spinner";
 import ActionCard from "../misc/ActionCard";
 import DecisionLabel from "../misc/DecisionLabel";
 
-const ActionSection = () => {
+const StateSection = () => {
   return (
     <div className="w-full h-full relative flex flex-col">
+      State
       <main className="flex-1 h-full relative flex flex-col p-0 lg:p-4 pr-2 gap-4 overflow-y-auto mask-b-from-90% minimal-scrollbar">
         <AnimatePresence mode="popLayout">
-          <ActionList />
+          {/* <ActionList /> */}
         </AnimatePresence>
       </main>
     </div>
   );
 };
 
-export default ActionSection;
+export default StateSection;
 
-const ActionList = () => {
+const _ActionList = () => {
   const [progress, setProgress] = useState(13);
 
   useEffect(() => {

@@ -10,10 +10,10 @@ import type { ChatMessage } from "../../types";
 
 export const EventList = ({ chats }: { chats: ChatMessage[] }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
-  const { isStreaming, currentActiveMessageId } = useChatStore(
+  const { isStreaming, currentActiveChatId } = useChatStore(
     useShallow((state) => ({
       isStreaming: state.isStreaming,
-      currentActiveMessageId: state.currentActiveMessageId,
+      currentActiveChatId: state.currentActiveChatId,
     })),
   );
 
@@ -49,12 +49,45 @@ export const EventList = ({ chats }: { chats: ChatMessage[] }) => {
                 </span>
               ) : chat.isStreaming &&
                 isStreaming &&
-                currentActiveMessageId === chat.id ? (
-                <div className="flex items-start gap-2">
-                  <span className="relative flex h-2.5 w-2.5 mt-1">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-purple-500" />
-                  </span>
+                currentActiveChatId === chat.id ? (
+                <div
+                  className={cn(
+                    "flex items-start gap-2",
+                    (chat.status === "waiting_approval" ||
+                      chat.status === "ask_user") &&
+                      "flex-col gap-1 justify-center",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      chat.status === "waiting_approval" ||
+                        chat.status === "ask_user"
+                        ? "flex gap-2 items-center"
+                        : "",
+                    )}
+                  >
+                    <span className="relative flex h-2.5 w-2.5 mt-1">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-purple-500" />
+                    </span>
+
+                    {(chat.status === "waiting_approval" ||
+                      chat.status === "ask_user") &&
+                      chat.badge && (
+                        <span
+                          className={cn(
+                            "rounded-full border px-2 py-0.5 text-xs font-bold",
+                            chat.badge.variant === "success"
+                              ? "border-green-500/20 bg-green-500/10 text-green-400"
+                              : chat.badge.variant === "danger"
+                                ? "border-red-500/20 bg-red-500/10 text-red-400"
+                                : "border-yellow-500/20 bg-yellow-500/10 text-yellow-400",
+                          )}
+                        >
+                          {chat.badge.label}
+                        </span>
+                      )}
+                  </div>
                   <span className="text-sm font-medium capitalize text-purple-200">
                     {chat.content}
                   </span>
@@ -66,31 +99,23 @@ export const EventList = ({ chats }: { chats: ChatMessage[] }) => {
                       Action Result
                     </span>
 
-                    {chat.data?.decision && (
+                    {chat.badge && (
                       <span
                         className={cn(
                           "rounded-full border px-2 py-0.5 text-xs font-bold",
-                          chat.data.decision === "ALLOW"
+                          chat.badge.variant === "success"
                             ? "border-green-500/20 bg-green-500/10 text-green-400"
-                            : chat.data.decision === "BLOCK"
+                            : chat.badge.variant === "danger"
                               ? "border-red-500/20 bg-red-500/10 text-red-400"
                               : "border-yellow-500/20 bg-yellow-500/10 text-yellow-400",
                         )}
                       >
-                        {chat.data.decision}
+                        {chat.badge.label}
                       </span>
                     )}
                   </div>
 
-                  {chat.data?.reasons?.length ? (
-                    <p className="mt-0.5 text-xs italic text-white/70">
-                      "{chat.data.reasons[0]}"
-                    </p>
-                  ) : (
-                    <span className="text-sm text-white/80">
-                      {chat.content}
-                    </span>
-                  )}
+                  <span className="text-sm text-white/80">{chat.content}</span>
                 </div>
               )}
             </BubbleContent>

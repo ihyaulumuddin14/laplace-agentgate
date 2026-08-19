@@ -2,9 +2,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/shared/components/ui/resizable";
-import ActionSection from "../sections/ActionSection";
 import ChatSection from "../sections/ChatSection";
-import InsightSection from "../sections/InsightSection";
+import InsightSection from "../sections/LogsSection";
+import ActionSection from "../sections/StateSection";
 import DemoCard from "./DemoCard";
 
 export default function DesktopDemoContainer() {

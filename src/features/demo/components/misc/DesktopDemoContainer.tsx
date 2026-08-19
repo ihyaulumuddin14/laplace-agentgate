@@ -3,8 +3,8 @@ import {
   ResizablePanelGroup,
 } from "@/shared/components/ui/resizable";
 import ChatSection from "../sections/ChatSection";
-import InsightSection from "../sections/LogsSection";
-import ActionSection from "../sections/StateSection";
+import LogsSection from "../sections/LogsSection";
+import StateSection from "../sections/StateSection";
 import DemoCard from "./DemoCard";
 
 export default function DesktopDemoContainer() {
@@ -20,12 +20,12 @@ export default function DesktopDemoContainer() {
       </ResizablePanel>
       <ResizablePanel defaultSize={"38%"} minSize={300}>
         <DemoCard>
-          <ActionSection />
+          <StateSection />
         </DemoCard>
       </ResizablePanel>
       <ResizablePanel defaultSize={"38%"} minSize={300}>
         <DemoCard>
-          <InsightSection />
+          <LogsSection />
         </DemoCard>
       </ResizablePanel>
     </ResizablePanelGroup>

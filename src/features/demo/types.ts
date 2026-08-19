@@ -1,8 +1,11 @@
 import type { IconType } from "react-icons";
+import { IoEyeOutline } from "react-icons/io5";
+import { LuNotepadText } from "react-icons/lu";
+import { MdOutlineMessage } from "react-icons/md";
 import type {
   ActionRequestSchema,
   DecisionResponseSchema,
-  ExecutionResponseSchema,
+  ExecutionResultResponseSchema,
 } from "@/features/demo/schema/chat-schema";
 
 export type ScenarioVariant = {
@@ -23,21 +26,41 @@ export type ExecutionStatus = "SUCCESS" | "FAILED" | "PARTIAL";
 
 export type ScenarioRunnerOptionType = {
   title: string;
-  description: string;
   Icon: IconType;
   accent: string;
   variants: ScenarioVariant[];
 };
 
-export const DemoTabs = {
-  chat: "chat",
-  action: "action",
-  insight: "insight",
-} as const;
+export type DemoTab = {
+  label: string;
+  icon: IconType;
+};
 
-export type DemoTab = (typeof DemoTabs)[keyof typeof DemoTabs];
+type DemoTabType = "chat" | "state" | "logs";
+
+export const DemoTabs: Record<DemoTabType, DemoTab> = {
+  chat: {
+    label: "Scenario",
+    icon: MdOutlineMessage,
+  },
+  state: {
+    label: "State View",
+    icon: IoEyeOutline,
+  },
+  logs: {
+    label: "Logs",
+    icon: LuNotepadText,
+  },
+};
 
 export type Role = "user" | "assistant";
+
+export type BadgeVariant = "success" | "danger" | "warning" | "neutral";
+
+export interface ChatBadge {
+  label: string;
+  variant: BadgeVariant;
+}
 
 export interface ChatMessage {
   id: string;
@@ -45,14 +68,19 @@ export interface ChatMessage {
   content: string;
   status?: TurnStatus;
   isStreaming?: boolean;
-  data?: { decision?: DecisionType; reasons?: string[] };
+  badge?: ChatBadge;
+  data?: {
+    decision?: DecisionType;
+    status?: ExecutionStatus;
+    reasons?: string[];
+  };
 }
 
 type MessageEventData = { message: string };
 type QuestionEventData = { question: string };
 type RejectedEventData = { message: string; action_id: string };
 
-export type ChatEvent =
+export type EventState =
   | { type: "planning"; data: MessageEventData }
   | { type: "proposed_action"; data: ActionRequestSchema }
   | { type: "evaluating"; data: MessageEventData }
@@ -60,8 +88,8 @@ export type ChatEvent =
   | { type: "waiting_approval"; data: MessageEventData }
   | { type: "ask_user"; data: QuestionEventData }
   | { type: "executing"; data: MessageEventData }
-  | { type: "execution"; data: ExecutionResponseSchema }
+  | { type: "execution_result"; data: ExecutionResultResponseSchema }
   | { type: "rejected"; data: RejectedEventData }
   | { type: "error"; data: MessageEventData };
 
-export type TurnStatus = ChatEvent["type"] | "idle";
+export type TurnStatus = EventState["type"] | "idle";

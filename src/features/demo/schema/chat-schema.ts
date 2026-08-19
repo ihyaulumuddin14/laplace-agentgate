@@ -34,7 +34,7 @@ export interface DecisionResponseSchema {
   created_at: string;
 }
 
-export interface ExecutionResponseSchema {
+export interface ExecutionResultResponseSchema {
   schema_version: string;
   run_id: string;
   action_id: string;

@@ -1,4 +1,6 @@
 import type { IconType } from "react-icons";
+import { FiClock } from "react-icons/fi";
+import { ImStatsBars } from "react-icons/im";
 import { IoEyeOutline } from "react-icons/io5";
 import { LuNotepadText } from "react-icons/lu";
 import { MdOutlineMessage } from "react-icons/md";
@@ -38,6 +40,8 @@ export type DemoTab = {
 
 type DemoTabType = "chat" | "state" | "logs";
 
+type LogsTabType = "audit" | "risk" | "latency";
+
 export const DemoTabs: Record<DemoTabType, DemoTab> = {
   chat: {
     label: "Scenario",
@@ -50,6 +54,21 @@ export const DemoTabs: Record<DemoTabType, DemoTab> = {
   logs: {
     label: "Logs",
     icon: LuNotepadText,
+  },
+};
+
+export const LogsTabs: Record<LogsTabType, DemoTab> = {
+  audit: {
+    label: "Audit Log",
+    icon: LuNotepadText,
+  },
+  risk: {
+    label: "Risk Dashboard",
+    icon: ImStatsBars,
+  },
+  latency: {
+    label: "Latency Report",
+    icon: FiClock,
   },
 };
 

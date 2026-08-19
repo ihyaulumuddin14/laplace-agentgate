@@ -30,6 +30,8 @@ export default function MobileDemoContainer() {
               handleSwitchTab={handleSwitchTab}
               tab={tab}
               isActive={currentTab.label === tab.label}
+              className="flex flex-col items-center justify-center gap-1 w-full h-full capitalize cursor-pointer! active:scale-95 transition-all duration-200"
+              iconClassName="text-lg"
             />
           ))}
           <span
@@ -41,7 +43,7 @@ export default function MobileDemoContainer() {
         </ul>
       </nav>
 
-      <main className="relative w-full h-[calc(100%-62px)] overflow-hidden">
+      <main className="relative w-full h-[calc(100%-62px)] border rounded-b-[20px] overflow-hidden">
         <AnimatePresence custom={direction}>
           {currentTab === DemoTabs.chat && (
             <DemoCardWrapperMotion
@@ -73,33 +75,34 @@ export default function MobileDemoContainer() {
   );
 }
 
-const MobileTab = ({
+export const MobileTab = ({
   handleSwitchTab,
   tab,
   isActive,
+  className = "",
+  iconClassName = "",
 }: {
   handleSwitchTab: (tab: DemoTab) => void;
   tab: DemoTab;
   isActive: boolean;
+  className?: string;
+  iconClassName?: string;
 }) => {
   return (
     <li className="h-full text-center text-sm hover:bg-purple-500/50 hover:text-white">
       <button
         type="button"
         onClick={() => handleSwitchTab(tab)}
-        className={cn(
-          "flex flex-col items-center justify-center gap-1 w-full h-full capitalize cursor-pointer! active:scale-95 transition-all duration-200",
-          isActive && "text-purple-100",
-        )}
+        className={cn(className, isActive && "text-purple-100")}
       >
-        <tab.icon className="text-xl" />
+        <tab.icon className={iconClassName} />
         {tab.label}
       </button>
     </li>
   );
 };
 
-const DemoCardWrapperMotion = ({
+export const DemoCardWrapperMotion = ({
   children,
   direction,
 }: {

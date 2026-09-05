@@ -3,7 +3,10 @@
 import { AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { type DemoTab, LogsTabs } from "../../types";
+import AuditLogs from "../misc/AuditLogs";
+import LatencyReport from "../misc/LatencyReport";
 import { DemoCardWrapperMotion, MobileTab } from "../misc/MobileDemoContainer";
+import RiskDashboard from "../misc/RiskDashboard";
 
 const LogsSection = () => {
   const [currentTab, setCurrentTab] = useState<DemoTab>(LogsTabs.audit);
@@ -26,8 +29,8 @@ const LogsSection = () => {
               handleSwitchTab={handleSwitchTab}
               tab={tab}
               isActive={currentTab.label === tab.label}
-              className="flex text-[9px] items-center justify-center gap-1 w-full h-full capitalize cursor-pointer! active:scale-95 transition-all duration-200"
-              iconClassName="text-sm"
+              className="flex text-[9px] sm:text-[10px] sm:font-semibold lg:text-sm items-center justify-center gap-1 w-full h-full capitalize cursor-pointer! active:scale-95 transition-all duration-200"
+              iconClassName="text-sm sm:text-base lg:text-xl sm:font-semibold"
             />
           ))}
           <span
@@ -45,7 +48,7 @@ const LogsSection = () => {
               direction={direction}
               key={LogsTabs.audit.label}
             >
-              Audit Log
+              <AuditLogs />
             </DemoCardWrapperMotion>
           )}
           {currentTab === LogsTabs.risk && (
@@ -53,7 +56,7 @@ const LogsSection = () => {
               direction={direction}
               key={LogsTabs.risk.label}
             >
-              Risk Dashboard
+              <RiskDashboard />
             </DemoCardWrapperMotion>
           )}
           {currentTab === LogsTabs.latency && (
@@ -61,7 +64,7 @@ const LogsSection = () => {
               direction={direction}
               key={LogsTabs.latency.label}
             >
-              Latency Report
+              <LatencyReport />
             </DemoCardWrapperMotion>
           )}
         </AnimatePresence>

@@ -93,7 +93,8 @@ const ChatSection = () => {
                 <FadeWrapperMotion
                   key="approval"
                   className={cn(
-                    "relative w-full p-5 bg-surface-2 backdrop-blur-md rounded-t-[20px] flex flex-col gap-3 border-5 border-dotted",
+                    "relative w-full p-5 bg-surface-2 backdrop-blur-md rounded-t-[20px] flex flex-col gap-3",
+                    "before:content-[''] before:absolute before:inset-0 before:rounded-t-[20px] before:border-2 before:border-purple-500 before:animate-pulse before:pointer-events-none",
                     isApproveProcessing && "pointer-events-none opacity-70",
                   )}
                 >
@@ -137,7 +138,8 @@ const ChatSection = () => {
                 <FadeWrapperMotion
                   key="ask-user"
                   className={cn(
-                    "relative w-full p-5 bg-surface backdrop-blur-md rounded-t-[20px] flex flex-col gap-3 border-5 border-dotted",
+                    "relative w-full p-5 bg-surface backdrop-blur-md rounded-t-[20px] flex flex-col gap-3",
+                    "before:content-[''] before:absolute before:inset-0 before:rounded-t-[20px] before:border-2 before:border-blue-500 before:animate-pulse before:pointer-events-none",
                     isAskProcessing && "pointer-events-none opacity-70",
                   )}
                 >

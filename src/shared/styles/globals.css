@@ -144,6 +144,11 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+  --need-approval: #fff600;
+  --block: #ff0c0c;
+  --allow: #4dff0c;
+  --sanitize: #00d4ff;
+  --ask-user: #ff9900;
   --radius: 0.625rem;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);

@@ -5,6 +5,7 @@ import { MdLockOutline } from "react-icons/md";
 import { RiLoopRightLine } from "react-icons/ri";
 import type {
   ActionRequestSchema,
+  DecisionResponseSchema,
   ExecutionResultResponseSchema,
 } from "../schema/chat-schema";
 import type { ScenarioRunnerOptionType } from "../types";
@@ -15,7 +16,10 @@ export const SCENARIOS: ScenarioRunnerOptionType[] = [
     Icon: CiCalendar,
     accent: "#4dff0c",
     variants: [
-      { taskText: "List today's calendar events", expectedDecision: "ALLOW" },
+      {
+        taskText: "List today's calendar events",
+        expectedDecision: "ALLOW",
+      },
     ],
   },
   {
@@ -81,6 +85,22 @@ export const PROPOSED_ACTION_DUMMY: ActionRequestSchema = {
   rollback_available: false,
   confidence: 1.0,
   created_at: "2026-08-07T07:18:59.587418Z",
+};
+
+export const DECISION_RESPONSE_DUMMY: DecisionResponseSchema = {
+  schema_version: "0.1",
+  run_id: "run_709c199e5cd6",
+  action_id: "act_9d916fa9e390",
+  decision: "ALLOW",
+  risk_level: "LOW",
+  risk_score: 0.1,
+  reasons: ["risk_hint=unknown, domain=browser"],
+  triggered_policies: [],
+  sensitive_entities: [],
+  sanitized_payload: null,
+  next_step: "execute",
+  latency_ms: 0,
+  created_at: "2026-08-07T07:18:59.587430Z",
 };
 
 export const EXECUTION_RESPONSE_DUMMY: ExecutionResultResponseSchema = {

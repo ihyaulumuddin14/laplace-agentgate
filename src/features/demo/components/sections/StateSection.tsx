@@ -84,7 +84,7 @@ const ActionList = () => {
   );
 };
 
-const DECISION_VARIANTS = {
+export const DECISION_VARIANTS = {
   ALLOW: {
     accent: "#4dff0c",
     label: "allow" as const,

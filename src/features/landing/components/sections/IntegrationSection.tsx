@@ -35,8 +35,8 @@ const DECISION_LABELS = [
 function IconChip({ Icon, size }: { Icon: IconType; size: number }) {
   return (
     <div
-      className="grid shrink-0 place-items-center rounded-2xl border border-white/15 bg-white/[0.07] text-white shadow-[0_6px_24px_-8px_rgba(129,51,241,0.7)] backdrop-blur-md"
-      style={{ width: size, height: size }}
+      className="grid shrink-0 place-items-center border border-white/15 bg-white/[0.07] text-white shadow-[0_6px_24px_-8px_rgba(129,51,241,0.7)] backdrop-blur-md"
+      style={{ width: size, height: size, borderRadius: size * 0.32 }}
     >
       <Icon size={Math.round(size * 0.46)} />
     </div>
@@ -46,8 +46,12 @@ function IconChip({ Icon, size }: { Icon: IconType; size: number }) {
 function LabelChip({ label, fontSize }: { label: string; fontSize: number }) {
   return (
     <span
-      className="whitespace-nowrap rounded-full border border-white/20 bg-white/12 px-3 py-1 font-poppins font-light text-white backdrop-blur-md"
-      style={{ fontSize, lineHeight: 1.6 }}
+      className="whitespace-nowrap rounded-full border border-white/20 bg-white/12 font-poppins font-light text-white backdrop-blur-md"
+      style={{
+        fontSize,
+        lineHeight: 1.6,
+        padding: `${fontSize * 0.4}px ${fontSize * 1.2}px`,
+      }}
     >
       {label}
     </span>
@@ -124,9 +128,19 @@ const DESKTOP_RINGS: OrbitRing[] = [
 ];
 
 const MOBILE_RINGS: OrbitRing[] = [
-  { w: 356, h: 556, r: 100, duration: 74 },
-  { w: 268, h: 396, r: 66, duration: 58, draw: false },
-  { w: 236, h: 268, r: 56, duration: 44 },
+  { w: 372, h: 370, r: 28, duration: 92 },
+  { w: 328, h: 322, r: 26, duration: 78 },
+  { w: 282, h: 272, r: 24, duration: 64 },
+  { w: 232, h: 226, r: 22, duration: 52 },
+  { w: 186, h: 170, r: 20, duration: 44 },
+  { w: 142, h: 114, r: 18, duration: 36 },
+];
+
+const ICON_RINGS: IconRingConfig[] = [
+  { ring: 0, icons: ORBIT_ICONS.slice(0, 2), from: 0 },
+  { ring: 1, icons: ORBIT_ICONS.slice(2, 4), from: 0.12 },
+  { ring: 2, icons: ORBIT_ICONS.slice(4, 6), from: 0.24 },
+  { ring: 3, icons: ORBIT_ICONS.slice(6, 8), from: 0.36 },
 ];
 
 export function IntegrationSection() {
@@ -138,20 +152,11 @@ export function IntegrationSection() {
           width={1200}
           height={744}
           rings={DESKTOP_RINGS}
-          travellers={buildTravellers(
-            [
-              { ring: 0, icons: ORBIT_ICONS.slice(0, 2), from: 0 },
-              { ring: 1, icons: ORBIT_ICONS.slice(2, 4), from: 0.12 },
-              { ring: 2, icons: ORBIT_ICONS.slice(4, 6), from: 0.24 },
-              { ring: 3, icons: ORBIT_ICONS.slice(6, 8), from: 0.36 },
-            ],
-            5,
-            {
-              iconSize: 50,
-              labelFontSize: 10,
-              labelBox: { w: 116, h: 38 },
-            },
-          )}
+          travellers={buildTravellers(ICON_RINGS, 5, {
+            iconSize: 50,
+            labelFontSize: 10,
+            labelBox: { w: 116, h: 38 },
+          })}
           center={<Core fontSize={24} paddingX={36} paddingY={19} />}
           centerW={196}
           centerH={84}
@@ -160,20 +165,16 @@ export function IntegrationSection() {
         <OrbitCanvas
           className="sm:hidden"
           width={400}
-          height={620}
+          height={400}
           rings={MOBILE_RINGS}
-          travellers={buildTravellers(
-            [{ ring: 0, icons: ORBIT_ICONS.slice(0, 4), from: 0 }],
-            2,
-            {
-              iconSize: 30,
-              labelFontSize: 9,
-              labelBox: { w: 86, h: 24 },
-            },
-          )}
-          center={<Core fontSize={14} paddingX={13} paddingY={8} />}
-          centerW={116}
-          centerH={50}
+          travellers={buildTravellers(ICON_RINGS, 5, {
+            iconSize: 26,
+            labelFontSize: 6,
+            labelBox: { w: 60, h: 16 },
+          })}
+          center={<Core fontSize={12} paddingX={20} paddingY={8} />}
+          centerW={104}
+          centerH={36}
         />
       </Reveal>
     </section>

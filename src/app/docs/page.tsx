@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+import { DOC_NAV_ITEMS } from "@/features/documentation/data/navItems";
+
 export default function DocsPage() {
-  return <div>DocsPage</div>;
+  redirect(`/docs/${DOC_NAV_ITEMS[0].id}`);
 }

@@ -1,0 +1,44 @@
+export const metadata = {
+  title: "Introduction",
+  description: "What AgentGate is and what it is not.",
+};
+
+# Introduction
+
+What AgentGate is and what it is not.
+
+AgentGate is a **framework-agnostic Python guardrail engine** for AI agent tool
+actions. It evaluates proposed actions before they are executed through APIs,
+browsers, files, or external systems.
+
+<DocCallout>
+  **Important:** AgentGate is not a regular chatbot and it is not a browser
+  extension in the MVP. Its focus is a pre-action guardrail for tool actions.
+</DocCallout>
+
+The system supports API-based actions such as Gmail, Google Calendar, GitHub,
+and Stripe Sandbox, as well as Playwright-based browser actions such as open,
+snapshot, click, type, select, submit, and screenshot.
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="What it is"
+    accent="#34d399"
+    items={[
+      "Framework-agnostic Python guardrail engine",
+      "Pre-action tool action evaluator",
+      "MVP: Console-first web demo",
+      "Supports API and browser tools",
+    ]}
+  />
+  <DocListCard
+    title="What it is not"
+    accent="#f87171"
+    items={[
+      "A regular chatbot or conversational AI",
+      "A Chrome/Browser Extension (Post-MVP)",
+      "An MCP server implementation",
+      "A LangGraph workflow integration",
+    ]}
+  />
+</div>

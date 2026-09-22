@@ -45,7 +45,7 @@ export function DocSidebar({
               key={item.id}
               Icon={item.Icon}
               label={item.label}
-              href={`#${item.id}`}
+              href={`/docs/${item.id}`}
               active={item.id === activeId}
               onClick={() => onSelect?.(item.id)}
             />

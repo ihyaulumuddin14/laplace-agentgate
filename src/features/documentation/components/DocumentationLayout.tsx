@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { MdClose, MdMenu } from "react-icons/md";
 import { DOC_NAV_ITEMS } from "@/features/documentation/data/navItems";
@@ -14,19 +15,15 @@ type DocumentationLayoutProps = {
  * article content. On small screens the sidebar collapses into a toggle.
  */
 export function DocumentationLayout({ children }: DocumentationLayoutProps) {
-  const [activeId, setActiveId] = useState(DOC_NAV_ITEMS[0]?.id ?? "");
+  const pathname = usePathname();
+  const activeId = pathname.split("/")[2] ?? DOC_NAV_ITEMS[0]?.id ?? "";
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleSelect = (id: string) => {
-    setActiveId(id);
-    setMobileOpen(false);
-  };
 
   const sidebar = (
     <DocSidebar
       items={DOC_NAV_ITEMS}
       activeId={activeId}
-      onSelect={handleSelect}
+      onSelect={() => setMobileOpen(false)}
       className="h-full rounded-3xl border border-purple-200/12 bg-surface-card/40 p-4"
     />
   );

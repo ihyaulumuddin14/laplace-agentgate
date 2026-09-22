@@ -77,13 +77,17 @@ export function RiskSection() {
         </Reveal>
 
         <Reveal delay={120}>
-          <CoverflowCarousel
-            className="mt-14 md:hidden"
-            items={RISK_CARDS.map((card) => ({
-              id: card.title,
-              node: <RiskCard {...card} />,
-            }))}
-          />
+          <div className="mt-14 md:hidden">
+            <CoverflowCarousel
+              items={RISK_CARDS.map((card) => ({
+                id: card.title,
+                node: <RiskCard {...card} />,
+              }))}
+            />
+            <p className="mt-2 text-center font-inter text-xs text-purple-100/50">
+              Swipe left or right to explore the risks
+            </p>
+          </div>
 
           <div className="mt-14 hidden gap-7 md:grid md:grid-cols-2 lg:grid-cols-3">
             {RISK_CARDS.map((card) => (

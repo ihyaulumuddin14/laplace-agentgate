@@ -73,13 +73,17 @@ export function ScenariosSection() {
         </Reveal>
 
         <Reveal delay={120}>
-          <CoverflowCarousel
-            className="mt-14 md:hidden"
-            items={SCENARIOS.map((s) => ({
-              id: s.tag,
-              node: <ScenarioCard {...s} />,
-            }))}
-          />
+          <div className="mt-14 md:hidden">
+            <CoverflowCarousel
+              items={SCENARIOS.map((s) => ({
+                id: s.tag,
+                node: <ScenarioCard {...s} />,
+              }))}
+            />
+            <p className="mt-2 text-center font-inter text-xs text-purple-100/50">
+              Swipe left or right to explore the scenarios
+            </p>
+          </div>
 
           <div className="mt-14 hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3">
             {SCENARIOS.map((s) => (

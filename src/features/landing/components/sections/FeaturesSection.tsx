@@ -102,6 +102,9 @@ export function FeaturesSection() {
                 node: <FeatureCard {...f} />,
               }))}
             />
+            <p className="mt-6 text-center font-inter text-xs text-purple-100/50">
+              Swipe to browse the features, or hold to pause
+            </p>
           </div>
 
           <div className="mt-14 hidden gap-5 md:grid md:grid-cols-3 lg:grid-cols-5">

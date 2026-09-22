@@ -1,5 +1,8 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import type { IconType } from "react-icons";
+import pin from "@/assets/landing/pin.svg";
+import { cn } from "@/shared/lib/utils";
 
 export type RoadmapCardProps = {
   index: string;
@@ -15,28 +18,41 @@ export function RoadmapCard({
   title,
   description,
   accent,
-}: RoadmapCardProps) {
+  className,
+}: RoadmapCardProps & { className?: string }) {
   return (
     <article
-      className="group relative flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-2xl border border-purple-200/12 bg-surface-card/80 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--accent)_45%,transparent)] hover:shadow-[0_20px_50px_-20px_color-mix(in_srgb,var(--accent)_55%,transparent)] sm:p-7"
+      className={cn(
+        "group relative rounded-2xl border border-purple-200/12 bg-surface-card px-5 pt-16 pb-6 shadow-[0_28px_60px_-30px_rgba(0,0,0,0.85)] transition-transform duration-300 hover:-translate-y-1 sm:px-6 sm:pt-20 sm:pb-8",
+        className,
+      )}
       style={{ "--accent": accent } as CSSProperties}
     >
-      {/* Big faded step number */}
-      <span className="pointer-events-none absolute right-4 top-3 font-poppins text-5xl font-bold text-[color-mix(in_srgb,var(--accent)_35%,transparent)] transition-colors duration-300 group-hover:text-[color-mix(in_srgb,var(--accent)_55%,transparent)]">
-        {index}
-      </span>
+      <Image
+        src={pin}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-7 left-1/2 w-16 -translate-x-1/2 drop-shadow-[0_8px_10px_rgba(0,0,0,0.45)] sm:-top-9 sm:w-20"
+      />
 
-      <div className="relative grid size-11 place-items-center rounded-xl border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-(--accent) transition-transform duration-300 group-hover:scale-110">
-        <Icon size={22} />
+      <div className="relative flex flex-col gap-4 rounded-xl border border-purple-50/40 bg-purple-800/25 p-5 transition-colors duration-300 group-hover:border-[color-mix(in_srgb,var(--accent)_60%,transparent)] sm:p-6 xl:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div className="grid size-11 place-items-center rounded-lg border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--accent)_22%,transparent)] text-(--accent) transition-transform duration-300 group-hover:scale-110">
+            <Icon size={22} />
+          </div>
+          <span className="font-poppins text-5xl font-bold leading-none text-(--accent)">
+            {index}
+          </span>
+        </div>
+
+        <h3 className="font-poppins text-lg font-semibold text-purple-50">
+          {title}
+        </h3>
+
+        <p className="font-poppins text-sm leading-relaxed text-purple-50 sm:text-justify">
+          {description}
+        </p>
       </div>
-
-      <h3 className="relative font-poppins text-lg font-semibold text-purple-50">
-        {title}
-      </h3>
-
-      <p className="relative font-inter text-sm leading-relaxed text-purple-50">
-        {description}
-      </p>
     </article>
   );
 }

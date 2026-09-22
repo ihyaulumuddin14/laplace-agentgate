@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FaGithub } from "react-icons/fa6";
 import { HiOutlineBookOpen } from "react-icons/hi";
 import { RiTerminalFill } from "react-icons/ri";
-
+import { Button } from "@/shared/components/ui/button";
 import { Reveal } from "@/shared/components/ui/Reveal";
 
 export function CtaSection() {
@@ -24,40 +24,30 @@ export function CtaSection() {
         </p>
 
         <div className="mt-11 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-5">
-          <Link
-            href="#demo-console"
-            className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-cta px-8 py-4 font-poppins text-base font-semibold text-purple-50 shadow-[0_12px_36px_-10px_rgba(129,51,241,0.95)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_46px_-12px_rgba(129,51,241,1)] sm:text-lg"
-          >
-            Open Demo Console
-            <RiTerminalFill
-              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              size={20}
-            />
-          </Link>
+          <Button asChild size={"lg"}>
+            <Link href="/demo">
+              Open Demo Console
+              <RiTerminalFill className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 size-5" />
+            </Link>
+          </Button>
 
-          <Link
-            href="#documentation"
-            className="group inline-flex items-center justify-center gap-2 rounded-2xl border-[1.5px] border-purple-50 px-8 py-4 font-poppins text-base font-semibold text-purple-50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-50/10 sm:text-lg"
-          >
-            Read Documentation
-            <HiOutlineBookOpen
-              className="transition-transform duration-300 group-hover:scale-110"
-              size={20}
-            />
-          </Link>
+          <Button asChild size={"lg"} variant={"secondary"}>
+            <Link href="/docs">
+              Read Documentation
+              <HiOutlineBookOpen className="transition-transform duration-300 group-hover:scale-110 size-5" />
+            </Link>
+          </Button>
 
-          <Link
-            href="https://github.com/ihyaulumuddin14/laplace-agentgate"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center justify-center gap-2 rounded-2xl border-[1.5px] border-purple-50 px-8 py-4 font-poppins text-base font-semibold text-purple-50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-50/10 sm:text-lg"
-          >
-            GitHub Repository
-            <FaGithub
-              className="transition-transform duration-300 group-hover:scale-110"
-              size={20}
-            />
-          </Link>
+          <Button asChild size={"lg"} variant={"secondary"}>
+            <Link
+              href="https://github.com/ihyaulumuddin14/laplace-agentgate"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub Repository
+              <FaGithub className="transition-transform duration-300 group-hover:scale-110 size-5" />
+            </Link>
+          </Button>
         </div>
       </Reveal>
     </section>

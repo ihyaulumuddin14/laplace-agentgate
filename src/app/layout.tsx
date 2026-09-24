@@ -1,4 +1,7 @@
+import AgentGateSessionProvider from "@/shared/components/layout/AgentGateSessionProvider";
 import { Navbar } from "@/shared/components/layout/Navbar";
+import QueryProvider from "@/shared/components/layout/QueryProvider";
+import { SessionObserver } from "@/shared/components/SessionObserver";
 import { cn } from "@/shared/lib/utils";
 import "@/shared/styles/globals.css";
 import type { Metadata } from "next";
@@ -51,8 +54,13 @@ export default function RootLayout({
       )}
     >
       <body className="flex min-h-full flex-col bg-surface">
-        <Navbar />
-        {children}
+        <QueryProvider>
+          <AgentGateSessionProvider>
+            <SessionObserver />
+            <Navbar />
+            {children}
+          </AgentGateSessionProvider>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -17,33 +17,49 @@ export function SessionObserver() {
     }
 
     const handleNavigate = (event: any) => {
-      if (!event.canIntercept) return;
-
       const currentPath = window.location.pathname;
       const destination = new URL(event.destination.url);
 
       const leavingDemo =
-        currentPath === "/demo" && destination.pathname !== "/demo";
+        currentPath === "/demo" &&
+        destination.origin === window.location.origin &&
+        destination.pathname !== "/demo";
 
       if (!leavingDemo) return;
 
-      const confirmed = window.confirm("Yakin ingin keluar dari Demo?");
-
-      if (!confirmed) {
-        event.preventDefault();
+      // not run for router.push and reload
+      if (event.navigationType === "push" || event.navigationType === "reload")
         return;
-      }
 
-      handleReplaced();
+      // Browser navigation Back / Forward
+      if (event.navigationType === "traverse") {
+        const confirmed = window.confirm(
+          "Your demo session will be terminated if you navigate away from the demo. Are you sure you want to continue?",
+        );
+
+        if (!confirmed) {
+          event.preventDefault();
+          return;
+        }
+
+        void handleReplaced();
+      }
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+
+      handleRefresh();
     };
 
     navigation.addEventListener("navigate", handleNavigate);
-    window.addEventListener("beforeunload", handleRefresh);
+    window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("pagehide", handlePageHide);
 
     return () => {
       navigation.removeEventListener("navigate", handleNavigate);
-      window.removeEventListener("beforeunload", handleRefresh);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
     };
   }, [handleReplaced, handleRefresh, handlePageHide]);

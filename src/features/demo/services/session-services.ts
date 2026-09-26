@@ -1,8 +1,6 @@
-import type { EndSessionRequest, SessionResponse } from "../types";
+import type { EndSessionRequest, SessionResponse } from "../types/services";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export type { EndSessionReason, SessionResponse } from "../types";
 
 export async function createSession(): Promise<SessionResponse> {
   const response = await fetch(`${API_URL}/api/v1/sessions`, {

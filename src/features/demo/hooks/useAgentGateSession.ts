@@ -1,11 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import {
-  createSession,
-  type EndSessionReason,
-  endSession,
-} from "../services/session-services";
+import { createSession, endSession } from "../services/session-services";
+import type { EndSessionReason } from "../types/services";
 
 export const SESSION_STORAGE_KEY = "agentgate-session";
 

@@ -8,7 +8,7 @@ export async function createSession(): Promise<SessionResponse> {
   });
 
   if (!response.ok) {
-    throw new Error("Gagal membuat sesi demo");
+    throw new Error("Failed to create demo session");
   }
 
   return response.json();
@@ -23,7 +23,7 @@ export async function endSession(
   });
 
   if (!response.ok) {
-    throw new Error("Gagal mengakhiri sesi demo");
+    throw new Error("Failed to end demo session");
   }
 
   return response.json();

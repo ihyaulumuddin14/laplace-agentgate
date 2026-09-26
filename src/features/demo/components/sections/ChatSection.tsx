@@ -60,7 +60,11 @@ const ChatSection = () => {
             <div className="w-full overflow-y-auto pb-2 minimal-scrollbar max-lg:mask-y-from-90%">
               <ul className="flex flex-col gap-3 w-full p-3 pl-0">
                 {SCENARIOS.map((scenario) => (
-                  <ScenarioRunnerOption key={scenario.title} {...scenario} />
+                  <ScenarioRunnerOption
+                    key={scenario.title}
+                    {...scenario}
+                    setInputValue={setInputValue}
+                  />
                 ))}
               </ul>
             </div>
@@ -143,7 +147,7 @@ const ChatSection = () => {
 
                   <form className="relative w-full mt-2" onSubmit={onAskSubmit}>
                     <Input
-                      className="w-full pr-10"
+                      className="w-full pr-15"
                       placeholder="Type your response..."
                       value={askInputValue}
                       onChange={(e) => setAskInputValue(e.target.value)}
@@ -165,7 +169,7 @@ const ChatSection = () => {
                 >
                   <form className="relative w-full" onSubmit={onSubmit}>
                     <Input
-                      className="w-full pr-10"
+                      className="w-full pr-15"
                       placeholder="Type a task..."
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}

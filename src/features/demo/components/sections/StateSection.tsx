@@ -196,6 +196,8 @@ const StateProposedAction = ({
 }: {
   proposedActionPayload: StreamMessage<PlanEventPayload>;
 }) => {
+  const currentStepIndex = useChatStore((state) => state.currentStepIndex);
+
   return (
     <ActionCard className="text-white">
       <h2 className="flex gap-5 text-lg font-semibold text-blue items-center">
@@ -207,45 +209,56 @@ const StateProposedAction = ({
         <div>
           <h3 className="text-md font-normal">Tool Name</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.data.plan[0].action_type}
+            {
+              proposedActionPayload.data.plan[currentStepIndex || 0]
+                ?.action_type
+            }
           </p>
         </div>
 
         <div>
           <h3 className="text-md font-normal">Target System</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.data.plan[0].target_system}
+            {
+              proposedActionPayload.data.plan[currentStepIndex || 0]
+                .target_system
+            }
           </p>
         </div>
 
         <div>
           <h3 className="text-md font-normal">Target</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.data.plan[0].target_system}
+            {
+              proposedActionPayload.data.plan[currentStepIndex || 0]
+                .target_system
+            }
             {", "}
-            {proposedActionPayload.data.plan[0].target}
+            {proposedActionPayload.data.plan[currentStepIndex || 0].target}
           </p>
         </div>
 
         <div>
           <h3 className="text-md font-normal">Domain</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.data.plan[0].domain}
+            {proposedActionPayload.data.plan[currentStepIndex || 0].domain}
           </p>
         </div>
       </div>
 
       <div className="w-full flex flex-col gap-2">
         <h3>Payload Summary</h3>
-        <div className="rounded-[12px] bg-[#EFE6FC]/50 text-sm font-light text-white py-3 px-4">
-          {JSON.stringify(proposedActionPayload.data.plan[0].payload, null, 2)}
+        <div className="rounded-[12px] bg-[#EFE6FC]/50 text-sm font-light text-white py-3 px-4 whitespace-pre-line">
+          {proposedActionPayload.data.summary.startsWith("\n")
+            ? proposedActionPayload.data.summary.replace("\n", "")
+            : proposedActionPayload.data.summary}
         </div>
       </div>
 
       <div className="w-full flex flex-col gap-2">
         <h3>Risk Hints</h3>
         <div className="w-fit rounded-[12px] bg-blue/50 text-sm border border-blue font-light text-white p-2">
-          {proposedActionPayload.data.plan[0].risk_hint}
+          {proposedActionPayload.data.plan[currentStepIndex || 0].risk_hint}
         </div>
       </div>
     </ActionCard>
@@ -290,7 +303,8 @@ const StateActionDecision = ({
     <ActionCard accent={variant.accent} className="text-white">
       <h2 className="flex gap-3 text-lg font-semibold items-center text-accent">
         <MdOutlineShield className="size-6" />
-        AgentGate Decision
+        AgentGate Decision{" "}
+        {event.type === "guardrail" && `Step #${event.data.data.index}`}
         <DecisionLabel className="ml-auto" label={variant.label} />
       </h2>
 

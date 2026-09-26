@@ -72,14 +72,16 @@ export function deriveChatDisplay(event: SSEEvent): {
 
     case "awaiting_approval": {
       const step = event.data.data.step;
+      const question = getApprovalQuestion({
+        action_type: step?.action_type,
+        target: step.target,
+      });
 
       return {
-        content:
-          getApprovalQuestion({
-            action_type: step.action_type,
-            target: step.target,
-          }) ??
-          "This action needs your approval, check the panel on the right side",
+        content: `Step #${step.index} - ${
+          question ??
+          "This action needs your approval, check the panel on the right side"
+        }`,
         badge: {
           label: "Needs Approval",
           variant: "warning",
@@ -104,7 +106,7 @@ export function deriveChatDisplay(event: SSEEvent): {
         : `#${index}`;
 
       return {
-        content: `Executing Step ${stepsString}`,
+        content: `Executing Step ${stepsString}...`,
       };
     }
 
@@ -132,19 +134,16 @@ export function deriveChatDisplay(event: SSEEvent): {
 
     case "done": {
       const doneData = event.data.data;
-      const isDeclined =
-        doneData.status === "declined" ||
-        doneData.steps?.some(
-          (s) =>
-            s.status === "declined" ||
-            s.decision?.approval_decision === "declined",
-        );
+      const isFailed =
+        doneData.status === "declined" || doneData.status === "blocked";
 
-      if (isDeclined) {
+      if (isFailed) {
         return {
-          content: "Action was declined — execution stopped",
+          content: `Action was ${doneData.status}, execution stopped`,
           badge: {
-            label: "Declined",
+            label:
+              doneData.status.charAt(0).toUpperCase() +
+              doneData.status.slice(1),
             variant: "danger",
           },
         };

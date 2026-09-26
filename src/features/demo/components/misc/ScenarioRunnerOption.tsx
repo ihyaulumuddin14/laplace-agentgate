@@ -10,12 +10,13 @@ export const ScenarioRunnerOption = ({
   Icon,
   accent,
   variants,
+  setInputValue,
 }: ScenarioRunnerOptionProps) => {
-  const { handleRunStart, isStreaming } = useRunStarter();
+  const { isStreaming } = useRunStarter();
 
   async function handleClick() {
-    const taskText = variants[0]?.taskText || "list calendar events";
-    handleRunStart(taskText);
+    const taskText = variants[0]?.taskText || "Baca file sample.txt";
+    setInputValue?.(taskText);
   }
 
   return (

@@ -64,7 +64,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
 
           // Check if a guardrail card for this step index already exists (e.g. re-evaluation after user input/approval)
           const existingIndex = filteredEvents.findIndex(
-            (e) => e.type === "guardrail" && e.data.data.index === stepIndex,
+            (e) => e.type === "guardrail" && e.data.data.index !== stepIndex,
           );
 
           if (existingIndex !== -1) {

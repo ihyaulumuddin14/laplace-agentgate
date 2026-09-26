@@ -2,16 +2,14 @@ import type { IconType } from "react-icons";
 import type { Decision, ExecutionStatus } from "./domain";
 import type { RunStatus } from "./events";
 
-export interface ScenarioVariant {
-  taskText: string;
-  expectedDecision: Decision;
-}
-
 export interface ScenarioRunnerOption {
   title: string;
   Icon: IconType;
   accent: string;
-  variants: readonly ScenarioVariant[];
+  variants: {
+    taskText: string;
+  }[];
+  setInputValue?: (input: string) => void;
 }
 
 export interface DemoTab {

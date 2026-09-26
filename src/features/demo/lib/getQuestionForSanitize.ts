@@ -68,22 +68,55 @@ function getHostname(url?: string) {
   }
 }
 
+function formatFieldLabels(fields: InputField[]): string {
+  const labels = fields.map((field) => field.label);
+
+  if (labels.length === 1) {
+    return labels[0];
+  }
+
+  if (labels.length === 2) {
+    return `${labels[0]} and ${labels[1]}`;
+  }
+
+  return `${labels.slice(0, -1).join(", ")}, and ${labels.at(-1)}`;
+}
+
 export function getInputQuestion(
   step: InputStep,
   fields: InputField[],
 ): string {
-  const field = fields[0];
-
-  if (step.action_type === "BROWSER_TYPE" && field) {
-    const fieldName = field.label.toLowerCase();
-    const hostname = getHostname(step.target);
-
-    if (hostname) {
-      return `What ${fieldName} should AgentGate enter on ${hostname}?`;
-    }
-
-    return `What ${fieldName} should AgentGate enter?`;
+  if (fields.length === 0) {
+    return "What information should AgentGate provide to continue?";
   }
 
-  return "What information should AgentGate provide to continue?";
+  const fieldLabels = formatFieldLabels(fields);
+
+  if (step.action_type === "BROWSER_TYPE") {
+    const hostname = getHostname(step.target);
+
+    if (fields.length === 1) {
+      const fieldName = fields[0].label.toLowerCase();
+
+      if (hostname) {
+        return `What ${fieldName} should AgentGate enter on ${hostname}?`;
+      }
+
+      return `What ${fieldName} should AgentGate enter?`;
+    }
+
+    if (hostname) {
+      return `What information should AgentGate enter for ${fieldLabels} on ${hostname}?`;
+    }
+
+    return `What information should AgentGate enter for ${fieldLabels}?`;
+  }
+
+  if (step.action_type === "API_CALL") {
+    const system = step.target_system || "the target system";
+
+    return `What information should AgentGate provide for ${fieldLabels} to continue the ${system} request?`;
+  }
+
+  return `What information should AgentGate provide for ${fieldLabels} to continue?`;
 }

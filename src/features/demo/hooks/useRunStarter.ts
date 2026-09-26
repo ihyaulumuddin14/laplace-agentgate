@@ -102,6 +102,7 @@ export const useRunStarter = () => {
             }
 
             // always update run status every event chunk has retrieved
+            // for ask user this set status is trigger to render the input ui
             setStatus(runStatus);
             updateLastChat((chat) => {
               if (chat.id === assistantMessageId) {
@@ -117,11 +118,11 @@ export const useRunStarter = () => {
           }
         }
       });
-    } catch (error) {
+    } catch (_error) {
       addChat({
         id: `msg-${Date.now()}`,
         role: "assistant",
-        content: `Failed to process request: ${(error as Error).message}`,
+        content: `Failed to process request, try again`,
         status: "error",
       });
     } finally {

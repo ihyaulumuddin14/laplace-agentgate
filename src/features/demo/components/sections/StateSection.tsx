@@ -105,6 +105,10 @@ export const DECISION_VARIANTS = {
     accent: "#EF4444",
     label: "block" as const,
   },
+  FAILED: {
+    accent: "#EF4444",
+    label: "failed" as const,
+  },
   SANITIZE: {
     accent: "#FF9900",
     label: "sanitize" as const,
@@ -221,7 +225,7 @@ const StateProposedAction = ({
           <p className="text-sm font-light">
             {
               proposedActionPayload.data.plan[currentStepIndex || 0]
-                .target_system
+                ?.target_system
             }
           </p>
         </div>
@@ -231,10 +235,10 @@ const StateProposedAction = ({
           <p className="text-sm font-light">
             {
               proposedActionPayload.data.plan[currentStepIndex || 0]
-                .target_system
+                ?.target_system
             }
             {", "}
-            {proposedActionPayload.data.plan[currentStepIndex || 0].target}
+            {proposedActionPayload.data.plan[currentStepIndex || 0]?.target}
           </p>
         </div>
 
@@ -251,7 +255,7 @@ const StateProposedAction = ({
         <div className="rounded-[12px] bg-[#EFE6FC]/50 text-sm font-light text-white py-3 px-4 whitespace-pre-line">
           {proposedActionPayload.data.summary.startsWith("\n")
             ? proposedActionPayload.data.summary.replace("\n", "")
-            : proposedActionPayload.data.summary}
+            : "-"}
         </div>
       </div>
 
@@ -286,7 +290,10 @@ const StateActionDecision = ({
 
   const decisionType = isDeclined
     ? "DECLINED"
-    : (decisionData?.decision ?? "ALLOW");
+    : event.type === "done"
+      ? (doneData?.status === "failed" && "FAILED") ||
+        (doneData?.status === "blocked" && "BLOCK")
+      : (decisionData?.decision ?? "ALLOW");
 
   const variant =
     DECISION_VARIANTS[decisionType as keyof typeof DECISION_VARIANTS] ||
@@ -298,6 +305,8 @@ const StateActionDecision = ({
         ? `${Math.round(decisionData.risk_score * 100)}%`
         : `${decisionData.risk_score}%`
       : "-";
+
+  const riskLevel = decisionData?.risk_level || "-";
 
   return (
     <ActionCard accent={variant.accent} className="text-white">
@@ -314,7 +323,7 @@ const StateActionDecision = ({
             Risk Level
           </h3>
           <p className="text-accent text-sm line-clamp-1 font-semibold uppercase">
-            {decisionData?.risk_level}
+            {riskLevel}
           </p>
         </div>
         <div className="border border-accent rounded-md p-3 flex flex-col items-center gap-1">
@@ -340,12 +349,18 @@ const StateActionDecision = ({
           <h3 className="text-base font-semibold text-white">Reasons</h3>
 
           <ul className="w-full flex flex-col gap-2">
-            {decisionData?.reasons?.map((reason) => (
-              <li key={reason} className="flex gap-3 items-center">
-                <IoWarningOutline className="size-5 shrink-0 text-accent" />
-                <p className="text-sm font-extralight">{reason}</p>
-              </li>
-            ))}
+            {decisionData?.reasons && decisionData.reasons.length > 0 ? (
+              decisionData?.reasons?.map((reason) => (
+                <li key={reason} className="flex gap-3 items-center">
+                  <IoWarningOutline className="size-5 shrink-0 text-accent" />
+                  <p className="text-sm font-extralight">{reason}</p>
+                </li>
+              ))
+            ) : (
+              <p className="text-sm font-extralight text-[#B9B9B9]">
+                No reasons
+              </p>
+            )}
           </ul>
         </div>
 
@@ -400,10 +415,17 @@ const StateActionDecision = ({
         )}
 
         <div className="w-full border border-accent rounded-md bg-accent/30 px-4 py-3 text-white flex flex-col gap-2">
-          <h3 className="font-semibold text-sm">Next Step</h3>
+          <h3 className="font-semibold text-sm">
+            {event.type === "done" ? "Result Summary" : "Next Step"}
+          </h3>
           <p className="text-xs font-extralight">
-            {isDeclined
-              ? "Action was declined — execution stopped."
+            {event.type === "done"
+              ? isDeclined
+                ? "Action was declined — execution stopped."
+                : event.data.data.status === "failed"
+                  ? "Action failed — execution stopped."
+                  : (event.data.data.steps.at(-1)?.execution?.result_summary ??
+                    "-")
               : decisionData?.next_step}
           </p>
         </div>

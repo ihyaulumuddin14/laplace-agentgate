@@ -74,7 +74,7 @@ export function deriveChatDisplay(event: SSEEvent): {
       const step = event.data.data.step;
       const question = getApprovalQuestion({
         action_type: step?.action_type,
-        target: step.target,
+        target: step?.target,
       });
 
       return {
@@ -135,7 +135,9 @@ export function deriveChatDisplay(event: SSEEvent): {
     case "done": {
       const doneData = event.data.data;
       const isFailed =
-        doneData.status === "declined" || doneData.status === "blocked";
+        doneData.status === "declined" ||
+        doneData.status === "blocked" ||
+        doneData.status === "failed";
 
       if (isFailed) {
         return {

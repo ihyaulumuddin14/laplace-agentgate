@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence } from "motion/react";
+import { u } from "motion/react-client";
 import { useState } from "react";
 import { TbSend } from "react-icons/tb";
 import { useShallow } from "zustand/react/shallow";
@@ -18,6 +19,7 @@ import { useApproveDecision } from "../../hooks/useApproveDecision";
 import { useAskUserDecision } from "../../hooks/useAskUserDecision";
 import { useRunStarter } from "../../hooks/useRunStarter";
 import { useChatStore } from "../../stores/chat-stores";
+import { useAskInputStore } from "../../stores/input-stores";
 import { ChatList } from "../misc/ChatList";
 import { EmptyChatFallback } from "../misc/EmptyChatFallback";
 import { ScenarioRunnerOption } from "../misc/ScenarioRunnerOption";
@@ -33,8 +35,14 @@ const ChatSection = () => {
   const { handleRunStart, isStreaming } = useRunStarter();
   const { handleApproveDecision, isApproveProcessing } = useApproveDecision();
   const { handleAskUserDecision, isAskProcessing } = useAskUserDecision();
+  const { fields, askUserBodyBuffer, setAskUserBodyBuffer } = useAskInputStore(
+    useShallow((state) => ({
+      fields: state.fields,
+      askUserBodyBuffer: state.askUserBodyBuffer,
+      setAskUserBodyBuffer: state.setAskUserBodyBuffer,
+    })),
+  );
   const [inputValue, setInputValue] = useState("");
-  const [askInputValue, setAskInputValue] = useState("");
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,9 +53,8 @@ const ChatSection = () => {
 
   const onAskSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!askInputValue.trim() || isAskProcessing) return;
-    handleAskUserDecision(askInputValue);
-    setAskInputValue("");
+    if (isAskProcessing) return;
+    handleAskUserDecision();
   };
 
   return (
@@ -70,7 +77,11 @@ const ChatSection = () => {
             </div>
           </div>
         </ResizablePanel>
-        <ResizablePanel defaultSize={"40%"} minSize={200}>
+        <ResizablePanel
+          defaultSize={"40%"}
+          minSize={200}
+          className="minimal-scrollbar"
+        >
           <div className="flex flex-col w-full h-full relative bg-surface-2/80 border-t-5 border-purple-800">
             {/* BUBBLE CHAT CONTENT */}
             <main className="flex-1 relative flex flex-col p-4 gap-4 overflow-y-auto mask-b-from-80% minimal-scrollbar">
@@ -142,21 +153,47 @@ const ChatSection = () => {
 
                   <span className="text-sm font-bold">Action Required</span>
                   <span className="text-xs">
-                    {chats[chats.length - 1].content}
+                    {chats[chats.length - 1]?.content}
                   </span>
 
-                  <form className="relative w-full mt-2" onSubmit={onAskSubmit}>
-                    <Input
-                      className="w-full pr-15"
-                      placeholder="Type your response..."
-                      value={askInputValue}
-                      onChange={(e) => setAskInputValue(e.target.value)}
-                      autoFocus
-                    />
+                  <form
+                    className="relative w-full mt-2 flex flex-col gap-2"
+                    onSubmit={onAskSubmit}
+                  >
+                    {fields.length > 0 &&
+                      fields.map((field, index) => (
+                        <div key={field.key} className="flex flex-col gap-1">
+                          <label htmlFor={field.key} className="text-xs">
+                            {field.label}
+                          </label>
+                          <Input
+                            id={field.key}
+                            name={field.key}
+                            type="password"
+                            className={cn(
+                              index === fields.length - 1
+                                ? "w-[calc(100%-60px)]"
+                                : "w-full",
+                              "pr-15",
+                            )}
+                            value={askUserBodyBuffer?.[field.key] || ""}
+                            onChange={(e) =>
+                              setAskUserBodyBuffer({
+                                [field.key]: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      ))}
                     <button
                       type="submit"
-                      disabled={isAskProcessing || !askInputValue.trim()}
-                      className="absolute h-full aspect-square top-1/2 right-1 -translate-y-1/2 flex justify-center items-center cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={
+                        isAskProcessing ||
+                        !askUserBodyBuffer ||
+                        (askUserBodyBuffer &&
+                          Object.keys(askUserBodyBuffer).length === 0)
+                      }
+                      className="border rounded-lg h-12.5 absolute aspect-square bottom-0 right-1 flex justify-center items-center cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <TbSend size={20} color="#efe6fc" />
                     </button>

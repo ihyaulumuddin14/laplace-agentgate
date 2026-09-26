@@ -4,7 +4,7 @@ type ApprovalStep = {
 };
 
 export function getApprovalQuestion(step: ApprovalStep): string {
-  const target = step.target || "the specified target";
+  const target = step?.target || "the specified target";
 
   switch (step.action_type) {
     case "BROWSER_OPEN":
@@ -93,7 +93,7 @@ export function getInputQuestion(
   const fieldLabels = formatFieldLabels(fields);
 
   if (step.action_type === "BROWSER_TYPE") {
-    const hostname = getHostname(step.target);
+    const hostname = getHostname(step?.target ?? "");
 
     if (fields.length === 1) {
       const fieldName = fields[0].label.toLowerCase();
@@ -113,7 +113,7 @@ export function getInputQuestion(
   }
 
   if (step.action_type === "API_CALL") {
-    const system = step.target_system || "the target system";
+    const system = step?.target_system || "the target system";
 
     return `What information should AgentGate provide for ${fieldLabels} to continue the ${system} request?`;
   }

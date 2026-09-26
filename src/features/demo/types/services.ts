@@ -17,7 +17,7 @@ export interface ApprovalDecisionRequest {
 
 export interface UserInputDecisionRequest {
   action: "input";
-  fields: { value: string };
+  fields: Record<string, string>;
   step_index: number;
 }
 

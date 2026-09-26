@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { RunStatus, StreamEvent } from "../types";
 import { useChatStore } from "./chat-stores";
+import { useAskInputStore } from "./input-stores";
 
 export type SSEEvent = StreamEvent;
 export type { RunStatus };
@@ -59,22 +60,23 @@ export const useEventStore = create<EventStore>((set, get) => ({
           // Remove any pending evaluating step_status for this step
           const filteredEvents = prevState.events.filter(
             (e) =>
-              !(e.type === "step_status" && e.data.data.index === stepIndex),
+              !(e.type === "step_status" && e.data.data.index === stepIndex) &&
+              e.type !== "guardrail",
           );
 
           // Check if a guardrail card for this step index already exists (e.g. re-evaluation after user input/approval)
-          const existingIndex = filteredEvents.findIndex(
-            (e) => e.type === "guardrail" && e.data.data.index !== stepIndex,
-          );
+          // const existingIndex = filteredEvents.findIndex(
+          //   (e) => e.type === "guardrail" && e.data.data.index !== stepIndex,
+          // );
 
-          if (existingIndex !== -1) {
-            const updated = [...filteredEvents];
-            updated[existingIndex] = event;
-            return {
-              ...prevState,
-              events: updated,
-            };
-          }
+          // if (existingIndex !== -1) {
+          //   const updated = [...filteredEvents];
+          //   updated[existingIndex] = event;
+          //   return {
+          //     ...prevState,
+          //     events: updated,
+          //   };
+          // }
 
           return {
             ...prevState,
@@ -89,6 +91,11 @@ export const useEventStore = create<EventStore>((set, get) => ({
 
         case "step_result": {
           get().setExecutingStatus("finish");
+          return prevState;
+        }
+
+        case "awaiting_input": {
+          useAskInputStore.getState().setFields(event.data.data.fields);
           return prevState;
         }
 

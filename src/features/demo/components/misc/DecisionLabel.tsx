@@ -3,6 +3,7 @@ import { cn } from "@/shared/lib/utils";
 type LabelType =
   | "allow"
   | "block"
+  | "failed"
   | "sanitize"
   | "need_approval"
   | "ask_user"

@@ -1,7 +1,7 @@
 import { useShallow } from "zustand/shallow";
 import { useAgentGateSessionContext } from "@/shared/components/layout/AgentGateSessionProvider";
 import { deriveChatDisplay } from "../lib/deriveChatDisplay";
-import { startRun } from "../services/chat-services";
+import { startRunService } from "../services/chat-services";
 import { useChatStore } from "../stores/chat-stores";
 import { type RunStatus, useEventStore } from "../stores/event-stores";
 import type { ChatMessage } from "../types";
@@ -79,7 +79,7 @@ export const useRunStarter = () => {
     };
 
     try {
-      await startRun(prompt, sessionId, (event) => {
+      await startRunService(prompt, sessionId, (event) => {
         addEvent(event);
 
         const runStatus: RunStatus = event.type as RunStatus;

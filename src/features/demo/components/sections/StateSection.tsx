@@ -9,11 +9,7 @@ import { Spinner } from "@/shared/components/ui/spinner";
 import type { DecisionResponseSchema } from "../../schema/chat-schema";
 import { useChatStore } from "../../stores/chat-stores";
 import { useEventStore } from "../../stores/event-stores";
-import type {
-  DoneEventData,
-  GuardrailEventData,
-  PlanEventData,
-} from "../../types";
+import type { PlanEventPayload, StreamEvent, StreamMessage } from "../../types";
 import ActionCard from "../misc/ActionCard";
 import DecisionLabel from "../misc/DecisionLabel";
 
@@ -87,10 +83,7 @@ const ActionList = () => {
                     : "done"
                 }
               >
-                <StateActionDecision
-                  eventType={event.type}
-                  decisionDataPayload={event.data}
-                />
+                <StateActionDecision event={event} />
               </FadeWrapperMotion>
             );
           } else {
@@ -201,7 +194,7 @@ const StateEvaluatingAction = () => {
 const StateProposedAction = ({
   proposedActionPayload,
 }: {
-  proposedActionPayload: PlanEventData;
+  proposedActionPayload: StreamMessage<PlanEventPayload>;
 }) => {
   return (
     <ActionCard className="text-white">
@@ -260,14 +253,12 @@ const StateProposedAction = ({
 };
 
 const StateActionDecision = ({
-  eventType,
-  decisionDataPayload,
+  event,
 }: {
-  eventType: "guardrail" | "done";
-  decisionDataPayload: GuardrailEventData | DoneEventData;
+  event: Extract<StreamEvent, { type: "guardrail" | "done" }>;
 }) => {
-  const isDone = eventType === "done";
-  const doneData = isDone ? (decisionDataPayload as DoneEventData).data : null;
+  const isDone = event.type === "done";
+  const doneData = isDone ? event.data.data : null;
   const isDeclined =
     doneData?.status === "declined" ||
     doneData?.steps?.some(
@@ -276,9 +267,9 @@ const StateActionDecision = ({
     );
 
   const decisionData: DecisionResponseSchema | undefined =
-    eventType === "guardrail"
-      ? (decisionDataPayload as GuardrailEventData).data.step?.decision
-      : (decisionDataPayload as DoneEventData).data.steps?.at(-1)?.decision;
+    event.type === "guardrail"
+      ? event.data.data.step.decision
+      : event.data.data.steps.at(-1)?.decision;
 
   const decisionType = isDeclined
     ? "DECLINED"

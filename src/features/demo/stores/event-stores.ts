@@ -1,33 +1,9 @@
 import { create } from "zustand";
-import type { SSEMessage } from "../services/chat-services";
-import type {
-  AwaitingApprovalEventData,
-  AwaitingInputEventData,
-  DoneEventData,
-  ExecutingEventData,
-  GuardrailEventData,
-  PlanEventData,
-  ReplanningEventData,
-  StepResultEventData,
-  StepStatusEventData,
-} from "../types";
+import type { RunStatus, StreamEvent } from "../types";
 import { useChatStore } from "./chat-stores";
 
-export type SSEEvent =
-  | { type: "run_started"; data: SSEMessage }
-  | { type: "planning"; data: SSEMessage }
-  | { type: "plan"; data: PlanEventData }
-  | { type: "guardrail"; data: GuardrailEventData }
-  | { type: "step_status"; data: StepStatusEventData }
-  | { type: "awaiting_approval"; data: AwaitingApprovalEventData }
-  | { type: "awaiting_input"; data: AwaitingInputEventData }
-  | { type: "executing"; data: ExecutingEventData }
-  | { type: "step_result"; data: StepResultEventData }
-  | { type: "replanning"; data: ReplanningEventData }
-  | { type: "done"; data: DoneEventData }
-  | { type: "error"; data: SSEMessage };
-
-export type RunStatus = SSEEvent["type"] | "idle";
+export type SSEEvent = StreamEvent;
+export type { RunStatus };
 
 interface EventStore {
   events: SSEEvent[];

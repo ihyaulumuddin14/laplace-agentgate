@@ -3,18 +3,19 @@
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useState } from "react";
 import { cn } from "@/shared/lib/utils";
-import { type DemoTab, DemoTabs } from "../../types";
+import { DEMO_TABS } from "../../constants/navigation";
+import type { DemoTab } from "../../types";
 import ChatSection from "../sections/ChatSection";
 import LogsSection from "../sections/LogsSection";
 import StateSection from "../sections/StateSection";
 
 export default function MobileDemoContainer() {
-  const [currentTab, setCurrentTab] = useState<DemoTab>(DemoTabs.chat);
-  const currentIndex = Object.values(DemoTabs).indexOf(currentTab);
+  const [currentTab, setCurrentTab] = useState<DemoTab>(DEMO_TABS.chat);
+  const currentIndex = Object.values(DEMO_TABS).indexOf(currentTab);
   const [direction, setDirection] = useState(1);
 
   const handleSwitchTab = (tab: DemoTab) => {
-    const nextIndex = Object.values(DemoTabs).indexOf(tab);
+    const nextIndex = Object.values(DEMO_TABS).indexOf(tab);
 
     setDirection(nextIndex > currentIndex ? 1 : -1);
     setCurrentTab(tab);
@@ -24,7 +25,7 @@ export default function MobileDemoContainer() {
     <div className="w-full h-full relative lg:hidden text-purple-50 p-3 pt-0">
       <nav className="w-full h-fit border z-20 rounded-t-[20px]">
         <ul className="w-full grid grid-cols-3 h-15 relative">
-          {Object.values(DemoTabs).map((tab) => (
+          {Object.values(DEMO_TABS).map((tab) => (
             <MobileTab
               key={tab.label}
               handleSwitchTab={handleSwitchTab}
@@ -45,26 +46,26 @@ export default function MobileDemoContainer() {
 
       <main className="relative w-full h-[calc(100%-62px)] border rounded-b-[20px] overflow-hidden">
         <AnimatePresence custom={direction}>
-          {currentTab === DemoTabs.chat && (
+          {currentTab === DEMO_TABS.chat && (
             <DemoCardWrapperMotion
               direction={direction}
-              key={DemoTabs.chat.label}
+              key={DEMO_TABS.chat.label}
             >
               <ChatSection />
             </DemoCardWrapperMotion>
           )}
-          {currentTab === DemoTabs.state && (
+          {currentTab === DEMO_TABS.state && (
             <DemoCardWrapperMotion
               direction={direction}
-              key={DemoTabs.state.label}
+              key={DEMO_TABS.state.label}
             >
               <StateSection />
             </DemoCardWrapperMotion>
           )}
-          {currentTab === DemoTabs.logs && (
+          {currentTab === DEMO_TABS.logs && (
             <DemoCardWrapperMotion
               direction={direction}
-              key={DemoTabs.logs.label}
+              key={DEMO_TABS.logs.label}
             >
               <LogsSection />
             </DemoCardWrapperMotion>

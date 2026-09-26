@@ -1,24 +1,22 @@
-import type { SSEEvent } from "../stores/event-stores";
+import type { StreamEvent, StreamEventPayloads } from "../types/events";
+import type {
+  ApprovalDecisionRequest,
+  UserInputDecisionRequest,
+} from "../types/services";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export type SSEMessage<T = unknown> = {
-  run_id: string;
-  type: string;
-  data: T;
-};
-
-function handleFrame(raw: string, onEvent: (event: SSEEvent) => void) {
+function handleFrame(raw: string, onEvent: (event: StreamEvent) => void) {
   if (!raw.trim() || raw.trim().startsWith(":")) {
     return;
   }
 
-  let eventName: SSEEvent["type"] = "done";
+  let eventName: keyof StreamEventPayloads = "done";
   let dataStr = "";
 
   for (const line of raw.split(/\r?\n/)) {
     if (line.startsWith("event:")) {
-      eventName = line.slice(6).trim() as SSEEvent["type"];
+      eventName = line.slice(6).trim() as keyof StreamEventPayloads;
     } else if (line.startsWith("data:")) {
       dataStr += `${line.slice(5).trim()}\n`;
     }
@@ -34,7 +32,7 @@ function handleFrame(raw: string, onEvent: (event: SSEEvent) => void) {
     onEvent({
       type: eventName,
       data: message,
-    } as SSEEvent);
+    } as StreamEvent);
   } catch (error) {
     const errorData = JSON.stringify({
       raw,
@@ -45,10 +43,10 @@ function handleFrame(raw: string, onEvent: (event: SSEEvent) => void) {
   }
 }
 
-export async function startRun(
+export async function startRunService(
   prompt: string,
   sessionId: string,
-  onEvent: (event: SSEEvent) => void,
+  onEvent: (event: StreamEvent) => void,
 ) {
   const response = await fetch(`${API_URL}/api/v1/chat/execute/stream`, {
     method: "POST",
@@ -107,49 +105,10 @@ export async function startRun(
   }
 }
 
-// export async function runScenario(
-//   task: string,
-//   expectedDecision: DecisionType,
-//   onEvent: (event: EventState) => void,
-// ) {
-//   const response = await fetch("/api/agent/run", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ task, expectedDecision }),
-//   });
-
-//   if (!response.body) throw new Error("No response body");
-
-//   const reader = response.body.getReader();
-//   const decoder = new TextDecoder();
-//   let buffer = "";
-
-//   while (true) {
-//     const { done, value } = await reader.read();
-//     if (done) break;
-
-//     buffer += decoder.decode(value, { stream: true });
-//     const parts = buffer.split("\n\n");
-//     buffer = parts.pop() ?? "";
-
-//     for (const part of parts) {
-//       if (!part.startsWith("data: ")) continue;
-//       const event = JSON.parse(part.replace("data: ", "")) as EventState;
-//       if (event.type === "error") {
-//         throw new Error("Something went wrong");
-//       }
-//       onEvent(event);
-//     }
-//   }
-// }
-
 export async function approveDecisionService(
   runId: string,
   sessionId: string,
-  approvalBody: {
-    action: "approve" | "decline";
-    step_index: number;
-  },
+  approvalBody: ApprovalDecisionRequest,
   onEvent?: () => void,
 ) {
   const response = await fetch(
@@ -174,11 +133,7 @@ export async function approveDecisionService(
 export async function askUserDecisionService(
   runId: string,
   sessionId: string,
-  askUserBody: {
-    action: "input";
-    fields: { value: string };
-    step_index: number;
-  },
+  askUserBody: UserInputDecisionRequest,
   onEvent?: () => void,
 ) {
   const response = await fetch(

@@ -3,14 +3,14 @@
 import type { CSSProperties } from "react";
 import { cn } from "@/shared/lib/utils";
 import { useRunStarter } from "../../hooks/useRunStarter";
-import type { ScenarioRunnerOptionType } from "../../types";
+import type { ScenarioRunnerOption as ScenarioRunnerOptionProps } from "../../types";
 
 export const ScenarioRunnerOption = ({
   title,
   Icon,
   accent,
   variants,
-}: ScenarioRunnerOptionType) => {
+}: ScenarioRunnerOptionProps) => {
   const { handleRunStart, isStreaming } = useRunStarter();
 
   async function handleClick() {

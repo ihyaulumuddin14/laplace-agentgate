@@ -6,11 +6,11 @@ import { RiLoopRightLine } from "react-icons/ri";
 import type {
   ActionRequestSchema,
   DecisionResponseSchema,
-  ExecutionResultResponseSchema,
+  ExecutionResponse,
 } from "../schema/chat-schema";
-import type { ScenarioRunnerOptionType } from "../types";
+import type { ScenarioRunnerOption } from "../types";
 
-export const SCENARIOS: ScenarioRunnerOptionType[] = [
+export const SCENARIOS = [
   {
     title: "Calendar Event",
     Icon: CiCalendar,
@@ -66,7 +66,7 @@ export const SCENARIOS: ScenarioRunnerOptionType[] = [
       },
     ],
   },
-] as const;
+] as const satisfies readonly ScenarioRunnerOption[];
 
 export const PROPOSED_ACTION_DUMMY: ActionRequestSchema = {
   schema_version: "0.1",
@@ -103,7 +103,7 @@ export const DECISION_RESPONSE_DUMMY: DecisionResponseSchema = {
   created_at: "2026-08-07T07:18:59.587430Z",
 };
 
-export const EXECUTION_RESPONSE_DUMMY: ExecutionResultResponseSchema = {
+export const EXECUTION_RESPONSE_DUMMY: ExecutionResponse = {
   schema_version: "0.1",
   run_id: "run_709c199e5cd6",
   action_id: "act_9d916fa9e390",

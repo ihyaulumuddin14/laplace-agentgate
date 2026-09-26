@@ -2,19 +2,20 @@
 
 import { AnimatePresence } from "motion/react";
 import { useState } from "react";
-import { type DemoTab, LogsTabs } from "../../types";
+import { LOG_TABS } from "../../constants/navigation";
+import type { DemoTab } from "../../types";
 import AuditLogs from "../misc/AuditLogs";
 import LatencyReport from "../misc/LatencyReport";
 import { DemoCardWrapperMotion, MobileTab } from "../misc/MobileDemoContainer";
 import RiskDashboard from "../misc/RiskDashboard";
 
 const LogsSection = () => {
-  const [currentTab, setCurrentTab] = useState<DemoTab>(LogsTabs.audit);
-  const currentIndex = Object.values(LogsTabs).indexOf(currentTab);
+  const [currentTab, setCurrentTab] = useState<DemoTab>(LOG_TABS.audit);
+  const currentIndex = Object.values(LOG_TABS).indexOf(currentTab);
   const [direction, setDirection] = useState(1);
 
   const handleSwitchTab = (tab: DemoTab) => {
-    const nextIndex = Object.values(LogsTabs).indexOf(tab);
+    const nextIndex = Object.values(LOG_TABS).indexOf(tab);
     setDirection(nextIndex > currentIndex ? 1 : -1);
     setCurrentTab(tab);
   };
@@ -23,7 +24,7 @@ const LogsSection = () => {
     <div className="w-full h-full relative flex flex-col">
       <nav className="w-full h-fit border z-20 rounded-t-[20px]">
         <ul className="w-full grid grid-cols-3 h-12 relative">
-          {Object.values(LogsTabs).map((tab) => (
+          {Object.values(LOG_TABS).map((tab) => (
             <MobileTab
               key={tab.label}
               handleSwitchTab={handleSwitchTab}
@@ -43,26 +44,26 @@ const LogsSection = () => {
       </nav>
       <main className="flex-1 h-full relative flex flex-col">
         <AnimatePresence custom={direction}>
-          {currentTab === LogsTabs.audit && (
+          {currentTab === LOG_TABS.audit && (
             <DemoCardWrapperMotion
               direction={direction}
-              key={LogsTabs.audit.label}
+              key={LOG_TABS.audit.label}
             >
               <AuditLogs />
             </DemoCardWrapperMotion>
           )}
-          {currentTab === LogsTabs.risk && (
+          {currentTab === LOG_TABS.risk && (
             <DemoCardWrapperMotion
               direction={direction}
-              key={LogsTabs.risk.label}
+              key={LOG_TABS.risk.label}
             >
               <RiskDashboard />
             </DemoCardWrapperMotion>
           )}
-          {currentTab === LogsTabs.latency && (
+          {currentTab === LOG_TABS.latency && (
             <DemoCardWrapperMotion
               direction={direction}
-              key={LogsTabs.latency.label}
+              key={LOG_TABS.latency.label}
             >
               <LatencyReport />
             </DemoCardWrapperMotion>

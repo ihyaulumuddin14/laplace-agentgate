@@ -6,12 +6,14 @@ import { MdOutlineCheckCircle, MdOutlineShield } from "react-icons/md";
 import FadeWrapperMotion from "@/shared/components/FadeWrapperMotion";
 import { Progress } from "@/shared/components/ui/progress";
 import { Spinner } from "@/shared/components/ui/spinner";
-import type {
-  ActionRequestSchema,
-  DecisionResponseSchema,
-} from "../../schema/chat-schema";
+import type { DecisionResponseSchema } from "../../schema/chat-schema";
 import { useChatStore } from "../../stores/chat-stores";
-import { useStateStore } from "../../stores/state-stores";
+import { useEventStore } from "../../stores/event-stores";
+import type {
+  DoneEventData,
+  GuardrailEventData,
+  PlanEventData,
+} from "../../types";
 import ActionCard from "../misc/ActionCard";
 import DecisionLabel from "../misc/DecisionLabel";
 
@@ -29,55 +31,72 @@ export default StateSection;
 
 const ActionList = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
-  const states = useStateStore((state) => state.states);
+  const events = useEventStore((state) => state.events);
   const status = useChatStore((state) => state.status);
   const [planningDone, setPlanningDone] = useState<boolean>(false);
 
   useEffect(() => {
-    if (status === "proposed_action") {
+    if (status === "plan") {
       setPlanningDone(true);
     }
   }, [status]);
 
   useEffect(() => {
-    if (states.length === 0) return;
+    if (events.length === 0) return;
 
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "end",
     });
-  }, [states.length]);
+  }, [events.length]);
 
   return (
     <>
       <ul className="flex flex-col gap-4">
-        {status === "planning" ? (
-          <StatePlanningAction isComplete={planningDone} />
-        ) : (
-          states.map((state) => {
-            if (state.type === "proposed_action") {
-              return (
-                <FadeWrapperMotion key={state.type}>
-                  <StateProposedAction proposedActionPayload={state.data} />
-                </FadeWrapperMotion>
-              );
-            } else if (state.type === "evaluating") {
-              return (
-                <FadeWrapperMotion key={state.type}>
-                  <StateEvaluatingAction />
-                </FadeWrapperMotion>
-              );
-            } else if (state.type === "decision") {
-              return (
-                <FadeWrapperMotion key={state.type}>
-                  <StateActionDecision decisionPayload={state.data} />
-                </FadeWrapperMotion>
-              );
-            } else {
-              return null;
-            }
-          })
-        )}
+        {events.map((event, index) => {
+          if (event.type === "planning" || event.type === "replanning") {
+            return (
+              <FadeWrapperMotion key={event.type}>
+                <StatePlanningAction
+                  isComplete={planningDone}
+                  eventType={event.type}
+                />
+              </FadeWrapperMotion>
+            );
+          } else if (event.type === "plan") {
+            return (
+              <FadeWrapperMotion key="plan">
+                <StateProposedAction proposedActionPayload={event.data} />
+              </FadeWrapperMotion>
+            );
+          } else if (
+            event.type === "step_status" &&
+            event.data.data.status === "running"
+          ) {
+            return (
+              <FadeWrapperMotion key={`evaluating-${event.data.data.index}`}>
+                <StateEvaluatingAction />
+              </FadeWrapperMotion>
+            );
+          } else if (event.type === "guardrail" || event.type === "done") {
+            return (
+              <FadeWrapperMotion
+                key={
+                  event.type === "guardrail"
+                    ? `guardrail-${event.data.data.index}-${event.data.data.step?.action_id ?? index}`
+                    : "done"
+                }
+              >
+                <StateActionDecision
+                  eventType={event.type}
+                  decisionDataPayload={event.data}
+                />
+              </FadeWrapperMotion>
+            );
+          } else {
+            return null;
+          }
+        })}
       </ul>
       <div ref={bottomRef} />
     </>
@@ -105,9 +124,19 @@ export const DECISION_VARIANTS = {
     accent: "#00D4FF",
     label: "ask_user" as const,
   },
+  DECLINED: {
+    accent: "#EF4444",
+    label: "declined" as const,
+  },
 };
 
-const StatePlanningAction = ({ isComplete }: { isComplete: boolean }) => {
+const StatePlanningAction = ({
+  isComplete,
+  eventType,
+}: {
+  isComplete: boolean;
+  eventType: "planning" | "replanning";
+}) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -125,7 +154,7 @@ const StatePlanningAction = ({ isComplete }: { isComplete: boolean }) => {
     <ActionCard className="text-white">
       <h2 className="flex gap-3 text-lg font-semibold text-purple-100 items-center">
         <Spinner strokeWidth={3} className="size-5" />
-        Planning Next Action
+        {eventType === "planning" ? "Planning Next Action" : "Replanning"}
       </h2>
       <p className="text-sm">
         LLM planner is processing your goal and preparing a proposed tool action
@@ -172,7 +201,7 @@ const StateEvaluatingAction = () => {
 const StateProposedAction = ({
   proposedActionPayload,
 }: {
-  proposedActionPayload: ActionRequestSchema;
+  proposedActionPayload: PlanEventData;
 }) => {
   return (
     <ActionCard className="text-white">
@@ -185,43 +214,45 @@ const StateProposedAction = ({
         <div>
           <h3 className="text-md font-normal">Tool Name</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.action_type}
+            {proposedActionPayload.data.plan[0].action_type}
           </p>
         </div>
 
         <div>
           <h3 className="text-md font-normal">Target System</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.target_system}
+            {proposedActionPayload.data.plan[0].target_system}
           </p>
         </div>
 
         <div>
           <h3 className="text-md font-normal">Target</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.target_system}
+            {proposedActionPayload.data.plan[0].target_system}
             {", "}
-            {proposedActionPayload.target}
+            {proposedActionPayload.data.plan[0].target}
           </p>
         </div>
 
         <div>
           <h3 className="text-md font-normal">Domain</h3>
-          <p className="text-sm font-light">{proposedActionPayload.domain}</p>
+          <p className="text-sm font-light">
+            {proposedActionPayload.data.plan[0].domain}
+          </p>
         </div>
       </div>
 
       <div className="w-full flex flex-col gap-2">
         <h3>Payload Summary</h3>
         <div className="rounded-[12px] bg-[#EFE6FC]/50 text-sm font-light text-white py-3 px-4">
-          {proposedActionPayload.payload_summary}
+          {JSON.stringify(proposedActionPayload.data.plan[0].payload, null, 2)}
         </div>
       </div>
 
       <div className="w-full flex flex-col gap-2">
         <h3>Risk Hints</h3>
         <div className="w-fit rounded-[12px] bg-blue/50 text-sm border border-blue font-light text-white p-2">
-          {proposedActionPayload.risk_hint}
+          {proposedActionPayload.data.plan[0].risk_hint}
         </div>
       </div>
     </ActionCard>
@@ -229,12 +260,40 @@ const StateProposedAction = ({
 };
 
 const StateActionDecision = ({
-  decisionPayload,
+  eventType,
+  decisionDataPayload,
 }: {
-  decisionPayload: DecisionResponseSchema;
+  eventType: "guardrail" | "done";
+  decisionDataPayload: GuardrailEventData | DoneEventData;
 }) => {
+  const isDone = eventType === "done";
+  const doneData = isDone ? (decisionDataPayload as DoneEventData).data : null;
+  const isDeclined =
+    doneData?.status === "declined" ||
+    doneData?.steps?.some(
+      (s) =>
+        s.status === "declined" || s.decision?.approval_decision === "declined",
+    );
+
+  const decisionData: DecisionResponseSchema | undefined =
+    eventType === "guardrail"
+      ? (decisionDataPayload as GuardrailEventData).data.step?.decision
+      : (decisionDataPayload as DoneEventData).data.steps?.at(-1)?.decision;
+
+  const decisionType = isDeclined
+    ? "DECLINED"
+    : (decisionData?.decision ?? "ALLOW");
+
   const variant =
-    DECISION_VARIANTS[decisionPayload.decision] || DECISION_VARIANTS.ALLOW;
+    DECISION_VARIANTS[decisionType as keyof typeof DECISION_VARIANTS] ||
+    DECISION_VARIANTS.ALLOW;
+
+  const formattedRiskScore =
+    decisionData?.risk_score != null
+      ? decisionData.risk_score <= 1
+        ? `${Math.round(decisionData.risk_score * 100)}%`
+        : `${decisionData.risk_score}%`
+      : "-";
 
   return (
     <ActionCard accent={variant.accent} className="text-white">
@@ -250,7 +309,7 @@ const StateActionDecision = ({
             Risk Level
           </h3>
           <p className="text-accent text-sm line-clamp-1 font-semibold uppercase">
-            {decisionPayload.risk_level}
+            {decisionData?.risk_level}
           </p>
         </div>
         <div className="border border-accent rounded-md p-3 flex flex-col items-center gap-1">
@@ -258,7 +317,7 @@ const StateActionDecision = ({
             Risk Score
           </h3>
           <p className="text-accent text-sm line-clamp-1 font-semibold">
-            {decisionPayload.risk_score}%
+            {formattedRiskScore}
           </p>
         </div>
         <div className="border border-accent rounded-md p-3 flex flex-col items-center gap-1">
@@ -266,7 +325,7 @@ const StateActionDecision = ({
             Audit ID
           </h3>
           <p className="text-accent text-sm line-clamp-1 font-semibold">
-            {decisionPayload.action_id.slice(0, 8)}
+            {decisionData?.action_id ? decisionData.action_id.slice(0, 8) : "-"}
           </p>
         </div>
       </div>
@@ -276,7 +335,7 @@ const StateActionDecision = ({
           <h3 className="text-base font-semibold text-white">Reasons</h3>
 
           <ul className="w-full flex flex-col gap-2">
-            {decisionPayload.reasons.map((reason) => (
+            {decisionData?.reasons?.map((reason) => (
               <li key={reason} className="flex gap-3 items-center">
                 <IoWarningOutline className="size-5 shrink-0 text-accent" />
                 <p className="text-sm font-extralight">{reason}</p>
@@ -285,7 +344,7 @@ const StateActionDecision = ({
           </ul>
         </div>
 
-        {decisionPayload.decision !== "ALLOW" && (
+        {decisionData?.decision !== "ALLOW" && (
           <>
             <div className="w-full flex flex-col gap-2">
               <h3 className="text-base font-semibold text-white">
@@ -293,8 +352,8 @@ const StateActionDecision = ({
               </h3>
 
               <ul className="w-full flex flex-wrap gap-3">
-                {decisionPayload.triggered_policies.length > 0 ? (
-                  decisionPayload.triggered_policies.map((triggered_policy) => (
+                {(decisionData?.triggered_policies?.length ?? 0) > 0 ? (
+                  decisionData?.triggered_policies.map((triggered_policy) => (
                     <li
                       key={triggered_policy}
                       className="w-fit rounded-[12px] bg-blue/50 text-sm border border-blue font-light text-white p-2"
@@ -316,8 +375,8 @@ const StateActionDecision = ({
               </h3>
 
               <ul className="w-full flex flex-wrap gap-3">
-                {decisionPayload.sensitive_entities.length > 0 ? (
-                  decisionPayload.sensitive_entities.map((sensitive_entity) => (
+                {(decisionData?.sensitive_entities?.length ?? 0) > 0 ? (
+                  decisionData?.sensitive_entities.map((sensitive_entity) => (
                     <li
                       key={sensitive_entity}
                       className="w-fit rounded-[12px] bg-red/50 text-sm border border-red font-light text-white p-2"
@@ -337,7 +396,11 @@ const StateActionDecision = ({
 
         <div className="w-full border border-accent rounded-md bg-accent/30 px-4 py-3 text-white flex flex-col gap-2">
           <h3 className="font-semibold text-sm">Next Step</h3>
-          <p className="text-xs font-extralight">{decisionPayload.next_step}</p>
+          <p className="text-xs font-extralight">
+            {isDeclined
+              ? "Action was declined — execution stopped."
+              : decisionData?.next_step}
+          </p>
         </div>
       </div>
     </ActionCard>

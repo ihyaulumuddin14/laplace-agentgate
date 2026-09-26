@@ -1,85 +1,181 @@
-import type { ChatBadge, EventState } from "../types";
+import type { SSEEvent } from "../stores/event-stores";
+import type { ChatBadge } from "../types";
+import {
+  getApprovalQuestion,
+  getInputQuestion,
+} from "./getQuestionForSanitize";
 
-export function deriveChatDisplay(state: EventState): {
+export function deriveChatDisplay(event: SSEEvent): {
   content: string;
   badge?: ChatBadge;
 } {
-  switch (state.type) {
+  switch (event.type) {
+    case "run_started":
+      return {
+        content: "Starting AgentGate...",
+      };
+
     case "planning":
-      return { content: state.data.message };
+      return {
+        content: "Planning...",
+      };
 
-    case "proposed_action":
-      return { content: `Preparing action: ${state.data.payload_summary}` };
+    case "plan":
+      return {
+        content: "Preparing execution plan...",
+      };
 
-    case "evaluating":
-      return { content: state.data.message };
+    case "guardrail": {
+      const data = event.data;
 
-    case "decision": {
-      const data = state.data;
-      if (data.decision === "BLOCK") {
+      if (data.data.decision === "BLOCK") {
         return {
-          content: humanizeReason(data.reasons[0] ?? "Action blocked"),
+          content: humanizeReason(data.data.reasons[0] ?? "Action blocked"),
           badge: { label: "Blocked", variant: "danger" },
         };
       }
-      if (data.decision === "NEED_APPROVAL") {
+
+      if (data.data.decision === "NEED_APPROVAL") {
         return {
           content: "⏳ This action needs your approval — check the panel →",
         };
       }
-      if (data.decision === "ASK_USER") {
-        return { content: "🤔 I need more information before continuing" };
+
+      if (data.data.decision === "ASK_USER") {
+        return {
+          content: "🤔 I need more information before continuing",
+        };
       }
-      if (data.decision === "ALLOW") {
-        return { content: "✅ Action allowed — continuing to execution" };
+
+      if (data.data.decision === "ALLOW") {
+        return {
+          content: "✅ Action allowed — continuing to execution",
+        };
       }
-      if (data.decision === "SANITIZE") {
+
+      if (data.data.decision === "SANITIZE") {
         return {
           content:
             "🧹 Sensitive content detected — sanitizing before continuing",
         };
       }
-      return { content: "Decision received" };
+
+      return {
+        content: "Guardrail evaluation completed",
+      };
     }
 
-    case "waiting_approval":
+    case "step_status":
       return {
-        content: state.data.message,
-        badge: { label: "Needs Approval", variant: "warning" },
+        content: `Running step #${event.data.data.index + 1}`,
       };
 
-    case "ask_user":
+    case "awaiting_approval": {
+      const step = event.data.data.step;
+
       return {
-        content: state.data.question,
-        badge: { label: "Action Required", variant: "warning" },
+        content:
+          getApprovalQuestion({
+            action_type: step.action_type,
+            target: step.target,
+          }) ??
+          "This action needs your approval, check the panel on the right side",
+        badge: {
+          label: "Needs Approval",
+          variant: "warning",
+        },
+      };
+    }
+    case "awaiting_input":
+      return {
+        content:
+          getInputQuestion(event.data.data.step, event.data.data.fields) ??
+          "I need more information before continuing",
+        badge: {
+          label: "Action Required",
+          variant: "warning",
+        },
       };
 
-    case "executing":
-      return { content: state.data.message };
+    case "executing": {
+      const index = event.data.data.index;
+      const stepsString = Array.isArray(index)
+        ? index.map((i) => `#${i}`).join(", ")
+        : `#${index}`;
 
-    case "execution_result":
-      return state.data.status === "SUCCESS"
+      return {
+        content: `Executing Step ${stepsString}`,
+      };
+    }
+
+    case "step_result":
+      return event.data.data.status === "SUCCESS"
         ? {
-            content: state.data.result_summary,
-            badge: { label: "Success", variant: "success" },
+            content: event.data.data.result_summary,
+            badge: {
+              label: "Success",
+              variant: "success",
+            },
           }
         : {
-            content: state.data.error ?? "Execution failed",
-            badge: { label: "Failed", variant: "danger" },
+            content: "Execution failed",
+            badge: {
+              label: "Failed",
+              variant: "danger",
+            },
           };
 
-    case "rejected":
-      return { content: "❌ Action rejected by reviewer" };
+    case "replanning":
+      return {
+        content: `Replanning #${event.data.data.iteration}, LLM decides next steps...`,
+      };
+
+    case "done": {
+      const doneData = event.data.data;
+      const isDeclined =
+        doneData.status === "declined" ||
+        doneData.steps?.some(
+          (s) =>
+            s.status === "declined" ||
+            s.decision?.approval_decision === "declined",
+        );
+
+      if (isDeclined) {
+        return {
+          content: "Action was declined — execution stopped",
+          badge: {
+            label: "Declined",
+            variant: "danger",
+          },
+        };
+      }
+
+      return {
+        content: "Task completed successfully",
+        badge: {
+          label: "Completed",
+          variant: "success",
+        },
+      };
+    }
 
     case "error":
-      return { content: state.data.message };
+      return {
+        content: "Something went wrong",
+        badge: {
+          label: "Error",
+          variant: "danger",
+        },
+      };
 
     default:
-      return { content: "Processing..." };
+      return {
+        content: "Processing...",
+      };
   }
 }
 
-function humanizeReason(raw: string): string {
+export function humanizeReason(raw: string): string {
   const map: Record<string, string> = {
     "risk_hint=unknown, domain=browser":
       "This action's risk level could not be determined",

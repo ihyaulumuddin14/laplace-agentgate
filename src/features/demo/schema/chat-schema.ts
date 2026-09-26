@@ -32,6 +32,10 @@ export interface DecisionResponseSchema {
   next_step: string;
   latency_ms: number;
   created_at: string;
+  initial_decision?: string;
+  approval_decision?: "approved" | "declined" | string;
+  guardrail_audit_id?: string;
+  evaluation_error?: string | null;
 }
 
 export interface ExecutionResultResponseSchema {

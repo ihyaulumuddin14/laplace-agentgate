@@ -16,9 +16,8 @@ import { cn } from "@/shared/lib/utils";
 import { SCENARIOS } from "../../constants/scenario";
 import { useApproveDecision } from "../../hooks/useApproveDecision";
 import { useAskUserDecision } from "../../hooks/useAskUserDecision";
-import { useTaskRunner } from "../../hooks/useTaskRunner";
+import { useRunStarter } from "../../hooks/useRunStarter";
 import { useChatStore } from "../../stores/chat-stores";
-import { useStateStore } from "../../stores/state-stores";
 import { ChatList } from "../misc/ChatList";
 import { EmptyChatFallback } from "../misc/EmptyChatFallback";
 import { ScenarioRunnerOption } from "../misc/ScenarioRunnerOption";
@@ -31,31 +30,23 @@ const ChatSection = () => {
     })),
   );
 
-  const { handleRunTask, isStreaming } = useTaskRunner();
-  const { handleDecision, isApproveProcessing } = useApproveDecision();
-  const { handleResponse, isAskProcessing } = useAskUserDecision();
-  const { states } = useStateStore(
-    useShallow((state) => ({ states: state.states })),
-  );
+  const { handleRunStart, isStreaming } = useRunStarter();
+  const { handleApproveDecision, isApproveProcessing } = useApproveDecision();
+  const { handleAskUserDecision, isAskProcessing } = useAskUserDecision();
   const [inputValue, setInputValue] = useState("");
   const [askInputValue, setAskInputValue] = useState("");
-
-  const proposedAction = [...states]
-    .reverse()
-    .find((e) => e.type === "proposed_action");
-  const actionId = proposedAction?.data?.action_id;
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || isStreaming) return;
-    handleRunTask(inputValue, "NEED_APPROVAL");
+    handleRunStart(inputValue);
     setInputValue("");
   };
 
   const onAskSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!askInputValue.trim() || isAskProcessing || !actionId) return;
-    handleResponse(actionId, askInputValue);
+    if (!askInputValue.trim() || isAskProcessing) return;
+    handleAskUserDecision(askInputValue);
     setAskInputValue("");
   };
 
@@ -89,7 +80,7 @@ const ChatSection = () => {
             </main>
 
             <AnimatePresence mode="wait">
-              {status === "waiting_approval" ? (
+              {status === "awaiting_approval" ? (
                 <FadeWrapperMotion
                   key="approval"
                   className={cn(
@@ -115,26 +106,22 @@ const ChatSection = () => {
                     <Button
                       size={"xs"}
                       variant={"secondary"}
-                      onClick={() => {
-                        if (actionId) handleDecision(actionId, "rejected");
-                      }}
-                      disabled={isApproveProcessing || !actionId}
+                      onClick={() => handleApproveDecision("decline")}
+                      disabled={isApproveProcessing}
                     >
                       Cancel
                     </Button>
                     <Button
                       size={"xs"}
                       variant={"default"}
-                      onClick={() => {
-                        if (actionId) handleDecision(actionId, "approved");
-                      }}
-                      disabled={isApproveProcessing || !actionId}
+                      onClick={() => handleApproveDecision("approve")}
+                      disabled={isApproveProcessing}
                     >
                       Approve
                     </Button>
                   </div>
                 </FadeWrapperMotion>
-              ) : status === "ask_user" ? (
+              ) : status === "awaiting_input" ? (
                 <FadeWrapperMotion
                   key="ask-user"
                   className={cn(
@@ -164,9 +151,7 @@ const ChatSection = () => {
                     />
                     <button
                       type="submit"
-                      disabled={
-                        isAskProcessing || !askInputValue.trim() || !actionId
-                      }
+                      disabled={isAskProcessing || !askInputValue.trim()}
                       className="absolute h-full aspect-square top-1/2 right-1 -translate-y-1/2 flex justify-center items-center cursor-pointer hover:scale-110 active:scale-100 transition-all ease-in-out duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <TbSend size={20} color="#efe6fc" />

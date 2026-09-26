@@ -9,6 +9,8 @@ import type {
   DecisionResponseSchema,
   ExecutionResultResponseSchema,
 } from "@/features/demo/schema/chat-schema";
+import type { SSEMessage } from "./services/chat-services";
+import type { RunStatus } from "./stores/event-stores";
 
 export type ScenarioVariant = {
   taskText: string;
@@ -85,7 +87,7 @@ export interface ChatMessage {
   id: string;
   role: Role;
   content: string;
-  status?: TurnStatus;
+  status?: RunStatus;
   isStreaming?: boolean;
   badge?: ChatBadge;
   data?: {
@@ -112,3 +114,184 @@ export type EventState =
   | { type: "error"; data: MessageEventData };
 
 export type TurnStatus = EventState["type"] | "idle";
+
+export type PlanEventData = SSEMessage<{
+  run_id: string;
+  plan: PlanItem[];
+  summary: string;
+  llm_provider: string;
+  raw_prompt: string;
+}>;
+
+export interface PlanItem {
+  source: string;
+  domain: string;
+  action_type: string;
+  target_system: string;
+  target: string;
+  risk_hint: string;
+  payload: PlanPayload;
+  index: number;
+  action_id: string;
+  status: string;
+  decision: string | null;
+  execution: unknown | null;
+}
+
+export interface PlanPayload {
+  action: string;
+  path: string;
+}
+
+export type StepStatusEventData = SSEMessage<{
+  run_id: string;
+  index: number;
+  status: string;
+}>;
+
+export type GuardrailEventData = SSEMessage<{
+  run_id: string;
+  index: number;
+  decision: DecisionType;
+  risk_level: string;
+  risk_score: number;
+  reasons: string[];
+  triggered_policies: string[];
+  step: {
+    source: string;
+    domain: string;
+    action_type: string;
+    target_system: string;
+    target: string;
+    risk_hint: string;
+    payload: {
+      action: string;
+      path: string;
+    };
+    index: number;
+    action_id: string;
+    status: string;
+    decision: DecisionResponseSchema;
+    execution: unknown | null;
+  };
+}>;
+
+export type AwaitingApprovalEventData = GuardrailEventData;
+
+export type AwaitingInputEventData = SSEMessage<{
+  run_id: string;
+  index: number;
+  sanitize: boolean;
+  fields: {
+    key: string;
+    label: string;
+  }[];
+  step: {
+    source: string;
+    domain: string;
+    action_type: string;
+    target_system: string;
+    target: string;
+    risk_hint: string;
+    payload: {
+      url: string;
+      action_type: string;
+      element_id: string;
+      label: string;
+      role: string;
+      value: string;
+    };
+    browser_element?: unknown | undefined;
+    index: number;
+    action_id: string;
+    status: string;
+    decision: DecisionResponseSchema;
+    execution: unknown | null;
+  };
+}>;
+
+export type ExecutingEventData = SSEMessage<{
+  run_id: string;
+  index: number[];
+  target_system: string;
+  url?: string;
+  action_type?: string;
+  actions?: [
+    {
+      type: string;
+      label: string;
+      role: string;
+      value: string;
+    },
+    {
+      type: "fill";
+      label: string;
+      role: string;
+      value: string;
+    },
+    {
+      type: "click";
+      label: string;
+      role: string;
+    },
+  ];
+}>;
+
+export type StepResultEventData = SSEMessage<{
+  run_id: string;
+  index: number[];
+  status: "SUCCESS" | "FAILED" | unknown;
+  result_summary: string;
+  observation: string;
+}>;
+
+export type ReplanningEventData = SSEMessage<{
+  run_id: string;
+  iteration: number;
+}>;
+
+export interface ExecutionResponse {
+  schema_version: string;
+  run_id: string;
+  action_id: string;
+  executor: string;
+  status: "SUCCESS" | "FAILED";
+  result_summary: string;
+  data: {
+    path: string;
+    content_preview: string;
+  };
+  error: string | null;
+  latency_ms: number;
+  created_at: string;
+}
+
+export interface Step {
+  source: string;
+  domain: string;
+  action_type: string;
+  target_system: string;
+  target: string;
+  risk_hint: string;
+  payload: PlanPayload;
+  index: number;
+  action_id: string;
+  status: string;
+}
+
+export interface PlanItem extends Step {
+  decision: string | null;
+  execution: unknown | null;
+}
+
+export interface DoneStep extends Step {
+  status: "done" | "declined" | string;
+  decision: DecisionResponseSchema;
+  execution: ExecutionResponse | null;
+}
+
+export type DoneEventData = SSEMessage<{
+  run_id: string;
+  status: "done" | "declined" | string;
+  steps: DoneStep[];
+}>;

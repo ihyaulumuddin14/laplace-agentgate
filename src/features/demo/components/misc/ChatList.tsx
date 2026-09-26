@@ -56,15 +56,15 @@ export const ChatList = ({ chats }: { chats: ChatMessage[] }) => {
                 <div
                   className={cn(
                     "flex items-start gap-2",
-                    (chat.status === "waiting_approval" ||
-                      chat.status === "ask_user") &&
+                    (chat.status === "awaiting_approval" ||
+                      chat.status === "awaiting_input") &&
                       "flex-col gap-1 justify-center",
                   )}
                 >
                   <div
                     className={cn(
-                      chat.status === "waiting_approval" ||
-                        chat.status === "ask_user"
+                      chat.status === "awaiting_approval" ||
+                        chat.status === "awaiting_input"
                         ? "flex gap-2 items-center"
                         : "",
                     )}
@@ -74,8 +74,8 @@ export const ChatList = ({ chats }: { chats: ChatMessage[] }) => {
                       <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-purple-500" />
                     </span>
 
-                    {(chat.status === "waiting_approval" ||
-                      chat.status === "ask_user") &&
+                    {(chat.status === "awaiting_approval" ||
+                      chat.status === "awaiting_input") &&
                       chat.badge && (
                         <span
                           className={cn(

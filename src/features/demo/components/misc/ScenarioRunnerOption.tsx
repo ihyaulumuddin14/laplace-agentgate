@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { cn } from "@/shared/lib/utils";
-import { useTaskRunner } from "../../hooks/useTaskRunner";
+import { useRunStarter } from "../../hooks/useRunStarter";
 import type { ScenarioRunnerOptionType } from "../../types";
 
 export const ScenarioRunnerOption = ({
@@ -11,12 +11,11 @@ export const ScenarioRunnerOption = ({
   accent,
   variants,
 }: ScenarioRunnerOptionType) => {
-  const { handleRunTask, isStreaming } = useTaskRunner();
+  const { handleRunStart, isStreaming } = useRunStarter();
 
   async function handleClick() {
     const taskText = variants[0]?.taskText || "list calendar events";
-    const expectedDecision = variants[0]?.expectedDecision || "NEED_APPROVAL";
-    handleRunTask(taskText, expectedDecision);
+    handleRunStart(taskText);
   }
 
   return (

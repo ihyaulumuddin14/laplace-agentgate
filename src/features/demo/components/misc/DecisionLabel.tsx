@@ -1,6 +1,12 @@
 import { cn } from "@/shared/lib/utils";
 
-type LabelType = "allow" | "block" | "sanitize" | "need_approval" | "ask_user";
+type LabelType =
+  | "allow"
+  | "block"
+  | "sanitize"
+  | "need_approval"
+  | "ask_user"
+  | "declined";
 
 const DecisionLabel = ({
   label,

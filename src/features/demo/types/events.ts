@@ -126,3 +126,93 @@ export type StreamEvent = {
 }[keyof StreamEventPayloads];
 
 export type RunStatus = StreamEvent["type"] | "idle";
+
+export type AuditLog = {
+  schema_version: string;
+  audit_id: string;
+  run_id: string;
+  action_id: string;
+
+  request_json: {
+    domain?: string;
+    run_id?: string;
+    source?: string;
+    target?: string;
+    owner_id?: string;
+    action_id?: string;
+    risk_hint?: string;
+    user_goal?: string;
+    confidence?: number;
+    created_at?: string;
+    session_id?: string;
+
+    action_type: string;
+    target_system?: string;
+
+    schema_version?: string;
+    browser_element?: unknown;
+    content_context?: string;
+    payload_summary?: string;
+
+    resolved_recipient?: unknown;
+    rollback_available?: boolean;
+    recipient_reference?: unknown;
+  };
+
+  decision_json: {
+    run_id?: string;
+    reasons?: string[];
+
+    decision: string;
+    action_id?: string;
+    next_step?: string;
+    created_at?: string;
+
+    latency_ms?: number;
+
+    risk_level?: string;
+    risk_score?: number;
+
+    schema_version?: string;
+    evaluation_error?: unknown;
+    initial_decision?: string | null;
+    approval_decision?: string | null;
+    sanitized_payload?: unknown;
+
+    guardrail_audit_id?: string | null;
+
+    sensitive_entities?: unknown[];
+    triggered_policies?: string[];
+  };
+
+  execution_json?: {
+    data?: unknown;
+    error?: {
+      code?: string;
+      message?: string;
+    } | null;
+
+    run_id?: string;
+    status?: string;
+    executor?: string;
+    action_id?: string;
+    created_at?: string;
+    latency_ms?: number;
+    result_summary?: string;
+    schema_version?: string;
+  };
+
+  execution_status?: string;
+  error_type?: string | null;
+
+  policy_version?: string;
+  detector_version?: string;
+
+  latency?: {
+    total_ms?: number;
+    executor_ms?: number;
+    guardrail_ms?: number;
+  };
+
+  created_at?: string;
+};

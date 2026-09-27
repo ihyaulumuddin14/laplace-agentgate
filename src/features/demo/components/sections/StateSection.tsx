@@ -245,7 +245,7 @@ const StateProposedAction = ({
         <div>
           <h3 className="text-md font-normal">Domain</h3>
           <p className="text-sm font-light">
-            {proposedActionPayload.data.plan[currentStepIndex || 0].domain}
+            {proposedActionPayload.data.plan[currentStepIndex || 0]?.domain}
           </p>
         </div>
       </div>
@@ -262,7 +262,7 @@ const StateProposedAction = ({
       <div className="w-full flex flex-col gap-2">
         <h3>Risk Hints</h3>
         <div className="w-fit rounded-[12px] bg-blue/50 text-sm border border-blue font-light text-white p-2">
-          {proposedActionPayload.data.plan[currentStepIndex || 0].risk_hint}
+          {proposedActionPayload.data.plan[currentStepIndex || 0]?.risk_hint}
         </div>
       </div>
     </ActionCard>
@@ -310,8 +310,8 @@ const StateActionDecision = ({
 
   return (
     <ActionCard accent={variant.accent} className="text-white">
-      <h2 className="flex gap-3 text-lg font-semibold items-center text-accent">
-        <MdOutlineShield className="size-6" />
+      <h2 className="flex gap-3 text-lg font-semibold items-center text-accent line-clamp-1">
+        <MdOutlineShield className="size-6 shrink-0" />
         AgentGate Decision{" "}
         {event.type === "guardrail" && `Step #${event.data.data.index}`}
         <DecisionLabel className="ml-auto" label={variant.label} />

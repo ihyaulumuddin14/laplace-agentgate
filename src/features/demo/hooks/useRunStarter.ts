@@ -5,6 +5,7 @@ import { startRunService } from "../services/chat-services";
 import { useChatStore } from "../stores/chat-stores";
 import { type RunStatus, useEventStore } from "../stores/event-stores";
 import type { ChatMessage } from "../types";
+import { useAuditLog } from "./useAuditLog";
 
 export const useRunStarter = () => {
   const {
@@ -26,6 +27,7 @@ export const useRunStarter = () => {
       finishRun: state.finishRun,
     })),
   );
+  const { refetch: refetchAuditLogs } = useAuditLog();
 
   const { sessionId } = useAgentGateSessionContext();
 
@@ -76,6 +78,8 @@ export const useRunStarter = () => {
         }
         return chat;
       });
+
+      refetchAuditLogs();
     };
 
     try {

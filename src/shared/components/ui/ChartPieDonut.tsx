@@ -46,28 +46,82 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartPieDonut() {
+export function ChartPieDonut({
+  totalApprove,
+  totalBlocked,
+  totalNeedApproval,
+  totalAskUser,
+  totalSanitize,
+}: {
+  totalApprove: number;
+  totalBlocked: number;
+  totalNeedApproval: number;
+  totalAskUser: number;
+  totalSanitize: number;
+}) {
+  const rawChartData = [
+    {
+      decision: "allow",
+      count: totalApprove,
+      actualCount: totalApprove,
+      fill: "var(--color-allow)",
+    },
+    {
+      decision: "block",
+      count: totalBlocked,
+      actualCount: totalBlocked,
+      fill: "var(--color-block)",
+    },
+    {
+      decision: "need_approval",
+      count: totalNeedApproval,
+      actualCount: totalNeedApproval,
+      fill: "var(--color-need_approval)",
+    },
+    {
+      decision: "ask_user",
+      count: totalAskUser,
+      actualCount: totalAskUser,
+      fill: "var(--color-ask_user)",
+    },
+    {
+      decision: "sanitize",
+      count: totalSanitize,
+      actualCount: totalSanitize,
+      fill: "var(--color-sanitize)",
+    },
+  ];
+
+  const hasData = rawChartData.some((item) => item.actualCount > 0);
+
+  const chartData = hasData
+    ? rawChartData
+    : rawChartData.map((item) => ({
+        ...item,
+        count: 1,
+      }));
+
   return (
-    <Card className="flex flex-col bg-transparent">
-      {/* <CardContent className="flex-1 pb-0"> */}
-      <ChartContainer
-        config={chartConfig}
-        className="mx-auto aspect-square h-[250px] w-[250px] bg-transparent"
-      >
+    <div className="w-[220px] h-[220px]">
+      <ChartContainer config={chartConfig} className="mx-auto h-full w-full">
         <PieChart>
           <ChartTooltip
             cursor={false}
             content={<ChartTooltipContent hideLabel />}
           />
+
           <Pie
             data={chartData}
             dataKey="count"
             nameKey="decision"
+            cx="50%"
+            cy="50%"
             innerRadius={50}
+            outerRadius={90}
+            strokeWidth={0}
           />
         </PieChart>
       </ChartContainer>
-      {/* </CardContent> */}
-    </Card>
+    </div>
   );
 }

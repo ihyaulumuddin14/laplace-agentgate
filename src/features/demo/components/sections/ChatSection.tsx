@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence } from "motion/react";
-import { u } from "motion/react-client";
 import { useState } from "react";
 import { TbSend } from "react-icons/tb";
 import { useShallow } from "zustand/react/shallow";

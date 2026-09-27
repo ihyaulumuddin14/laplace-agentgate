@@ -64,20 +64,6 @@ export const useEventStore = create<EventStore>((set, get) => ({
               e.type !== "guardrail",
           );
 
-          // Check if a guardrail card for this step index already exists (e.g. re-evaluation after user input/approval)
-          // const existingIndex = filteredEvents.findIndex(
-          //   (e) => e.type === "guardrail" && e.data.data.index !== stepIndex,
-          // );
-
-          // if (existingIndex !== -1) {
-          //   const updated = [...filteredEvents];
-          //   updated[existingIndex] = event;
-          //   return {
-          //     ...prevState,
-          //     events: updated,
-          //   };
-          // }
-
           return {
             ...prevState,
             events: [...filteredEvents, event],
@@ -95,6 +81,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         }
 
         case "awaiting_input": {
+          useAskInputStore.getState().clearFields();
           useAskInputStore.getState().setFields(event.data.data.fields);
           return prevState;
         }

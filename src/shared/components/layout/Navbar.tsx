@@ -81,7 +81,7 @@ export function Navbar() {
           </ul>
 
           <div className="flex items-center gap-2">
-            <Link
+            <GuardedLink
               href="https://github.com/ihyaulumuddin14/laplace-agentgate"
               target="_blank"
               rel="noopener noreferrer"
@@ -95,7 +95,7 @@ export function Navbar() {
                 height={34}
                 className="h-7.5 w-7.5 sm:h-8.5 sm:w-8.5"
               />
-            </Link>
+            </GuardedLink>
 
             <button
               type="button"
@@ -117,7 +117,7 @@ export function Navbar() {
 
               return (
                 <li key={item.label}>
-                  <Link
+                  <GuardedLink
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => {
@@ -130,7 +130,7 @@ export function Navbar() {
                     }`}
                   >
                     {item.label}
-                  </Link>
+                  </GuardedLink>
                 </li>
               );
             })}

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 const DemoCard = ({ children }: { children: ReactNode }) => {
   return (
-    <article className="w-full h-full bg-surface-card/10 rounded-[20px] flex relative border">
+    <article className="w-full h-full bg-surface-card/10 rounded-[20px] flex relative border overflow-hidden">
       {children}
     </article>
   );

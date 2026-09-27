@@ -1,24 +1,12 @@
 "use client";
 
 import { Pie, PieChart } from "recharts";
-
-import { Card } from "@/shared/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/shared/components/ui/chart";
-
-export const description = "A donut chart";
-
-const chartData = [
-  { decision: "allow", count: 275, fill: "var(--color-allow)" },
-  { decision: "block", count: 200, fill: "var(--color-block)" },
-  { decision: "need_approval", count: 187, fill: "var(--color-need_approval)" },
-  { decision: "ask_user", count: 173, fill: "var(--color-ask_user)" },
-  { decision: "sanitize", count: 90, fill: "var(--color-sanitize)" },
-];
 
 const chartConfig = {
   count: {
@@ -102,7 +90,7 @@ export function ChartPieDonut({
       }));
 
   return (
-    <div className="w-[220px] h-[220px]">
+    <div className="w-55 h-55">
       <ChartContainer config={chartConfig} className="mx-auto h-full w-full">
         <PieChart>
           <ChartTooltip

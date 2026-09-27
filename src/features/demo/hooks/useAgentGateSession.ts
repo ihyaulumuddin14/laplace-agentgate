@@ -2,6 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { createSession, endSession } from "../services/session-services";
+import { useChatStore } from "../stores/chat-stores";
+import { useEventStore } from "../stores/event-stores";
 import type { EndSessionReason } from "../types/services";
 
 export const SESSION_STORAGE_KEY = "agentgate-session";
@@ -9,6 +11,8 @@ export const SESSION_STORAGE_KEY = "agentgate-session";
 export const useAgentGateSession = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const pathname = usePathname();
+  const { clearChats } = useChatStore();
+  const { clearEvents } = useEventStore();
 
   const createAgentGateSession = useMutation({
     mutationFn: createSession,
@@ -31,6 +35,8 @@ export const useAgentGateSession = () => {
     onSuccess: () => {
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
       setSessionId(null);
+      clearChats();
+      clearEvents();
     },
     onError: () => console.log("Failed to end session"),
   });

@@ -233,11 +233,6 @@ const StateProposedAction = ({
         <div>
           <h3 className="text-md font-normal">Target</h3>
           <p className="text-sm font-light">
-            {
-              proposedActionPayload.data.plan[currentStepIndex || 0]
-                ?.target_system
-            }
-            {", "}
             {proposedActionPayload.data.plan[currentStepIndex || 0]?.target}
           </p>
         </div>

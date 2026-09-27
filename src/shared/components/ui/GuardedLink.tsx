@@ -8,10 +8,18 @@ import { useAgentGateSessionContext } from "@/shared/components/layout/AgentGate
 type GuardedLinkProps = LinkProps & {
   children: ReactNode;
   className?: string;
+  target?: string;
+  rel?: string;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export function GuardedLink({ children, onClick, ...props }: GuardedLinkProps) {
+export function GuardedLink({
+  children,
+  onClick,
+  target,
+  rel,
+  ...props
+}: GuardedLinkProps) {
   const pathname = usePathname();
   const { handleReplaced } = useAgentGateSessionContext();
 
@@ -42,7 +50,7 @@ export function GuardedLink({ children, onClick, ...props }: GuardedLinkProps) {
   };
 
   return (
-    <Link {...props} onClick={handleClick}>
+    <Link {...props} rel={rel} target={target} onClick={handleClick}>
       {children}
     </Link>
   );

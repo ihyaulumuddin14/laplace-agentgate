@@ -145,7 +145,6 @@ function ChartTooltipContent({
     >,
     "accessibilityLayer"
   >) {
-  console.log(payload);
   const { config } = useChart();
 
   const tooltipLabel = React.useMemo(() => {
@@ -257,7 +256,7 @@ function ChartTooltipContent({
                       </div>
                       {item.value != null && (
                         <span className="font-mono font-medium text-foreground tabular-nums">
-                          {item.payload.actualCount
+                          {item.payload.actualCount != null
                             ? typeof item.payload.actualCount === "number"
                               ? item.payload.actualCount.toLocaleString()
                               : String(item.payload.actualCount)

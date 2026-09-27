@@ -73,13 +73,17 @@ export function DecisionsSection() {
 
         <Reveal delay={120}>
           {/* Mobile: all five in one coverflow carousel */}
-          <CoverflowCarousel
-            className="mt-14 md:hidden"
-            items={DECISIONS.map((decision) => ({
-              id: decision.name,
-              node: <DecisionCard {...decision} />,
-            }))}
-          />
+          <div className="mt-14 md:hidden">
+            <CoverflowCarousel
+              items={DECISIONS.map((decision) => ({
+                id: decision.name,
+                node: <DecisionCard {...decision} />,
+              }))}
+            />
+            <p className="mt-2 text-center font-inter text-xs text-purple-100/50">
+              Swipe left or right to see all five decisions
+            </p>
+          </div>
 
           {/* Desktop */}
           <div className="mt-14 hidden gap-7 md:flex flex-wrap justify-center w-full max-w-7xl mx-auto">

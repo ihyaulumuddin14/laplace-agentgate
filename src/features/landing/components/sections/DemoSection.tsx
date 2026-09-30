@@ -1,7 +1,30 @@
-import { MdPlayArrow } from "react-icons/md";
+"use client";
+
+import { useRef, useState } from "react";
+import { MdPause, MdPlayArrow } from "react-icons/md";
 import { Reveal } from "@/shared/components/ui/Reveal";
 
+const videoUrl =
+  "https://iaqebbgmfcphikkemjef.supabase.co/storage/v1/object/public/laplace-assets/demo.mp4";
+
 export function DemoSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlay = async () => {
+    const video = videoRef.current;
+
+    if (!video) return;
+
+    if (video.paused) {
+      await video.play();
+      setIsPlaying(true);
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
   return (
     <section
       id="demo-console"
@@ -26,19 +49,32 @@ export function DemoSection() {
         </Reveal>
 
         <Reveal delay={140}>
-          {/* Video placeholder — the real demo recording drops in later */}
           <div className="group relative mt-14 aspect-video w-full overflow-hidden rounded-3xl border border-purple-200/20 bg-surface-card/50 shadow-[0_40px_100px_-50px_rgba(129,51,241,0.7)] backdrop-blur-sm transition-colors duration-300 hover:border-purple-300/40">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(146,84,235,0.12)_0%,transparent_70%)]"
             />
-            <div className="relative flex h-full flex-col items-center justify-center gap-4">
-              <span className="grid size-16 place-items-center rounded-full border border-purple-200/25 bg-purple-500/15 text-purple-100 transition-transform duration-300 group-hover:scale-110">
-                <MdPlayArrow size={34} />
-              </span>
-              <span className="font-inter text-sm text-purple-100/45">
-                Demo video coming soon
-              </span>
+            <div className="relative flex h-full flex-col items-center justify-center gap-4 overflow-hidden">
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                className="absolute inset-0 size-full object-cover"
+                muted
+                loop
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
+                preload="metadata"
+              />
+
+              <button
+                type="button"
+                onClick={togglePlay}
+                aria-label={isPlaying ? "Pause video" : "Play video"}
+                className="relative z-10 grid size-16 place-items-center rounded-full border border-purple-200/25 bg-purple-500/15 text-purple-100 transition-all duration-300 group-hover:scale-110 opacity-0 group-hover:opacity-100 cursor-pointer"
+              >
+                {isPlaying ? <MdPause size={26} /> : <MdPlayArrow size={28} />}
+              </button>
             </div>
           </div>
         </Reveal>

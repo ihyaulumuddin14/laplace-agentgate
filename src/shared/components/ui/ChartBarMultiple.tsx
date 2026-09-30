@@ -99,7 +99,7 @@ export function ChartBarMultiple({ data }: { data: BarChartData[] }) {
             tickMargin={10}
             axisLine={true}
             stroke="white"
-            tickFormatter={(value) => value.slice(0, 3)}
+            tickFormatter={(value) => value.slice(0, 7)}
           />
           <ChartTooltip
             cursor={false}

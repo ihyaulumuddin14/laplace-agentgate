@@ -68,7 +68,7 @@ const RiskDashboard = () => {
 
   return (
     <article className="flex h-full w-full flex-col items-center gap-10 overflow-y-auto p-3 py-12 sm:py-7 max-lg:mask-y-from-90% minimal-scrollbar">
-      <div className="w-[80%] flex sm:flex-col gap-5 sm:gap-10">
+      <div className="w-[80%] flex sm:flex-col gap-5 sm:gap-10 sm:items-center">
         <ChartPieDonut
           totalApprove={totalApprove}
           totalBlocked={totalBlocked}

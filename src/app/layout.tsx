@@ -30,7 +30,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AgentGate — Guardrails for AI Agent Actions",
+  title: "AgentGate - Guardrails for AI Agent Actions",
   description:
     "AgentGate is a framework-agnostic AI guardrail engine that evaluates every proposed agent action before it is executed.",
 };

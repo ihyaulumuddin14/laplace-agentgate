@@ -81,7 +81,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             <GuardedLink
-              href="https://github.com/ihyaulumuddin14/laplace-agentgate"
+              href="https://github.com/yukienjoyer7/agent-gate"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="AgentGate on GitHub"

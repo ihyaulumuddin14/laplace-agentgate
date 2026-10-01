@@ -163,6 +163,18 @@ const StatePlanningAction = ({
 };
 
 const StateEvaluatingAction = () => {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(
+      () => setProgress((prev) => (prev >= 80 ? prev : prev + 20)),
+      2000,
+    );
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   return (
     <ActionCard className="text-white">
       <h2 className="flex gap-3 text-lg font-semibold text-green items-center">
@@ -174,19 +186,27 @@ const StateEvaluatingAction = () => {
         action has been executed yet.
       </p>
       <ul className="w-full flex flex-col gap-3">
-        <li className="flex gap-2 items-center">
-          <MdOutlineCheckCircle className="text-green size-6" />
+        <li
+          className={`${progress > 20 ? "text-green" : ""} flex gap-2 items-center`}
+        >
+          <MdOutlineCheckCircle className="size-6" />
           <p className="text-sm font-extralight">Sensitive Data </p>
         </li>
-        <li className="flex gap-2 items-center">
+        <li
+          className={`${progress > 40 ? "text-green" : ""} flex gap-2 items-center`}
+        >
           <MdOutlineCheckCircle className="size-6" />
           <p className="text-sm font-extralight">Policy engine</p>
         </li>
-        <li className="flex gap-2 items-center">
+        <li
+          className={`${progress > 60 ? "text-green" : ""} flex gap-2 items-center`}
+        >
           <MdOutlineCheckCircle className="size-6" />
           <p className="text-sm font-extralight">Policy engine</p>
         </li>
-        <li className="flex gap-2 items-center">
+        <li
+          className={`${progress === 100 ? "text-green" : ""} flex gap-2 items-center`}
+        >
           <MdOutlineCheckCircle className="size-6" />
           <p className="text-sm font-extralight">Decision engine</p>
         </li>

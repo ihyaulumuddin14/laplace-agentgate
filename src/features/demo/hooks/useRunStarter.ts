@@ -61,6 +61,7 @@ export const useRunStarter = () => {
       role: "assistant",
       content: "Planning",
       status: useChatStore.getState().status,
+      isStreaming: true,
     });
 
     setCurrentActiveChatId(assistantMessageId);
@@ -69,10 +70,11 @@ export const useRunStarter = () => {
       finishRun();
 
       updateLastChat((chat) => {
+        // only update the last chat with role assistant on the left side,
+        // not user or error chat
         if (chat.id === assistantMessageId) {
           return {
             ...chat,
-            id: `msg-${Date.now()}`,
             ...updates,
           };
         }
@@ -97,6 +99,7 @@ export const useRunStarter = () => {
               content: badgeDisplay.content,
               badge: badgeDisplay.badge,
               status: runStatus,
+              isStreaming: false,
             });
             break;
           default: {
@@ -124,7 +127,7 @@ export const useRunStarter = () => {
       });
     } catch (_error) {
       addChat({
-        id: `msg-${Date.now()}`,
+        id: `error-${Date.now()}`,
         role: "assistant",
         content: `Failed to process request, try again`,
         status: "error",

@@ -67,36 +67,38 @@ const RiskDashboard = () => {
   ];
 
   return (
-    <article className="flex h-full w-full flex-col items-center gap-10 overflow-y-auto p-3 py-7 max-lg:mask-y-from-90% minimal-scrollbar">
-      <ChartPieDonut
-        totalApprove={totalApprove}
-        totalBlocked={totalBlocked}
-        totalNeedApproval={totalNeedApproval}
-        totalAskUser={totalAskUser}
-        totalSanitize={totalSanitize}
-      />
+    <article className="flex h-full w-full flex-col items-center gap-10 overflow-y-auto p-3 py-12 sm:py-7 max-lg:mask-y-from-90% minimal-scrollbar">
+      <div className="w-[80%] flex sm:flex-col gap-5 sm:gap-10 sm:items-center">
+        <ChartPieDonut
+          totalApprove={totalApprove}
+          totalBlocked={totalBlocked}
+          totalNeedApproval={totalNeedApproval}
+          totalAskUser={totalAskUser}
+          totalSanitize={totalSanitize}
+        />
 
-      <ul className="flex w-[80%] flex-col gap-2">
-        {decisionItems.map((item) => (
-          <li
-            key={item.label}
-            style={{ "--accent": item.accent } as CSSProperties}
-            className="flex w-full justify-between"
-          >
-            <div className="flex w-full flex-1 items-center gap-7">
-              <div className="size-4 aspect-square rounded-full border bg-accent" />
+        <ul className="flex w-full flex-col gap-2">
+          {decisionItems.map((item) => (
+            <li
+              key={item.label}
+              style={{ "--accent": item.accent } as CSSProperties}
+              className="flex w-full justify-between"
+            >
+              <div className="flex w-full flex-1 items-center gap-3 sm:gap-7">
+                <div className="size-4 aspect-square rounded-full border bg-accent" />
 
-              <p className="line-clamp-1 text-[12px] font-medium sm:text-sm lg:text-base">
-                {item.label}
+                <p className="line-clamp-1 text-[12px] font-medium sm:text-sm lg:text-base">
+                  {item.label}
+                </p>
+              </div>
+
+              <p className="text-[10px] font-medium sm:text-xs lg:text-sm">
+                {item.count.toFixed(0)}
               </p>
-            </div>
-
-            <p className="text-[10px] font-medium sm:text-xs lg:text-sm">
-              {item.count}
-            </p>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <ul className="grid w-[80%] grid-cols-2 gap-2">
         {summaryItems.map((item) => (

@@ -16,7 +16,7 @@ export const SCENARIOS = [
     accent: "#4dff0c",
     variants: [
       {
-        taskText: "Buka youtube.com lalu cari video tentang AI",
+        taskText: "Open youtube.com then search for video about AI",
       },
     ],
   },
@@ -26,7 +26,7 @@ export const SCENARIOS = [
     accent: "#EF4444",
     variants: [
       {
-        taskText: "Kirim pembayaran 50000 ke partner via stripe",
+        taskText: "Send a payment of 50000 to partner via stripe",
       },
     ],
   },
@@ -36,7 +36,7 @@ export const SCENARIOS = [
     accent: "#ebd234",
     variants: [
       {
-        taskText: "Kirim email ke john@example.com bilang hello",
+        taskText: "Send an email to john@example.com saying hello",
       },
     ],
   },
@@ -46,7 +46,7 @@ export const SCENARIOS = [
     accent: "#FF9900",
     variants: [
       {
-        taskText: "Login ke github.com dengan password <password>",
+        taskText: "Login to github.com with password <password>",
       },
     ],
   },

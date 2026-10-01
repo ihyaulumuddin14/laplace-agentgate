@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CtaSection } from "@/features/landing/components/sections/CtaSection";
 import { DecisionsSection } from "@/features/landing/components/sections/DecisionsSection";
 import { DemoSection } from "@/features/landing/components/sections/DemoSection";
@@ -8,6 +9,12 @@ import { IntegrationSection } from "@/features/landing/components/sections/Integ
 import { RiskSection } from "@/features/landing/components/sections/RiskSection";
 import { RoadmapSection } from "@/features/landing/components/sections/RoadmapSection";
 import { ScenariosSection } from "@/features/landing/components/sections/ScenariosSection";
+
+export const metadata: Metadata = {
+  title: "AI Agent Action Guardrails",
+  description:
+    "Explore AgentGate, a framework-agnostic guardrail engine for AI agent actions. Evaluate proposed tool actions, enforce policy decisions, and audit execution through the AgentGate Demo Console.",
+};
 
 export default function Home() {
   return (

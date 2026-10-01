@@ -7,6 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/shared/components/ui/chart";
+import { useIsMobile } from "@/shared/hooks/useIsMobile";
 
 const chartConfig = {
   count: {
@@ -47,6 +48,7 @@ export function ChartPieDonut({
   totalAskUser: number;
   totalSanitize: number;
 }) {
+  const isMobile = useIsMobile();
   const rawChartData = [
     {
       decision: "allow",
@@ -90,22 +92,21 @@ export function ChartPieDonut({
       }));
 
   return (
-    <div className="w-55 h-55">
+    <div className="h-35 sm:h-55 w-35 sm:w-55">
       <ChartContainer config={chartConfig} className="mx-auto h-full w-full">
         <PieChart>
           <ChartTooltip
             cursor={false}
             content={<ChartTooltipContent hideLabel />}
           />
-
           <Pie
             data={chartData}
             dataKey="count"
             nameKey="decision"
             cx="50%"
             cy="50%"
-            innerRadius={50}
-            outerRadius={90}
+            innerRadius={isMobile ? 25 : 50}
+            outerRadius={isMobile ? 60 : 90}
             strokeWidth={0}
           />
         </PieChart>

@@ -1,0 +1,141 @@
+"use client";
+
+import { AnimatePresence, motion } from "motion/react";
+import { type ReactNode, useState } from "react";
+import { cn } from "@/shared/lib/utils";
+import { DEMO_TABS } from "../../constants/navigation";
+import type { DemoTab } from "../../types";
+import ChatSection from "../sections/ChatSection";
+import LogsSection from "../sections/LogsSection";
+import StateSection from "../sections/StateSection";
+
+export default function MobileDemoContainer() {
+  const [currentTab, setCurrentTab] = useState<DemoTab>(DEMO_TABS.chat);
+  const currentIndex = Object.values(DEMO_TABS).indexOf(currentTab);
+  const [direction, setDirection] = useState(1);
+
+  const handleSwitchTab = (tab: DemoTab) => {
+    const nextIndex = Object.values(DEMO_TABS).indexOf(tab);
+
+    setDirection(nextIndex > currentIndex ? 1 : -1);
+    setCurrentTab(tab);
+  };
+
+  return (
+    <div className="w-full h-full relative lg:hidden text-purple-50 p-3 pt-0">
+      <nav className="w-full h-fit border z-20 rounded-t-[20px]">
+        <ul className="w-full grid grid-cols-3 h-15 relative">
+          {Object.values(DEMO_TABS).map((tab) => (
+            <MobileTab
+              key={tab.label}
+              handleSwitchTab={handleSwitchTab}
+              tab={tab}
+              isActive={currentTab.label === tab.label}
+              className="flex flex-col items-center justify-center gap-1 w-full h-full capitalize cursor-pointer! active:scale-95 transition-all duration-200"
+              iconClassName="text-lg"
+            />
+          ))}
+          <span
+            className="absolute bottom-0 left-0 h-0.5 w-1/3 bg-purple-100 transition-transform duration-300 ease-in-out"
+            style={{
+              transform: `translateX(${currentIndex * 100}%)`,
+            }}
+          />
+        </ul>
+      </nav>
+
+      <main className="relative w-full h-[calc(100%-62px)] border rounded-b-[20px] overflow-hidden">
+        <AnimatePresence custom={direction}>
+          {currentTab === DEMO_TABS.chat && (
+            <DemoCardWrapperMotion
+              direction={direction}
+              key={DEMO_TABS.chat.label}
+            >
+              <ChatSection />
+            </DemoCardWrapperMotion>
+          )}
+          {currentTab === DEMO_TABS.state && (
+            <DemoCardWrapperMotion
+              direction={direction}
+              key={DEMO_TABS.state.label}
+            >
+              <StateSection />
+            </DemoCardWrapperMotion>
+          )}
+          {currentTab === DEMO_TABS.logs && (
+            <DemoCardWrapperMotion
+              direction={direction}
+              key={DEMO_TABS.logs.label}
+            >
+              <LogsSection />
+            </DemoCardWrapperMotion>
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+}
+
+export const MobileTab = ({
+  handleSwitchTab,
+  tab,
+  isActive,
+  className = "",
+  iconClassName = "",
+}: {
+  handleSwitchTab: (tab: DemoTab) => void;
+  tab: DemoTab;
+  isActive: boolean;
+  className?: string;
+  iconClassName?: string;
+}) => {
+  return (
+    <li className="h-full text-center text-sm hover:bg-purple-500/50 hover:text-white">
+      <button
+        type="button"
+        onClick={() => handleSwitchTab(tab)}
+        className={cn(className, isActive && "text-purple-100")}
+      >
+        <tab.icon className={iconClassName} />
+        {tab.label}
+      </button>
+    </li>
+  );
+};
+
+export const DemoCardWrapperMotion = ({
+  children,
+  direction,
+}: {
+  children: ReactNode;
+  direction: number;
+}) => {
+  const variants = {
+    enter: (direction: number) => ({
+      translateX: direction > 0 ? "100%" : "-100%",
+    }),
+    center: {
+      translateX: "0%",
+    },
+    exit: (direction: number) => ({
+      translateX: direction > 0 ? "-100%" : "100%",
+    }),
+  };
+
+  return (
+    <motion.section
+      custom={direction}
+      variants={variants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
+      }}
+      className="absolute w-full h-full"
+    >
+      {children}
+    </motion.section>
+  );
+};

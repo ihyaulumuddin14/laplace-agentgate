@@ -16,26 +16,61 @@ This repository contains the public marketing website, technical documentation, 
 - Zustand
 - Tanstack Query
 
-## Requirements
+## Run the project
 
-- Node.js >=24 <25
+Choose one of the following options.
+
+### Run locally with npm
+
+Requirements:
+
+- Node.js 24
 - npm
 
-## Getting Started
+The repository includes an `.env` file used by the frontend. Set `NEXT_PUBLIC_API_URL` there to the AgentGate API URL you want to use; this value is exposed to the browser and is embedded when the app is built.
 
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the development server:
+Install dependencies and start the development server:
 
 ```bash
+npm ci
 npm run dev
 ```
 
-Open http://localhost:3000 in your browser.
+Open [http://localhost:3000](http://localhost:3000).
+
+To run a local production build instead:
+
+```bash
+npm run build
+npm run start
+```
+
+### Run with Docker Compose
+
+Requirements:
+
+- Docker Engine with Docker Compose v2
+
+Docker Compose reads `NEXT_PUBLIC_API_URL` from `.env` and passes it to the image build. Confirm the value is set before building:
+
+```env
+NEXT_PUBLIC_API_URL=https://your-api.example.com
+```
+
+Build and start the app:
+
+```bash
+docker compose up --build -d
+```
+
+Open [http://localhost:3000](http://localhost:3000). The container runs the optimized standalone Next.js build and restarts automatically unless stopped.
+
+To view logs or stop the service:
+
+```bash
+docker compose logs -f app
+docker compose down
+```
 
 ## Available Scripts
 
@@ -49,7 +84,7 @@ Build the project for production.
 
 ### `npm run start`
 
-Run the production build locally.
+Run a previously created production build locally.
 
 ### `npm run lint`
 

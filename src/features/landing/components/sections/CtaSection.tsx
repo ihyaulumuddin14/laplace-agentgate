@@ -40,7 +40,7 @@ export function CtaSection() {
 
           <Button asChild size={"lg"} variant={"secondary"}>
             <Link
-              href="https://github.com/ihyaulumuddin14/laplace-agentgate"
+              href="https://github.com/yukienjoyer7/agent-gate"
               target="_blank"
               rel="noopener noreferrer"
             >

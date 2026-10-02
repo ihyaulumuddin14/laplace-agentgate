@@ -85,9 +85,14 @@ export function ScenariosSection() {
             </p>
           </div>
 
-          <div className="mt-14 hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 hidden flex-wrap justify-center gap-6 md:flex">
             {SCENARIOS.map((s) => (
-              <ScenarioCard key={s.tag} {...s} />
+              <div
+                key={s.tag}
+                className="w-full md:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
+              >
+                <ScenarioCard {...s} />
+              </div>
             ))}
           </div>
         </Reveal>

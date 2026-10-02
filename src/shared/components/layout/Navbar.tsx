@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdClose, MdMenu } from "react-icons/md";
 import githubMark from "@/assets/profil.png";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
+import { GuardedLink } from "../ui/GuardedLink";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -43,9 +43,12 @@ export function Navbar() {
             isScrolled ? "px-5 sm:px-14" : "px-5 sm:px-14"
           }`}
         >
-          <Link href="#hero" className="transition-opacity hover:opacity-80">
+          <GuardedLink
+            href="/#hero"
+            className="transition-opacity hover:opacity-80"
+          >
             <BrandWordmark logoSize={30} textClassName="text-base sm:text-lg" />
-          </Link>
+          </GuardedLink>
 
           {/* Desktop navigation */}
           <ul className="hidden items-center gap-8 lg:flex xl:gap-12">
@@ -54,7 +57,7 @@ export function Navbar() {
 
               return (
                 <li key={item.label}>
-                  <Link
+                  <GuardedLink
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={`relative block pb-1 font-poppins font-semibold leading-[100%] text-base transition-colors duration-200 ${
@@ -70,15 +73,15 @@ export function Navbar() {
                         isActive ? "scale-x-100" : "scale-x-0"
                       }`}
                     />
-                  </Link>
+                  </GuardedLink>
                 </li>
               );
             })}
           </ul>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="https://github.com/ihyaulumuddin14/laplace-agentgate"
+            <GuardedLink
+              href="https://github.com/yukienjoyer7/agent-gate"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="AgentGate on GitHub"
@@ -91,7 +94,7 @@ export function Navbar() {
                 height={34}
                 className="h-7.5 w-7.5 sm:h-8.5 sm:w-8.5"
               />
-            </Link>
+            </GuardedLink>
 
             <button
               type="button"
@@ -113,7 +116,7 @@ export function Navbar() {
 
               return (
                 <li key={item.label}>
-                  <Link
+                  <GuardedLink
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => {
@@ -126,7 +129,7 @@ export function Navbar() {
                     }`}
                   >
                     {item.label}
-                  </Link>
+                  </GuardedLink>
                 </li>
               );
             })}

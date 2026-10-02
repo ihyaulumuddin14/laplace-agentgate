@@ -89,9 +89,14 @@ export function RiskSection() {
             </p>
           </div>
 
-          <div className="mt-14 hidden gap-7 md:grid md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 hidden flex-wrap justify-center gap-7 md:flex">
             {RISK_CARDS.map((card) => (
-              <RiskCard key={card.title} {...card} />
+              <div
+                key={card.title}
+                className="w-full md:w-[calc((100%-1.75rem)/2)] lg:w-[calc((100%-3.5rem)/3)]"
+              >
+                <RiskCard {...card} />
+              </div>
             ))}
           </div>
         </Reveal>

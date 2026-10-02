@@ -49,9 +49,9 @@ export function DocumentationLayout({ children }: DocumentationLayoutProps) {
             {sidebar}
           </aside>
 
-          <main className="min-w-0 flex-1 rounded-3xl border border-purple-200/12 bg-surface-card/25 p-6 sm:p-8 lg:p-10">
+          <div className="min-w-0 flex-1 rounded-3xl border border-purple-200/12 bg-surface-card/25 p-6 sm:p-8 lg:p-10">
             {children}
-          </main>
+          </div>
         </div>
       </div>
     </div>

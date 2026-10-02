@@ -3,12 +3,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  output: "standalone",
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 };
 
 const withMDX = createMDX({
   options: {
-    // Plugins are referenced by name so they stay serializable for Turbopack.
     remarkPlugins: ["remark-gfm"],
   },
 });

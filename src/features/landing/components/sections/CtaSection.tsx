@@ -23,7 +23,7 @@ export function CtaSection() {
           audit logs. Test the guardrail engine yourself.
         </p>
 
-        <div className="mt-11 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-5">
+        <div className="mt-11 flex w-full flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-5">
           <Button asChild size={"lg"}>
             <Link href="/demo">
               Open Demo Console
@@ -40,7 +40,7 @@ export function CtaSection() {
 
           <Button asChild size={"lg"} variant={"secondary"}>
             <Link
-              href="https://github.com/ihyaulumuddin14/laplace-agentgate"
+              href="https://github.com/yukienjoyer7/agent-gate"
               target="_blank"
               rel="noopener noreferrer"
             >

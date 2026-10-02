@@ -1,10 +1,12 @@
+import AgentGateSessionProvider from "@/shared/components/layout/AgentGateSessionProvider";
+import { Navbar } from "@/shared/components/layout/Navbar";
+import QueryProvider from "@/shared/components/layout/QueryProvider";
+import { SessionObserver } from "@/shared/components/SessionObserver";
+import { cn } from "@/shared/lib/utils";
+import "@/shared/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Poppins } from "next/font/google";
-import { Footer } from "@/shared/components/layout/Footer";
-import { Navbar } from "@/shared/components/layout/Navbar";
 import "../shared/styles/globals.css";
-import "@/shared/styles/globals.css";
-import { cn } from "@/shared/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +30,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AgentGate — Guardrails for AI Agent Actions",
+  title: {
+    default: "AgentGate | Guardrails for AI Agent Actions",
+    template: "%s | AgentGate",
+  },
   description:
-    "AgentGate is a framework-agnostic AI guardrail engine that evaluates every proposed agent action before it is executed.",
+    "AgentGate is a framework-agnostic guardrail engine that evaluates AI agent tool actions before they reach APIs, browsers, files, or other external systems.",
+  applicationName: "AgentGate",
 };
 
 export default function RootLayout({
@@ -52,9 +58,13 @@ export default function RootLayout({
       )}
     >
       <body className="flex min-h-full flex-col bg-surface">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <QueryProvider>
+          <AgentGateSessionProvider>
+            <SessionObserver />
+            <Navbar />
+            {children}
+          </AgentGateSessionProvider>
+        </QueryProvider>
       </body>
     </html>
   );

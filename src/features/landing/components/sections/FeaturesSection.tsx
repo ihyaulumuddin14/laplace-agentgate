@@ -107,9 +107,14 @@ export function FeaturesSection() {
             </p>
           </div>
 
-          <div className="mt-14 hidden gap-5 md:grid md:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-14 hidden flex-wrap justify-center gap-5 md:flex">
             {FEATURES.map((f) => (
-              <FeatureCard key={f.title} {...f} />
+              <div
+                key={f.title}
+                className="w-full md:w-[calc((100%-2.5rem)/3)] lg:w-[calc((100%-5rem)/5)]"
+              >
+                <FeatureCard {...f} />
+              </div>
             ))}
           </div>
         </Reveal>

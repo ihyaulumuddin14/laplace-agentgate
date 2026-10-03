@@ -1,7 +1,88 @@
 export const metadata = {
   title: "Architecture",
+  description:
+    "The pre-action guardrail pipeline and how the frontend consumes it.",
 };
 
-# Architecture
+One pipeline, one checkpoint, one audit record per action.
 
-<DocCallout>This section is still being written.</DocCallout>
+## The pre-action flow
+
+```text
+User Task
+   ↓
+LLM Planner          proposes the next tool action
+   ↓
+Action Request       normalised contract
+   ↓
+AgentGate            detectors → policy engine → risk scoring → decision engine
+   ↓
+Decision Router      ALLOW · BLOCK · NEED_APPROVAL · SANITIZE · ASK_USER
+   ↓
+Executor             API connector or Playwright, only when permitted
+   ↓
+Audit Log            request + decision + execution + latency
+```
+
+The planner runs inside a custom function-calling loop. After each executed
+step it may replan, which produces a new `ActionRequest` and a new evaluation —
+so a single run can pass the gate many times.
+
+## Stages inside the gate
+
+| Stage | Responsibility |
+| --- | --- |
+| Detectors | Find sensitive entities: credentials, payment data, personal data |
+| Policy engine | Match the action against the active policy packs |
+| Risk scoring | Produce a `risk_level` and a numeric `risk_score` |
+| Decision engine | Combine the above into one of the five decisions |
+
+## Layers in this repository
+
+| Layer | Path | Responsibility |
+| --- | --- | --- |
+| Routing | `src/app` | Routes, layouts, page composition only |
+| Features | `src/features` | Domain logic for `landing`, `documentation`, `demo` |
+| Shared | `src/shared` | UI primitives, MDX components, typography, helpers |
+| Content | `src/content/docs` | Documentation pages as native MDX |
+
+Business logic never lives in `src/app`, and features never import from each
+other — shared code is extracted into `src/shared` instead.
+
+## Backend surface
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/sessions` | Create an ephemeral demo session |
+| `POST` | `/api/v1/sessions/end` | End a session on reset, refresh, or page hide |
+| `POST` | `/api/v1/chat/execute/stream` | Start a run, stream events back |
+| `POST` | `/api/v1/chat/execute/{run_id}/respond` | Answer an approval or input pause |
+| `GET` | `/api/v1/audits` | Read the audit records of the session |
+
+Every request carries the session in the `X-AgentGate-Session` header. The base
+URL comes from `NEXT_PUBLIC_API_URL`.
+
+## Streaming transport
+
+The run endpoint responds with `text/event-stream`. Frames are split on a blank
+line, the `event:` line gives the type, and the `data:` lines carry a JSON
+envelope with `run_id`, `type`, and `data`.
+
+| Event | Emitted when |
+| --- | --- |
+| `run_started` | The run is accepted |
+| `planning` / `replanning` | The planner is deciding the next action |
+| `plan` | A plan with proposed steps is ready |
+| `step_status` | A step changes state, e.g. to `running` |
+| `guardrail` | A decision is available for a step |
+| `awaiting_approval` | The run is paused for a human reviewer |
+| `awaiting_input` | The run is paused for user input |
+| `executing` | The executor was permitted to run |
+| `step_result` | Execution finished with `SUCCESS`, `FAILED`, or `PARTIAL` |
+| `done` | The run finished, was declined, blocked, or failed |
+| `error` | The run could not continue |
+
+<DocCallout>
+  The frontend treats these events as the single source of truth for run state.
+  Server data is never copied into global stores as a cache — only UI state is.
+</DocCallout>

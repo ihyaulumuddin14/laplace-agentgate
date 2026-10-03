@@ -1,7 +1,90 @@
 export const metadata = {
   title: "Policy Packs",
+  description: "Bundled rule sets that turn detected risk into a decision.",
 };
 
-# Policy Packs
+A policy pack is a versioned bundle of rules scoped to one kind of work.
 
-<DocCallout>This section is still being written.</DocCallout>
+Detectors answer *what is in this action*. Policy packs answer *what should
+happen about it*. Keeping them separate means a detector improvement does not
+silently change a decision, and a policy change does not require new detection.
+
+## Packs shipped with the MVP
+
+| Pack | Scope | Typical decision |
+| --- | --- | --- |
+| Booking messaging policy | Customer-facing messages and confirmations | `NEED_APPROVAL` |
+| Code and data protection policy | Repositories, local files, secrets | `BLOCK` |
+| Productivity assistant policy | Bulk mailbox and calendar operations | `NEED_APPROVAL` |
+
+### Booking messaging policy
+
+Targets an external customer with a payment or confirmation pattern. Sending is
+legitimate work, but the recipient is outside the organisation and the message
+cannot be unsent — so a reviewer sees it first.
+
+### Code and data protection policy
+
+Covers source code exposure, API keys and private keys, and environment file
+access. These are blocked outright rather than escalated: there is no reviewer
+answer that makes leaking a key acceptable.
+
+### Productivity assistant policy
+
+Covers bulk operations such as archiving or deleting several hundred messages.
+The rule is threshold based — a handful of items is routine, a few hundred is
+not — and undo difficulty raises the escalation.
+
+## Rule anatomy
+
+| Part | Purpose |
+| --- | --- |
+| Match | Which actions the rule applies to, by domain, action type, or target |
+| Condition | Detected entities, counts, thresholds, or element risk hints |
+| Decision | The verdict the rule proposes |
+| Reason | The explanation surfaced in `reasons` |
+| Identifier | The name reported in `triggered_policies` |
+
+When several rules match, the most restrictive decision wins:
+
+```text
+BLOCK  >  NEED_APPROVAL  >  ASK_USER  >  SANITIZE  >  ALLOW
+```
+
+<DocCallout>
+  Every matched rule is reported in `triggered_policies`, even when it did not
+  decide the outcome. A reviewer should see all the reasons an action was
+  escalated, not only the strongest one.
+</DocCallout>
+
+## Versioning
+
+Audit records store `policy_version` and `detector_version` next to the
+decision. A decision can therefore always be replayed against the exact rules
+that produced it, which is what makes the
+[benchmark](/docs/benchmark-evaluation) comparable across releases.
+
+## Design rules
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="A good rule"
+    accent="#34d399"
+    items={[
+      "Names one concrete risk",
+      "States a reason a human can read",
+      "Escalates when a human can actually judge it",
+      "Blocks only when no answer makes it safe",
+    ]}
+  />
+  <DocListCard
+    title="A bad rule"
+    accent="#f87171"
+    items={[
+      "Escalates everything, training reviewers to click approve",
+      "Matches on brittle selectors or exact wording",
+      "Returns a reason only an engineer can decode",
+      "Depends on an un-versioned detector",
+    ]}
+  />
+</div>

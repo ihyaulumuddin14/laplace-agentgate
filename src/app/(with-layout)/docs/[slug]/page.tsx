@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DocArticle } from "@/features/documentation/components/DocArticle";
 import { DOC_NAV_ITEMS } from "@/features/documentation/data/navItems";
 import { loadDoc } from "@/features/documentation/services/loadDoc";
 
@@ -26,11 +27,12 @@ export async function generateMetadata({
 
 export default async function DocPage({ params }: DocPageProps) {
   const { slug } = await params;
-  const { Content } = await loadDoc(slug);
+  const { Content, metadata } = await loadDoc(slug);
+  const index = DOC_NAV_ITEMS.findIndex((item) => item.id === slug);
 
   return (
-    <article className="flex max-w-3xl flex-col gap-6">
+    <DocArticle number={index + 1} title={metadata.title}>
       <Content />
-    </article>
+    </DocArticle>
   );
 }

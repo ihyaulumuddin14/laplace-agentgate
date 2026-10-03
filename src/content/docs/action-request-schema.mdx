@@ -1,7 +1,85 @@
 export const metadata = {
   title: "Action Request Schema",
+  description: "The contract a planner sends into the guardrail engine.",
 };
 
-# Action Request Schema
+The input contract. One `ActionRequest` describes exactly one proposed action.
 
-<DocCallout>This section is still being written.</DocCallout>
+An `ActionRequest` is produced before anything happens. It carries a
+*description* of the intended side effect, never its result — which is what
+makes the evaluation a pre-action check.
+
+## Fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `schema_version` | `string` | yes | Contract version, e.g. `"0.1"` |
+| `run_id` | `string` | yes | Groups every action of one user task |
+| `action_id` | `string` | yes | Unique id for this action, used by the audit record |
+| `source` | `string` | yes | Where the action came from, e.g. `api`, `cli` |
+| `domain` | `string` | yes | `browser`, `api`, or `file` |
+| `action_type` | `string` | yes | The tool contract being invoked |
+| `target_system` | `string` | yes | `browser`, `gmail`, `calendar`, `github`, `stripe` |
+| `target` | `string` | yes | URL, recipient, endpoint, or file path |
+| `content_context` | `string` | no | Surrounding text the detectors should scan |
+| `payload_summary` | `string` | yes | Human readable summary of the side effect |
+| `browser_element` | `string \| null` | yes | Resolved element reference for browser actions |
+| `risk_hint` | `string` | yes | Planner's own guess, e.g. `low_risk`, `unknown` |
+| `rollback_available` | `boolean` | no | Whether the action can be undone |
+| `confidence` | `number` | no | Planner confidence between `0` and `1` |
+| `created_at` | `string` | yes | ISO 8601 timestamp |
+
+<DocCallout>
+  `risk_hint` is a **hint**, not a verdict. The gate re-derives risk from the
+  detectors and the policy packs, so a `low_risk` hint can still be blocked.
+</DocCallout>
+
+## Example
+
+```json
+{
+  "schema_version": "0.1",
+  "run_id": "run_709c199e5cd6",
+  "action_id": "act_9d916fa9e390",
+  "source": "api",
+  "domain": "browser",
+  "action_type": "BROWSER_PROTOTYPE_ACTION",
+  "target_system": "browser",
+  "target": "https://youtube.com",
+  "content_context": "",
+  "payload_summary": "3 browser actions on https://youtube.com: fill, submit, screenshot",
+  "browser_element": null,
+  "risk_hint": "unknown",
+  "rollback_available": false,
+  "confidence": 1.0,
+  "created_at": "2026-08-07T07:18:59.587418Z"
+}
+```
+
+## Planned steps
+
+A plan event carries several steps, each a planner-level view of an upcoming
+`ActionRequest`. Alongside the fields above, a planned step adds its position
+and lifecycle in the run:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `index` | `number` | Zero-based position of the step within the plan |
+| `status` | `string` | `pending`, `running`, `done`, or `declined` |
+| `payload` | `object` | Action specific payload, e.g. `action` and `path` |
+| `decision` | `DecisionResponse \| null` | Filled in once the gate has evaluated it |
+| `execution` | `object \| null` | Filled in only after a permitted execution |
+
+Browser steps carry a richer payload — `url`, `action_type`, `element_id`,
+`label`, `role`, and `value` — resolved from the accessibility snapshot. See
+[Browser Snapshot Builder](/docs/browser-snapshot-builder).
+
+## Rules
+
+- One action per request. Batched side effects are described through
+  `payload_summary` and expanded into individual actions by the executor.
+- `action_id` is stable across a pause. When a run resumes after approval,
+  sanitisation, or user input, the re-evaluated action keeps its id so the audit
+  trail stays linear.
+- Secrets are never placed in `target` or `payload_summary`. Values the user has
+  to supply are requested through `ASK_USER` instead.

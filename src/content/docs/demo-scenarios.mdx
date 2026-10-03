@@ -1,7 +1,87 @@
 export const metadata = {
   title: "Demo Scenarios",
+  description: "The prepared runs that exercise each decision path.",
 };
 
-# Demo Scenarios
+Five preset tasks, chosen so that every decision path is reachable in a demo.
 
-<DocCallout>This section is still being written.</DocCallout>
+The Scenario Runner fills the chat input with a ready-made task. Nothing is
+pre-recorded: each scenario runs the real planner, the real gate, and the real
+executor, so the decision you see is the decision the engine made.
+
+## Presets
+
+| Scenario | Task | Exercises |
+| --- | --- | --- |
+| Open Youtube | Open `youtube.com` then search for a video about AI | `ALLOW` and the browser snapshot path |
+| Payment | Send a payment of 50000 to a partner via Stripe | `NEED_APPROVAL` on a sandbox payment |
+| Send an email | Send an email to an external address | `NEED_APPROVAL` on an external recipient |
+| Login (sanitize credentials) | Log in to `github.com` with a password | `SANITIZE`, then `ASK_USER` for the value |
+| Inbox Cleanup | Review and delete emails older than 30 days | Bulk threshold escalation |
+
+<DocCallout>
+  The login scenario never sends a credential through the planner. The detector
+  catches the field, the payload is sanitised, and the value is collected
+  directly from you when the run pauses.
+</DocCallout>
+
+## Policy scenarios
+
+The three packs described in [Policy Packs](/docs/policy-packs) each have a
+matching narrative used in the walkthrough:
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="Booking messaging safety"
+    accent="#fff600"
+    items={[
+      "Agent proposes a payment confirmation to a customer",
+      "External customer target",
+      "Payment confirmation pattern",
+      "Browser submit action",
+      "Decision: NEED_APPROVAL",
+    ]}
+  />
+  <DocListCard
+    title="Internal data and code protection"
+    accent="#ff0c0c"
+    items={[
+      "Agent reads repositories and local files",
+      "Source code exposure",
+      "API keys and private keys",
+      "Environment file access",
+      "Decision: BLOCK",
+    ]}
+  />
+</div>
+
+<DocListCard
+  className="mt-4 sm:w-1/2"
+  title="Productivity assistant safety"
+  accent="#00d4ff"
+  items={[
+    "Agent proposes bulk archiving of 320+ emails",
+    "Bulk email operation",
+    "Affected items above threshold",
+    "Difficult to undo",
+    "Decision: NEED_APPROVAL",
+  ]}
+/>
+
+## Running a scenario
+
+1. Open the Demo Console. A session is created automatically.
+2. Pick a scenario, or type your own task in the chat.
+3. Watch the **State View** as the plan, the evaluation, and the decision arrive.
+4. Answer the pause when one appears — approve, decline, or supply the value.
+5. Open **Logs** to read the audit record the run produced.
+
+A single run can pause more than once. The planner replans after each executed
+step, so every new action goes through the gate again.
+
+## Writing your own
+
+Free-form tasks work as well as the presets. The useful ones are specific about
+the side effect — a target, a recipient, an amount — because that is what the
+detectors and policies have to work with. A vague task mostly produces a vague
+plan, and the resulting evaluation is correspondingly uninteresting.

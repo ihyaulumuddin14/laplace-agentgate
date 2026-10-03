@@ -1,7 +1,76 @@
 export const metadata = {
   title: "MVP Scope",
+  description: "What ships in the MVP and what is deliberately deferred.",
 };
 
-# MVP Scope
+The MVP is console-first: one web demo that makes the guardrail observable.
 
-<DocCallout>This section is still being written.</DocCallout>
+The goal is not breadth of integrations. It is to prove that a pre-action
+guardrail can evaluate real tool actions, return a decision fast enough to sit
+in the hot path, and leave an audit trail a reviewer can trust.
+
+<DocCallout>
+  **Console-first.** The Demo Console is the product surface of the MVP. The
+  browser extension, MCP adapter, and LangGraph adapter are explicitly post-MVP.
+</DocCallout>
+
+## In scope
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="Shipping in the MVP"
+    accent="#34d399"
+    items={[
+      "Landing page and technical documentation",
+      "Demo Console with Web Chat and Scenario Runner",
+      "Proposed Action Preview and Decision Card",
+      "Approval Queue for human review",
+      "Audit Log, Risk Dashboard, Latency Report",
+      "CLI demo for scenario replay and benchmarks",
+    ]}
+  />
+  <DocListCard
+    title="Deferred to post-MVP"
+    accent="#f87171"
+    items={[
+      "Chrome / browser extension",
+      "MCP server and client adapters",
+      "LangGraph workflow integration",
+      "OpenClaw adapter",
+      "Multi-tenant accounts and persistence",
+    ]}
+  />
+</div>
+
+## Frontend scope
+
+This repository covers the public website, the documentation, and the Demo
+Console. It consumes only `ActionRequest` and `DecisionResponse` from the
+backend and holds no evaluation logic of its own.
+
+| Surface | Contents |
+| --- | --- |
+| Landing Page | Risk framing, flow, decisions, scenarios, roadmap |
+| Documentation | Native MDX pages under `src/content/docs` |
+| Demo Console | Scenario tab, State View, Logs |
+
+## Owned by the DS and DE teams
+
+The evaluation engine itself lives outside this repository:
+
+- AgentGate Core
+- LLM Planner
+- Policy Engine
+- Risk Scoring
+- Playwright Executor
+- API Connectors
+- Browser Extension
+- MCP and LangGraph adapters
+
+## Working assumptions
+
+- Sessions are ephemeral. A session is created on entering the Demo Console and
+  ended on reset, refresh, or page hide — there is no durable user account.
+- Mock data is used while a backend endpoint is unavailable, so frontend and
+  backend work can proceed in parallel.
+- Stripe actions run against the sandbox only. No live payment is ever executed.

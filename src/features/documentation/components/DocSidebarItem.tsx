@@ -1,20 +1,25 @@
+"use client";
+
+import { motion } from "motion/react";
 import Link from "next/link";
 import type { IconType } from "react-icons";
+import { cn } from "@/shared/lib/utils";
 
 type DocSidebarItemProps = {
   Icon: IconType;
   label: string;
   href: string;
   active?: boolean;
+  indicatorId?: string;
   onClick?: () => void;
 };
 
-/** A single sidebar entry: icon + label, with an active state. */
 export function DocSidebarItem({
   Icon,
   label,
   href,
   active = false,
+  indicatorId,
   onClick,
 }: DocSidebarItemProps) {
   return (
@@ -22,21 +27,28 @@ export function DocSidebarItem({
       href={href}
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={`group flex items-center gap-3 rounded-2xl border px-4 py-3 font-inter text-sm transition-all duration-200 ${
-        active
-          ? "border-purple-300/30 bg-purple-500/15 font-semibold text-purple-50"
-          : "border-transparent text-purple-100/75 hover:border-purple-200/15 hover:bg-white/5 hover:text-purple-50"
-      }`}
+      className={cn(
+        "group relative flex items-center gap-3.5 rounded-2xl px-4 py-3.5 font-poppins text-sm text-white transition-colors duration-200",
+        !active && "hover:bg-white/8",
+      )}
     >
+      {active && indicatorId && (
+        <motion.span
+          aria-hidden="true"
+          layoutId={indicatorId}
+          transition={{ type: "spring", stiffness: 420, damping: 38 }}
+          className="absolute inset-0 rounded-2xl border border-purple-300/35 bg-purple-500/22 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]"
+        />
+      )}
+
       <Icon
         size={20}
-        className={`shrink-0 transition-colors duration-200 ${
-          active
-            ? "text-purple-200"
-            : "text-purple-100/70 group-hover:text-purple-100"
-        }`}
+        aria-hidden="true"
+        className="relative z-10 shrink-0 text-white"
       />
-      <span className="truncate">{label}</span>
+      <span className={cn("relative z-10 truncate", active && "font-semibold")}>
+        {label}
+      </span>
     </Link>
   );
 }

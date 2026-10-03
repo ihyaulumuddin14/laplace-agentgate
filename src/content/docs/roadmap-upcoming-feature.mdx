@@ -1,7 +1,71 @@
 export const metadata = {
   title: "Roadmap / Upcoming Feature",
+  description: "What comes after the MVP, and the order it arrives in.",
 };
 
-# Roadmap / Upcoming Feature
+Four post-MVP tracks, deliberately sequenced behind a stable core.
 
-<DocCallout>This section is still being written.</DocCallout>
+Every item below reuses the same two contracts. Nothing on this roadmap changes
+what `ActionRequest` or `DecisionResponse` mean — adapters translate into them,
+they do not extend them.
+
+<DocCallout>
+  **Order matters.** The engine's decision quality and latency are proven first.
+  An adapter built on an unstable gate only multiplies the surface area of every
+  remaining bug.
+</DocCallout>
+
+## 01 — Chrome / browser extension
+
+Guard the browser the user is already in, instead of a Playwright instance.
+
+- Snapshot the active page directly from the extension
+- Highlight the element an action targets before it is clicked
+- Extension-based control, no Playwright dependency
+- Same snapshot and selector contract as the
+  [snapshot builder](/docs/browser-snapshot-builder)
+
+## 02 — MCP compatible path
+
+A server and client adapter that carries the existing contracts over MCP, so
+any MCP-aware host can route its tool calls through the gate without knowing
+anything about AgentGate internals.
+
+## 03 — LangGraph adapter
+
+Workflow graph integration, scheduled after the core evaluation engine is
+stable, fast, and well benchmarked. Each node's tool call becomes an
+`ActionRequest`; the returned decision controls the edge the graph takes.
+
+## 04 — OpenClaw adapter
+
+Optional integration, taken on incrementally once the framework-agnostic engine
+has proven itself in production.
+
+## Not on the roadmap
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="Planned"
+    accent="#34d399"
+    items={[
+      "Adapters that reuse the existing contracts",
+      "Extension-based browser snapshots",
+      "Broader API connector coverage",
+      "Policy pack versioning and replay tooling",
+    ]}
+  />
+  <DocListCard
+    title="Out of scope"
+    accent="#f87171"
+    items={[
+      "Becoming a conversational agent",
+      "Replacing the planner or the executor",
+      "Post-hoc moderation of completed actions",
+      "Framework-specific forks of the contracts",
+    ]}
+  />
+</div>
+
+AgentGate stays one thing: the checkpoint in front of the executor. See
+[Core Concept](/docs/core-concept) for why that boundary is the whole design.

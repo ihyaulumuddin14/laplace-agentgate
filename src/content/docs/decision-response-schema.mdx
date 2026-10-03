@@ -1,7 +1,85 @@
 export const metadata = {
   title: "Decision Response Schema",
+  description: "The verdict the guardrail engine returns for one action.",
 };
 
-# Decision Response Schema
+The output contract. Every evaluated action gets exactly one `DecisionResponse`.
 
-<DocCallout>This section is still being written.</DocCallout>
+## Fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `schema_version` | `string` | yes | Contract version, e.g. `"0.1"` |
+| `run_id` | `string` | yes | Matches the originating `ActionRequest` |
+| `action_id` | `string` | yes | Matches the originating `ActionRequest` |
+| `decision` | `Decision` | yes | `ALLOW`, `BLOCK`, `NEED_APPROVAL`, `SANITIZE`, `ASK_USER` |
+| `risk_level` | `string` | yes | `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` |
+| `risk_score` | `number` | yes | Normalised score between `0` and `1` |
+| `reasons` | `string[]` | yes | Why the decision was reached |
+| `triggered_policies` | `string[]` | yes | Policy rules that matched |
+| `sensitive_entities` | `string[]` | yes | Entity classes the detectors found |
+| `sanitized_payload` | `string \| null` | yes | Safe payload when `decision` is `SANITIZE` |
+| `next_step` | `string` | yes | What the router should do, e.g. `execute` |
+| `latency_ms` | `number` | yes | Guardrail evaluation time for this action |
+| `created_at` | `string` | yes | ISO 8601 timestamp |
+| `initial_decision` | `string` | no | Decision before a human responded |
+| `approval_decision` | `"approved" \| "declined"` | no | Reviewer's answer after a pause |
+| `guardrail_audit_id` | `string` | no | Link to the audit record |
+| `evaluation_error` | `string \| null` | no | Set when the evaluation itself failed |
+
+## Example
+
+```json
+{
+  "schema_version": "0.1",
+  "run_id": "run_709c199e5cd6",
+  "action_id": "act_9d916fa9e390",
+  "decision": "ALLOW",
+  "risk_level": "LOW",
+  "risk_score": 0.1,
+  "reasons": ["risk_hint=unknown, domain=browser"],
+  "triggered_policies": [],
+  "sensitive_entities": [],
+  "sanitized_payload": null,
+  "next_step": "execute",
+  "latency_ms": 0,
+  "created_at": "2026-08-07T07:18:59.587430Z"
+}
+```
+
+## How each decision continues
+
+| Decision | Router behaviour | Resulting event |
+| --- | --- | --- |
+| `ALLOW` | Invoke the executor | `executing`, then `step_result` |
+| `BLOCK` | Stop the run | `done` with status `blocked` |
+| `NEED_APPROVAL` | Pause for a reviewer | `awaiting_approval` |
+| `SANITIZE` | Swap in `sanitized_payload`, collect what is missing | `awaiting_input` |
+| `ASK_USER` | Pause for the user | `awaiting_input` |
+
+A paused run resumes through `POST /api/v1/chat/execute/{run_id}/respond`. The
+reviewer's answer is recorded in `approval_decision`, while `initial_decision`
+keeps the pre-approval verdict — so a declined action still shows *why* it was
+escalated in the first place.
+
+<DocCallout>
+  A declined approval ends the run with status `declined`, not `blocked`. The
+  distinction matters in the Risk Dashboard: `blocked` is the policy's call,
+  `declined` is the human's.
+</DocCallout>
+
+## Execution response
+
+When the router permits execution, the executor returns its own record:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `executor` | `string` | Which executor ran, e.g. `browser_prototype_agent` |
+| `status` | `"SUCCESS" \| "FAILED"` | Outcome of the execution |
+| `result_summary` | `string` | Human readable outcome |
+| `data` | `object` | Executor payload, including browser snapshots |
+| `error` | `string \| null` | Failure detail when `status` is `FAILED` |
+| `latency_ms` | `number` | Executor time, reported separately from the gate |
+
+Guardrail and executor latency stay separate so the
+[Latency Report](/docs/benchmark-evaluation) can show the real cost of guarding.

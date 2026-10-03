@@ -1,7 +1,83 @@
 export const metadata = {
   title: "Core Concept",
+  description:
+    "How the pre-action guardrail evaluates every tool action before it runs.",
 };
 
-# Core Concept
+AgentGate sits between the agent that *decides* and the executor that *acts*.
 
-<DocCallout>This section is still being written.</DocCallout>
+Most agent failures are not reasoning failures — they are **action failures**.
+The model picks a plausible next step, the executor runs it, and the side effect
+is already real: an email is sent, a form is submitted, a booking is cancelled.
+AgentGate inserts one mandatory checkpoint in front of that executor.
+
+## Pre-action, not post-hoc
+
+Every proposed step is serialised into an `ActionRequest` and evaluated **before
+execution**. The evaluation returns a `DecisionResponse`, and only that decision
+determines whether the executor is ever invoked.
+
+<DocCallout>
+  **No action is executed during evaluation.** Detectors, the policy engine, risk
+  scoring, and the decision engine all operate on the proposed action only.
+</DocCallout>
+
+## Five decisions
+
+| Decision | Meaning | Next step |
+| --- | --- | --- |
+| `ALLOW` | Action is safe | Execute immediately |
+| `BLOCK` | Violates policy or is too risky | Stop, no execution |
+| `NEED_APPROVAL` | High risk, needs a human reviewer | Wait for approve or decline |
+| `SANITIZE` | Sensitive data detected | Redact the payload, then continue |
+| `ASK_USER` | Missing or ambiguous information | Collect input, then re-evaluate |
+
+`NEED_APPROVAL`, `SANITIZE`, and `ASK_USER` pause the run. The run resumes only
+after the reviewer or the user responds, and the resumed step is evaluated again.
+
+## Two contracts, any framework
+
+AgentGate is framework-agnostic because it does not care who produced the plan.
+The engine only speaks two schemas:
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="Action Request"
+    accent="#60a5fa"
+    items={[
+      "Produced by the planner or adapter",
+      "Describes one proposed tool action",
+      "Carries target, payload summary, risk hint",
+      "Never contains executed results",
+    ]}
+  />
+  <DocListCard
+    title="Decision Response"
+    accent="#a78bfa"
+    items={[
+      "Produced by the guardrail engine",
+      "Decision, risk level, and risk score",
+      "Reasons and triggered policies",
+      "Sanitized payload when applicable",
+    ]}
+  />
+</div>
+
+Anything that can emit an `ActionRequest` and honour a `DecisionResponse` can be
+guarded — a custom function-calling loop today, an MCP server or a LangGraph
+workflow later. See [Action Request Schema](/docs/action-request-schema) and
+[Decision Response Schema](/docs/decision-response-schema) for the field level
+contract.
+
+## Domains covered by the MVP
+
+- **API actions** — Gmail, Google Calendar, GitHub, Stripe Sandbox
+- **Browser actions** — open, snapshot, click, type, select, submit, screenshot
+- **File actions** — local reads evaluated before the file is touched
+
+## Auditability
+
+Every evaluation is written to an audit record containing the request, the
+decision, the execution result, the policy and detector versions, and a latency
+breakdown. The same record powers the [Audit Log, Risk Dashboard, and Latency
+Report](/docs/demo-console-guide) in the Demo Console.

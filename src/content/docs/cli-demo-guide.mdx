@@ -1,7 +1,86 @@
 export const metadata = {
   title: "CLI Demo Guide",
+  description: "The developer path: scenario replay, detector debugging, benchmarks.",
 };
 
-# CLI Demo Guide
+The console is for showing the guardrail. The CLI is for working on it.
 
-<DocCallout>This section is still being written.</DocCallout>
+Where the Demo Console renders one run for an audience, the CLI replays runs
+headlessly, prints the raw contracts, and executes benchmark batches — the three
+things you need when tuning detectors and policies.
+
+<DocCallout>
+  **The CLI ships with AgentGate Core**, not with this frontend repository. The
+  workflows below describe what it covers; the exact command surface is
+  published with the Core release and linked here once it is public.
+</DocCallout>
+
+## What it covers
+
+| Workflow | Purpose |
+| --- | --- |
+| Scenario replay | Re-run a recorded scenario and diff the decisions |
+| Detector debugging | Print detected entities and spans for a given payload |
+| Policy inspection | Show which rules matched and which one decided |
+| Benchmark runs | Execute a batch and report the aggregate metrics |
+
+## Scenario replay
+
+A replay feeds stored `ActionRequest` payloads back through the gate without
+touching an executor, then compares the resulting `DecisionResponse` against the
+expected one. Because `policy_version` and `detector_version` are recorded in
+every audit entry, a replay can tell you whether a decision changed *and* which
+component changed it.
+
+The useful outputs are:
+
+- the decision diff per action,
+- the reasons that appeared or disappeared,
+- the triggered policies before and after,
+- the guardrail latency delta.
+
+## Detector debugging
+
+Detector debugging runs detection alone on a payload and prints the entity
+classes it found. This separates the two failure modes that look identical from
+the console: a detector that missed an entity, and a policy that saw the entity
+and chose not to escalate.
+
+## Policy inspection
+
+Policy inspection lists every rule that matched an action, in precedence order,
+alongside the decision each one proposed. Only the most restrictive decision
+survives into the response, so inspection is the way to see rules that are
+matching far more often than intended.
+
+## Benchmark runs
+
+Benchmark runs execute a whole scenario set and emit the aggregate figures the
+[Benchmark and Evaluation](/docs/benchmark-evaluation) page defines — decision
+distribution, block and approval rates, P50 and P95 latency, and the guardrail
+overhead against an unguarded baseline.
+
+## When to reach for it
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="Use the CLI"
+    accent="#34d399"
+    items={[
+      "A policy change needs a regression check",
+      "A decision is wrong and you need the entity list",
+      "You are measuring guardrail overhead",
+      "You need reproducible numbers for a report",
+    ]}
+  />
+  <DocListCard
+    title="Use the console"
+    accent="#60a5fa"
+    items={[
+      "Demonstrating the guardrail to someone",
+      "Exercising an approval or input pause by hand",
+      "Checking how a decision is presented",
+      "Reading a single run's audit record",
+    ]}
+  />
+</div>

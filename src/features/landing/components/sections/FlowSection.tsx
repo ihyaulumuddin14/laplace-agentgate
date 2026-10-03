@@ -19,12 +19,41 @@ const STEPS: FlowStep[] = [
     description:
       "Natural language goal provided by the user to begin the requested workflow.",
   },
-  { Icon: HiOutlineCpuChip, title: "LLM Planner", description: LOREM },
-  { Icon: FaArrowRight, title: "Action Request", description: LOREM },
-  { Icon: MdOutlineShield, title: "Agent Gate", description: LOREM },
-  { Icon: FaCodeBranch, title: "Decision Router", description: LOREM },
-  { Icon: MdOutlineLanguage, title: "Executor", description: LOREM },
-  { Icon: FiDatabase, title: "Audit Log", description: LOREM },
+  {
+    Icon: HiOutlineCpuChip,
+    title: "LLM Planner",
+    description:
+      "Interprets the user goal and proposes the appropriate tool action.",
+  },
+  {
+    Icon: FaArrowRight,
+    title: "Action Request",
+    description:
+      "Converts the proposed action into a standardized request schema.",
+  },
+  {
+    Icon: MdOutlineShield,
+    title: "Agent Gate",
+    description:
+      "Evaluates the requested action against safety and policy rules.",
+  },
+  {
+    Icon: FaCodeBranch,
+    title: "Decision Router",
+    description:
+      "Routes the request based on the decision made by the safety gate.",
+  },
+  {
+    Icon: MdOutlineLanguage,
+    title: "Executor",
+    description: "Executes the approved action through an API or browser.",
+  },
+  {
+    Icon: FiDatabase,
+    title: "Audit Log",
+    description:
+      "Records the action, decision, and execution details for traceability.",
+  },
 ];
 
 export function FlowSection() {

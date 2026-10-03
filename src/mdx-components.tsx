@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { DocCallout } from "@/shared/components/mdx/DocCallout";
+import { DocCard } from "@/shared/components/mdx/DocCard";
 import { DocListCard } from "@/shared/components/mdx/DocListCard";
 import {
   Anchor,
@@ -9,6 +10,7 @@ import {
   H1,
   H2,
   H3,
+  H4,
   InlineCode,
   OrderedList,
   Paragraph,
@@ -20,10 +22,10 @@ import {
 } from "@/shared/components/typography/DocTypography";
 
 const components = {
-  // Markdown elements
   h1: H1,
   h2: H2,
   h3: H3,
+  h4: H4,
   p: Paragraph,
   strong: Strong,
   a: Anchor,
@@ -37,8 +39,8 @@ const components = {
   td: TableCell,
   hr: Divider,
 
-  // Custom components usable in any .mdx file without importing
   DocCallout,
+  DocCard,
   DocListCard,
 } satisfies MDXComponents;
 

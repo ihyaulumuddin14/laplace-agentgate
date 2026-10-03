@@ -1,7 +1,109 @@
 export const metadata = {
   title: "Browser Snapshot Builder",
+  description:
+    "How a live page becomes a stable, evaluable set of element references.",
 };
 
-# Browser Snapshot Builder
+A browser action can only be guarded if the element it targets can be named.
 
-<DocCallout>This section is still being written.</DocCallout>
+Raw CSS selectors are unstable and meaningless to a policy engine. The snapshot
+builder walks the page once and produces a flat list of elements, each with a
+stable `element_id`, an accessibility role, a human label, and a risk hint the
+gate can reason about.
+
+## Snapshot element
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `element_id` | `string` | Stable reference used by every browser action |
+| `role` | `string` | Accessibility role, e.g. `button`, `textbox`, `link` |
+| `label` | `string` | Accessible name shown to the user and the reviewer |
+| `risk_hint` | `string` | Element level hint, e.g. `low_risk`, `credential` |
+| `dom` | `object` | Raw attributes kept for debugging and locator fallbacks |
+
+The `dom` object retains `tag`, `id`, `class`, `text`, `name`, `title`,
+`placeholder`, `aria_label`, `test_id`, `href`, `visible`, and `disabled`.
+
+```json
+{
+  "element_id": "1",
+  "role": "button",
+  "label": "Guide",
+  "risk_hint": "low_risk",
+  "dom": {
+    "tag": "button",
+    "id": "button",
+    "class": "style-scope yt-icon-button",
+    "aria_label": "Guide",
+    "visible": true,
+    "disabled": false
+  }
+}
+```
+
+## Selector map
+
+Each `element_id` maps to one primary locator and an ordered list of fallbacks,
+so execution survives small DOM changes between snapshot and click.
+
+```json
+{
+  "1": {
+    "primary": { "strategy": "role", "role": "button", "name": "Skip navigation" },
+    "fallbacks": [
+      { "strategy": "label", "value": "Skip navigation" },
+      { "strategy": "text", "value": "Skip navigation" }
+    ]
+  }
+}
+```
+
+| Strategy | Resolution |
+| --- | --- |
+| `role` | Accessibility role plus accessible name — preferred |
+| `label` | Associated label text |
+| `text` | Visible text content |
+| `test_id` | Explicit test attribute when the page provides one |
+
+<DocCallout>
+  Role-based locators are preferred because they describe **what the element is
+  for**, which is exactly what a policy needs to reason about. A class name
+  carries no such meaning.
+</DocCallout>
+
+## Builder pipeline
+
+1. **Open** the target URL and wait for the page to settle.
+2. **Collect** interactive and labelled elements, skipping hidden nodes.
+3. **Assign** a stable `element_id` to each surviving element.
+4. **Derive** the accessible role and label.
+5. **Classify** a `risk_hint` from role, label, and attributes — a password
+   field, a submit control, or a destructive action is marked here.
+6. **Emit** the snapshot, the selector map, and the locator candidates.
+
+## Before and after execution
+
+| Field | Contents |
+| --- | --- |
+| `snapshot` | Elements as seen before the action ran |
+| `selector_map` | Locators derived from that snapshot |
+| `locator_candidates` | All candidate strategies per element |
+| `final_snapshot` | Elements after the action ran |
+| `final_selector_map` | Locators for the resulting page |
+| `action_results` | Per action outcome with index, status, and `final_url` |
+| `executed` | Whether any action actually ran |
+
+Keeping both sides lets the audit record show what the page looked like when the
+decision was made, not only what it looked like afterwards.
+
+## Why the gate needs it
+
+- **Named targets.** `BROWSER_CLICK` on `element_id` `12` labelled
+  *Cancel Booking* is evaluable; a click on `div > button:nth-child(3)` is not.
+- **Credential awareness.** A `textbox` labelled *Password* raises
+  `SANITIZE` before any keystroke is sent.
+- **Reviewer clarity.** The Approval Queue shows the role and the label, so a
+  human approves a described action rather than a selector.
+
+See [Tool Contracts](/docs/tool-contracts) for the browser actions that consume
+these references.

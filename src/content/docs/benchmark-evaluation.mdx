@@ -1,7 +1,75 @@
 export const metadata = {
   title: "Benchmark & Evaluation",
+  description: "How guardrail quality and guardrail cost are measured.",
 };
 
-# Benchmark & Evaluation
+A guardrail has to be judged on two axes at once: does it catch the right
+actions, and does it stay cheap enough to live in the hot path.
 
-<DocCallout>This section is still being written.</DocCallout>
+Optimising one alone is easy and useless. A gate that blocks everything is
+perfectly safe and unusable; a gate that allows everything is instant and
+pointless.
+
+## Decision quality
+
+| Metric | Definition |
+| --- | --- |
+| Decision distribution | Share of `ALLOW`, `BLOCK`, `NEED_APPROVAL`, `SANITIZE`, `ASK_USER` |
+| Catch rate | Risky actions correctly escalated or blocked |
+| False escalation rate | Safe actions sent to a reviewer unnecessarily |
+| Miss rate | Risky actions allowed through |
+| Decline rate | Escalations a reviewer refused, against all escalations |
+
+<DocCallout>
+  False escalation is a safety metric, not only a convenience one. A reviewer who
+  approves out of habit is no longer reviewing, so an over-eager policy quietly
+  removes the protection it was meant to add.
+</DocCallout>
+
+The decline rate is the honest signal here. Escalations that a human almost
+always approves were probably not worth escalating, and the matching rule in
+[Policy Packs](/docs/policy-packs) should be tightened.
+
+## Latency
+
+| Metric | Definition |
+| --- | --- |
+| P50 total | Median end-to-end time for one action |
+| P95 total | Tail end-to-end time for one action |
+| P50 guardrail | Median evaluation time inside the gate |
+| P95 guardrail | Tail evaluation time inside the gate |
+| Guardrail overhead | Guarded time against the unguarded baseline, as a percentage |
+
+Guardrail and executor latency are reported separately — `latency_ms` on the
+decision, `latency_ms` on the execution, and the `latency` breakdown on the
+audit record. Overhead is measured against a raw run with the gate disabled, so
+the number reflects the guardrail alone rather than the speed of the target
+system.
+
+Latency is also broken down by domain, because the three behave differently:
+
+| Domain | Characteristic |
+| --- | --- |
+| `API` | Fast and predictable, dominated by the connector |
+| `FILE` | Fastest path, detection dominates |
+| `BROWSER` | Slowest and most variable, dominated by page load and snapshot |
+
+## Reporting rules
+
+- Report percentiles, never averages. A mean hides exactly the tail that makes a
+  guardrail feel slow.
+- Pin `policy_version` and `detector_version` with every result. A number without
+  its versions cannot be reproduced or compared.
+- Keep pauses out of the latency figures. Time spent waiting for a human is not
+  guardrail cost.
+- Record the baseline alongside the guarded run, from the same scenario set.
+
+## Live view
+
+The Latency Report in the Demo Console shows P50 and P95 totals, the guardrail
+share, and the per-domain breakdown for the current session. The Risk Dashboard
+shows the decision distribution together with total actions, approved, blocked,
+and pending review.
+
+Session figures are indicative — a handful of runs is not a benchmark. Use the
+[CLI benchmark runs](/docs/cli-demo-guide) for numbers you intend to quote.

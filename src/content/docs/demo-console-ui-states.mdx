@@ -1,7 +1,100 @@
 export const metadata = {
   title: "Demo Console UI States",
+  description: "Every card, badge, and empty state the console can render.",
 };
 
-# Demo Console UI States
+Each state in the console maps to one streamed event. Nothing is simulated.
 
-<DocCallout>This section is still being written.</DocCallout>
+## State View cards
+
+| Card | Event | Shows |
+| --- | --- | --- |
+| Planning Next Action | `planning` | Spinner and progress while the planner works |
+| Replanning | `replanning` | Same card, labelled with the iteration |
+| Proposed Action | `plan` | Tool name, target system, target, domain, payload summary, risk hints |
+| Evaluating with AgentGate | `step_status` with status `running` | Detectors, policy engine, and decision engine checking off |
+| AgentGate Decision | `guardrail` | Risk level, risk score, audit id, reasons, policies, entities, next step |
+| Result | `done` | Final status and the execution result summary |
+
+The Evaluating card states plainly that no action has been executed yet — it is
+the visual proof that the check happens *before* the side effect.
+
+<DocCallout>
+  The Decision card hides triggered policies and sensitive entities for `ALLOW`,
+  because there is nothing to review. Every other decision shows them, with an
+  explicit "none detected" when a list is empty.
+</DocCallout>
+
+## Decision accents
+
+| Decision | Label | Accent |
+| --- | --- | --- |
+| `ALLOW` | allow | green |
+| `BLOCK` | block | red |
+| `NEED_APPROVAL` | need_approval | yellow |
+| `SANITIZE` | sanitize | orange |
+| `ASK_USER` | ask_user | blue |
+| `DECLINED` | declined | red |
+| `FAILED` | failed | red |
+
+`DECLINED` and `FAILED` are terminal run states rather than guardrail verdicts,
+but they reuse the same card so the trace reads consistently.
+
+## Chat messages
+
+| Event | Message | Badge |
+| --- | --- | --- |
+| `run_started` | Starting AgentGate | — |
+| `planning` | Planning | — |
+| `plan` | Preparing execution plan | — |
+| `guardrail` with `ALLOW` | Action allowed, continuing to execution | — |
+| `guardrail` with `BLOCK` | The humanised reason for the block | Blocked |
+| `guardrail` with `SANITIZE` | Sensitive content detected, sanitising | — |
+| `awaiting_approval` | A question naming the action and its target | Needs Approval |
+| `awaiting_input` | A question naming the fields required | Action Required |
+| `executing` | Executing the listed steps | — |
+| `step_result` | The executor's result summary | Success or Failed |
+| `done` | Task completed, or the terminal status | Completed, Declined, Blocked |
+| `error` | Something went wrong | Error |
+
+Pause questions are generated from the action type and the target, so an
+approval reads as a sentence — *Allow AgentGate to submit the form on
+example.com?* — rather than as a dump of JSON.
+
+## Badge variants
+
+| Variant | Used for |
+| --- | --- |
+| `success` | Successful execution, completed run |
+| `danger` | Block, decline, failure, error |
+| `warning` | Approval or input required |
+| `neutral` | Informational progress |
+
+## Empty, loading, and error
+
+<div className="grid gap-4 sm:grid-cols-2">
+  <DocListCard
+    title="Before a run"
+    accent="#60a5fa"
+    items={[
+      "Chat shows the AgentGate placeholder",
+      "State View is empty",
+      "Audit Log shows no audit logs found",
+      "Scenario Runner is the primary call to action",
+    ]}
+  />
+  <DocListCard
+    title="During and after"
+    accent="#a78bfa"
+    items={[
+      "Cards append as events arrive and auto-scroll",
+      "Pause cards block further input until answered",
+      "Audit rows show PENDING until execution reports",
+      "Reset clears chat, events, and the session",
+    ]}
+  />
+</div>
+
+Session creation failures and stream errors surface as an error message in chat
+rather than as a blank console. If `evaluation_error` is set on a decision, the
+run is stopped instead of defaulting to allow.

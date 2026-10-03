@@ -1,39 +1,41 @@
 import type { CSSProperties } from "react";
+import { cn } from "@/shared/lib/utils";
 
 type DocListCardProps = {
   title: string;
   items: string[];
-  /** Accent colour for the border + heading (e.g. a green / red hex). */
   accent: string;
   className?: string;
 };
 
-/** Bordered, colour-accented list — e.g. "What it is" / "What it is not". */
 export function DocListCard({
   title,
   items,
   accent,
-  className = "",
+  className,
 }: DocListCardProps) {
   return (
     <div
-      className={`rounded-2xl border p-6 ${className}`}
+      className={cn(
+        "rounded-2xl border p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] backdrop-blur-md sm:p-6",
+        className,
+      )}
       style={
         {
           "--accent": accent,
-          borderColor: "color-mix(in srgb, var(--accent) 40%, transparent)",
-          background: "color-mix(in srgb, var(--accent) 6%, transparent)",
+          borderColor: "color-mix(in srgb, var(--accent) 38%, transparent)",
+          background: "color-mix(in srgb, var(--accent) 7%, transparent)",
         } as CSSProperties
       }
     >
-      <h4 className="font-poppins text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+      <h3 className="font-poppins text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
         {title}
-      </h4>
+      </h3>
       <ul className="mt-4 flex flex-col gap-2.5">
         {items.map((item) => (
           <li
             key={item}
-            className="flex gap-2 font-inter text-sm leading-relaxed text-purple-50"
+            className="flex gap-2.5 font-poppins text-[15px] leading-relaxed text-white sm:text-base"
           >
             <span className="text-[var(--accent)]">•</span>
             <span>{item}</span>

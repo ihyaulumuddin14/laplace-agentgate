@@ -3,42 +3,47 @@ export const metadata = {
   description: "What AgentGate is and what it is not.",
 };
 
-# Introduction
+AgentGate Core is a framework-agnostic Python guardrail engine for AI agent
+tool actions. It sits between an agent's decision-making logic and the systems
+that logic wants to act on — APIs, browsers, files, or other external
+systems — and evaluates every proposed action before it is allowed to run.
 
-What AgentGate is and what it is not.
+<DocCard title="What AgentGate is:">
 
-AgentGate is a **framework-agnostic Python guardrail engine** for AI agent tool
-actions. It evaluates proposed actions before they are executed through APIs,
-browsers, files, or external systems.
+- A policy evaluation and enforcement layer for agentic tool calls, validated
+  in the MVP through a **core-optimized execution path**: a DS-led custom
+  function-calling loop, the AgentGate Python Core Engine, a Decision Router, a
+  Hybrid API + Browser Executor, an Approval Queue, and an Audit Log.
+- Framework-agnostic by design: the core engine does not depend on a specific
+  agent runtime, LLM provider, or orchestration library.
+- A pre-execution checkpoint — every action is converted into a structured
+  request, evaluated against policy, and only then routed for execution (or
+  blocked / sent for approval).
+
+</DocCard>
+
+<DocCard title="What AgentGate is not (in the MVP):">
+
+- It is not a regular chatbot. AgentGate does not itself decide what the agent
+  should try to do — that is the job of the DS-led custom function-calling
+  loop. AgentGate evaluates the actions that loop proposes.
+- It is not (only) a browser extension. Direct, in-browser interception of page
+  actions — reading the live DOM, highlighting elements, intercepting user
+  clicks — is a **post-MVP** capability. In the MVP, browser automation is
+  driven by a backend Playwright Browser Executor, not by anything running
+  inside the user's own browser session.
+- The MVP website is not just a landing page and documentation site. It also
+  functions as the **AgentGate Demo Console:** web chat, a scenario runner, a
+  proposed-action preview, a decision card, an approval queue, an audit log, a
+  risk dashboard, and a latency benchmark view all live there, so the team can
+  validate the core engine end-to-end without building a separate extension or
+  app first.
+
+</DocCard>
+
+The core AgentGate provides is simple to state and central to everything else
+in this documentation:
 
 <DocCallout>
-  **Important:** AgentGate is not a regular chatbot and it is not a browser
-  extension in the MVP. Its focus is a pre-action guardrail for tool actions.
+  No real API or browser action should run before AgentGate evaluation.
 </DocCallout>
-
-The system supports API-based actions such as Gmail, Google Calendar, GitHub,
-and Stripe Sandbox, as well as Playwright-based browser actions such as open,
-snapshot, click, type, select, submit, and screenshot.
-
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="What it is"
-    accent="#34d399"
-    items={[
-      "Framework-agnostic Python guardrail engine",
-      "Pre-action tool action evaluator",
-      "MVP: Console-first web demo",
-      "Supports API and browser tools",
-    ]}
-  />
-  <DocListCard
-    title="What it is not"
-    accent="#f87171"
-    items={[
-      "A regular chatbot or conversational AI",
-      "A Chrome/Browser Extension (Post-MVP)",
-      "An MCP server implementation",
-      "A LangGraph workflow integration",
-    ]}
-  />
-</div>

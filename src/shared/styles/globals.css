@@ -376,20 +376,34 @@ body {
 /* Thin purple scrollbar for the documentation sidebar. */
 .doc-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(146, 84, 235, 0.5) transparent;
+  scrollbar-color: rgba(146, 84, 235, 0.65) rgba(255, 255, 255, 0.05);
 }
 
 .doc-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
+}
+
+.doc-scrollbar::-webkit-scrollbar-track {
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .doc-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 9999px;
-  background: rgba(146, 84, 235, 0.5);
+  background: linear-gradient(
+    180deg,
+    rgba(178, 138, 241, 0.85),
+    rgba(129, 51, 241, 0.85)
+  );
 }
 
 .doc-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(146, 84, 235, 0.7);
+  background: linear-gradient(
+    180deg,
+    rgba(204, 176, 246, 0.95),
+    rgba(146, 84, 235, 0.95)
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {

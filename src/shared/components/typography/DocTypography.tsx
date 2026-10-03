@@ -174,7 +174,7 @@ export function TableHeaderCell({ className, ...props }: ComponentProps<"th">) {
   return (
     <th
       className={cn(
-        "border-b border-white/14 bg-white/8 px-4 py-3 text-left font-poppins font-semibold text-white",
+        "border-r border-b border-white/14 bg-white/8 px-4 py-3 text-center font-poppins font-semibold text-white last:border-r-0",
         className,
       )}
       {...props}
@@ -185,7 +185,10 @@ export function TableHeaderCell({ className, ...props }: ComponentProps<"th">) {
 export function TableCell({ className, ...props }: ComponentProps<"td">) {
   return (
     <td
-      className={cn("border-b border-white/6 px-4 py-3 align-top", className)}
+      className={cn(
+        "border-r border-b border-white/10 px-4 py-3 align-top last:border-r-0",
+        className,
+      )}
       {...props}
     />
   );

@@ -1,76 +1,50 @@
 export const metadata = {
   title: "MVP Scope",
-  description: "What ships in the MVP and what is deliberately deferred.",
+  description:
+    "What the MVP proves, what is deferred, and the limitations it documents.",
 };
 
-The MVP is console-first: one web demo that makes the guardrail observable.
+AgentGate MVP validates one claim end to end: **no real API or browser action
+runs before AgentGate evaluation.** The MVP proves this on three evidence-based
+domains through a `core-optimized path`, not through production integrations.
 
-The goal is not breadth of integrations. It is to prove that a pre-action
-guardrail can evaluate real tool actions, return a decision fast enough to sit
-in the hot path, and leave an audit trail a reviewer can trust.
+#### Included in MVP
 
-<DocCallout>
-  **Console-first.** The Demo Console is the product surface of the MVP. The
-  browser extension, MCP adapter, and LangGraph adapter are explicitly post-MVP.
-</DocCallout>
+| Area | Include |
+| :---: | --- |
+| Domains | Reservation Messaging (customer), Productivity Assistant, Internal Data & Source Code Protection |
+| Actions covered | 27 actions in the final Policy Matrix (8 reservation, 10 productivity, 9 internal data/code) |
+| Decisions | ALLOW, NEED_APPROVAL, BLOCK, SANITIZE, ASK_USER (NEED_APPROVAL escalates to CRITICAL for financial or irreversible actions) |
+| Agent logic | DS-led custom function-calling loop, evaluated by the core engine (not a generic agent framework) |
+| Core Engine | Action Space Validator, detectors, policy engine, risk scoring, sanitizer, DecisionResponse builder |
+| Detectors | PII/secret, source-code, phishing/payment-risk, path classifier, internal-domain classifier, bulk-action and query-scope evaluators |
+| Enforcement | Decision Router, Approval Queue (with timeout and single execution), Audit Log |
+| Execution | Hybrid executor. APIs: Gmail, Google Calendar, GitHub REST, Stripe Sandbox, Telegram Bot API, local filesystem. Fallback: Playwright against a sandbox/mock booking dashboard |
+| Browser safety | Browser Snapshot Builder (element_id, role, label, text; no raw HTML) and internal selector map |
+| Interfaces | Web Demo Console (chat, scenario runner, proposed-action preview, decision card, approval queue, audit log, risk dashboard, latency benchmark view) and CLI (run, replay, inspect, benchmark) |
+| Evaluation | 15 test scenarios (TC-P/C/B), 26-scenario decision matrix, detector test cases, Policy QA examples, FP/FN taxonomy, 6-dimension rubric, 31-item QA checklist |
+| MVP pass bar | Zero critical safety violations, average dimension score ≥ 3.0, all 15 scenarios match expected output (max 1 non-critical edge-case miss), P95 latency ≤ 250–500 ms, overhead ≤ 20% on standard actions (never > 100% on bulk) |
 
-## In scope
+#### Explicitly out of MVP (Post-MVP)
 
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="Shipping in the MVP"
-    accent="#34d399"
-    items={[
-      "Landing page and technical documentation",
-      "Demo Console with Web Chat and Scenario Runner",
-      "Proposed Action Preview and Decision Card",
-      "Approval Queue for human review",
-      "Audit Log, Risk Dashboard, Latency Report",
-      "CLI demo for scenario replay and benchmarks",
-    ]}
-  />
-  <DocListCard
-    title="Deferred to post-MVP"
-    accent="#f87171"
-    items={[
-      "Chrome / browser extension",
-      "MCP server and client adapters",
-      "LangGraph workflow integration",
-      "OpenClaw adapter",
-      "Multi-tenant accounts and persistence",
-    ]}
-  />
-</div>
+| Area | Include |
+| :---: | --- |
+| Chrome/Browser Extension | Live DOM reading, element highlighting, in-browser click interception |
+| MCP adapter | Reuses ActionRequest/DecisionResponse contracts |
+| LangGraph adapter | After core engine is stable and fast |
+| OpenClaw adapter | Optional; after engine quality is proven |
+| More API connectors | After auth, policy versioning, connector management |
+| Browser recorder, Policy pack marketplace | Ecosystem features, last |
+| Other domains | Finance, HR, Healthcare, Legal, Education, DevOps, Customer Support (from the Sprint 1 taxonomy) |
+| WhatsApp Cloud API | Paid and ban-prone; Telegram is used instead |
+| Real money and real customer systems | Stripe stays in sandbox; the booking dashboard is a mock |
 
-## Frontend scope
+#### Known limitations (documented, not guaranteed in MVP)
 
-This repository covers the public website, the documentation, and the Demo
-Console. It consumes only `ActionRequest` and `DecisionResponse` from the
-backend and holds no evaluation logic of its own.
+These come from the FP/FN taxonomy. They are mitigation directions, not shipped
+guarantees :
 
-| Surface | Contents |
-| --- | --- |
-| Landing Page | Risk framing, flow, decisions, scenarios, roadmap |
-| Documentation | Native MDX pages under `src/content/docs` |
-| Demo Console | Scenario tab, State View, Logs |
-
-## Owned by the DS and DE teams
-
-The evaluation engine itself lives outside this repository:
-
-- AgentGate Core
-- LLM Planner
-- Policy Engine
-- Risk Scoring
-- Playwright Executor
-- API Connectors
-- Browser Extension
-- MCP and LangGraph adapters
-
-## Working assumptions
-
-- Sessions are ephemeral. A session is created on entering the Demo Console and
-  ended on reset, refresh, or page hide — there is no durable user account.
-- Mock data is used while a backend endpoint is unavailable, so frontend and
-  backend work can proceed in parallel.
-- Stripe actions run against the sandbox only. No live payment is ever executed.
+- Session-level approval memory (FP-05) and contextual bulk thresholds (FP-02)
+- Session-level data provenance and cumulative risk tracking (FN-02, FN-05)
+- `action_origin` field for prompt-injection scrutiny (FN-03)
+- Base64/encoded secret decoding (FN-01)

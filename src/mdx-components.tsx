@@ -2,6 +2,8 @@ import type { MDXComponents } from "mdx/types";
 import { DocCallout } from "@/shared/components/mdx/DocCallout";
 import { DocCard } from "@/shared/components/mdx/DocCard";
 import { DocListCard } from "@/shared/components/mdx/DocListCard";
+import { DocStep, DocSteps } from "@/shared/components/mdx/DocSteps";
+import { DocToken } from "@/shared/components/mdx/DocToken";
 import {
   Anchor,
   Blockquote,
@@ -42,6 +44,9 @@ const components = {
   DocCallout,
   DocCard,
   DocListCard,
+  DocStep,
+  DocSteps,
+  DocToken,
 } satisfies MDXComponents;
 
 export function useMDXComponents(): MDXComponents {

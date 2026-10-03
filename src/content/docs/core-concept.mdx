@@ -1,83 +1,101 @@
 export const metadata = {
   title: "Core Concept",
   description:
-    "How the pre-action guardrail evaluates every tool action before it runs.",
+    "The fixed pre-action pipeline every agent action must pass through.",
 };
 
-AgentGate sits between the agent that *decides* and the executor that *acts*.
+AgentGate implements **a pre-action guardrail** flow: every action an agent
+wants to take passes through a fixed pipeline of steps between "the user asked
+for something" and "something actually happened in the outside world." The flow
+is the same regardless of which policy pack, executor, or interface is involved.
 
-Most agent failures are not reasoning failures — they are **action failures**.
-The model picks a plausible next step, the executor runs it, and the side effect
-is already real: an email is sent, a form is submitted, a booking is cancelled.
-AgentGate inserts one mandatory checkpoint in front of that executor.
+## The flow, step by step
 
-## Pre-action, not post-hoc
+<DocSteps>
+  <DocStep title="User gives a task.">
 
-Every proposed step is serialised into an `ActionRequest` and evaluated **before
-execution**. The evaluation returns a `DecisionResponse`, and only that decision
-determines whether the executor is ever invoked.
+    The user states an intent in natural language (e.g. "Send this message to
+    the hotel") through the Web Chat or CLI Demo interface.
 
-<DocCallout>
-  **No action is executed during evaluation.** Detectors, the policy engine, risk
-  scoring, and the decision engine all operate on the proposed action only.
-</DocCallout>
+  </DocStep>
 
-## Five decisions
+  <DocStep title="DS-led custom function-calling loop proposes a tool call.">
 
-| Decision | Meaning | Next step |
-| --- | --- | --- |
-| `ALLOW` | Action is safe | Execute immediately |
-| `BLOCK` | Violates policy or is too risky | Stop, no execution |
-| `NEED_APPROVAL` | High risk, needs a human reviewer | Wait for approve or decline |
-| `SANITIZE` | Sensitive data detected | Redact the payload, then continue |
-| `ASK_USER` | Missing or ambiguous information | Collect input, then re-evaluate |
+    Rather than a generic off-the-shelf agent framework, the MVP uses a
+    purpose-built, data-science-led function-calling loop to decide on a
+    concrete action — a specific tool, with specific arguments — that it
+    believes accomplishes the task.
 
-`NEED_APPROVAL`, `SANITIZE`, and `ASK_USER` pause the run. The run resumes only
-after the reviewer or the user responds, and the resumed step is evaluated again.
+  </DocStep>
 
-## Two contracts, any framework
+  <DocStep title="Runtime converts the tool call into an ActionRequest.">
 
-AgentGate is framework-agnostic because it does not care who produced the plan.
-The engine only speaks two schemas:
+    The proposed tool call is normalized into AgentGate's structured request
+    format, so every downstream component speaks the same schema — the same
+    contract that post-MVP adapters (Section 4) will later reuse.
 
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="Action Request"
-    accent="#60a5fa"
-    items={[
-      "Produced by the planner or adapter",
-      "Describes one proposed tool action",
-      "Carries target, payload summary, risk hint",
-      "Never contains executed results",
-    ]}
-  />
-  <DocListCard
-    title="Decision Response"
-    accent="#a78bfa"
-    items={[
-      "Produced by the guardrail engine",
-      "Decision, risk level, and risk score",
-      "Reasons and triggered policies",
-      "Sanitized payload when applicable",
-    ]}
-  />
-</div>
+  </DocStep>
 
-Anything that can emit an `ActionRequest` and honour a `DecisionResponse` can be
-guarded — a custom function-calling loop today, an MCP server or a LangGraph
-workflow later. See [Action Request Schema](/docs/action-request-schema) and
-[Decision Response Schema](/docs/decision-response-schema) for the field level
-contract.
+  <DocStep title="AgentGate Core Engine evaluates the ActionRequest.">
 
-## Domains covered by the MVP
+    The request passes through the detector, policy engine, risk scoring, and
+    sanitizer components, checked against the relevant policy pack(s) (see
+    Policy Packs), and assigned a decision — for example <DocToken>ALLOW,
+    NEED_APPROVAL, or ASK_USER</DocToken> — along with supporting reasons.
 
-- **API actions** — Gmail, Google Calendar, GitHub, Stripe Sandbox
-- **Browser actions** — open, snapshot, click, type, select, submit, screenshot
-- **File actions** — local reads evaluated before the file is touched
+  </DocStep>
 
-## Auditability
+  <DocStep title="Decision Router enforces the decision.">
 
-Every evaluation is written to an audit record containing the request, the
-decision, the execution result, the policy and detector versions, and a latency
-breakdown. The same record powers the [Audit Log, Risk Dashboard, and Latency
-Report](/docs/demo-console-guide) in the Demo Console.
+    The router is the single point that acts on AgentGate's decision: it either
+    lets the action proceed, routes it to the Approval Queue for human sign-off,
+    or stops it outright. No component downstream of the router can bypass this
+    step.
+
+  </DocStep>
+
+  <DocStep title="Hybrid API + Browser Executor runs only when allowed.">
+
+    Actual execution happens exclusively after the Decision Router has cleared
+    the action — see Hybrid API + Browser Execution Policy below for how the
+    executor chooses between the two paths.
+
+  </DocStep>
+
+  <DocStep title="Audit Log records the request, decision, reasons, and result.">
+
+    Every evaluated action — allowed, blocked, or approval-gated — is logged
+    with the original request, AgentGate's decision, the reasoning behind it,
+    and the eventual execution result (success, failure, or not executed).
+    Logged latency also feeds the Demo Console's benchmark report (raw vs.
+    guarded execution time).
+
+  </DocStep>
+</DocSteps>
+
+<DocCard title="Hybrid API + Browser Execution Policy">
+
+Execution is hybrid by design, not browser-first or API-only:
+
+- Real APIs are preferred where they are available and technically feasible for
+  the MVP, for example the Gmail API, Google Calendar API, GitHub API, Stripe
+  Sandbox, Telegram Bot API, and the local filesystem.
+- Playwright-based browser tools are the fallback, used against a sandbox or
+  mock dashboard when a suitable API is unavailable, closed, paid, or otherwise
+  unsuitable for the demo.
+- The rule is the same regardless of path: every API call and every browser
+  action — whichever executor handles it — must be evaluated by AgentGate
+  before it executes. The hybrid choice is an implementation detail of Step 6;
+  it never bypasses Steps 3–5.
+
+</DocCard>
+
+<DocCard title="Why this matters">
+
+Because every action is forced through this pipeline — regardless of whether it
+ends up going to a real API or a Playwright browser action — AgentGate can
+guarantee its main rule even when the underlying agent logic is unpredictable,
+the task is ambiguous, or the proposed action is dangerous: nothing reaches a
+live API or browser session without first passing evaluation.
+
+</DocCard>

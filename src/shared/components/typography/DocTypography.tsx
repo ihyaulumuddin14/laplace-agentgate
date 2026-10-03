@@ -18,7 +18,7 @@ export function H2({ className, ...props }: ComponentProps<"h2">) {
   return (
     <h2
       className={cn(
-        "mt-4 font-poppins text-xl font-semibold leading-snug text-white sm:text-2xl",
+        "mt-4 font-poppins text-xl font-bold leading-snug text-purple-200 sm:text-2xl",
         className,
       )}
       {...props}

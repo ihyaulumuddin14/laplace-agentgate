@@ -136,7 +136,7 @@ export function InlineCode({ className, ...props }: ComponentProps<"code">) {
   return (
     <code
       className={cn(
-        "rounded-md border border-white/10 bg-white/8 px-1.5 py-0.5 font-mono text-[0.88em] text-purple-100",
+        "rounded-md border border-purple-200/15 bg-white/8 px-1.5 py-0.5 font-mono text-[0.88em] text-purple-100",
         className,
       )}
       {...props}
@@ -148,7 +148,7 @@ export function CodeBlock({ className, ...props }: ComponentProps<"pre">) {
   return (
     <pre
       className={cn(
-        "doc-scrollbar overflow-x-auto rounded-2xl border border-white/18 bg-black/30 p-5 font-mono text-[13px] leading-relaxed text-white sm:text-sm [&>code]:border-0 [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit",
+        "doc-scrollbar overflow-x-auto whitespace-pre-wrap break-words rounded-2xl border border-purple-200/15 bg-black/30 p-5 font-mono text-[13px] leading-relaxed text-white sm:text-sm [&>code]:border-0 [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit",
         className,
       )}
       {...props}
@@ -158,7 +158,7 @@ export function CodeBlock({ className, ...props }: ComponentProps<"pre">) {
 
 export function Table({ className, ...props }: ComponentProps<"table">) {
   return (
-    <div className="doc-scrollbar overflow-x-auto rounded-2xl border border-white/18">
+    <div className="doc-scrollbar overflow-x-auto rounded-2xl border border-purple-200/15">
       <table
         className={cn(
           "w-full border-collapse font-poppins text-[13px] text-white sm:text-sm",
@@ -174,7 +174,7 @@ export function TableHeaderCell({ className, ...props }: ComponentProps<"th">) {
   return (
     <th
       className={cn(
-        "border-r border-b border-white/14 bg-white/8 px-4 py-3 text-center font-poppins font-semibold text-white last:border-r-0",
+        "border-r border-b border-purple-200/15 bg-white/8 px-4 py-3 text-center font-poppins font-semibold text-white last:border-r-0",
         className,
       )}
       {...props}
@@ -186,7 +186,7 @@ export function TableCell({ className, ...props }: ComponentProps<"td">) {
   return (
     <td
       className={cn(
-        "border-r border-b border-white/10 px-4 py-3 align-top last:border-r-0",
+        "border-r border-b border-purple-200/12 px-4 py-3 align-top last:border-r-0",
         className,
       )}
       {...props}
@@ -195,5 +195,5 @@ export function TableCell({ className, ...props }: ComponentProps<"td">) {
 }
 
 export function Divider({ className, ...props }: ComponentProps<"hr">) {
-  return <hr className={cn("border-white/10", className)} {...props} />;
+  return <hr className={cn("border-purple-200/15", className)} {...props} />;
 }

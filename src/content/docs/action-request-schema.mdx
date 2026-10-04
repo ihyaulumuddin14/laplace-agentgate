@@ -1,85 +1,74 @@
 export const metadata = {
-  title: "Action Request Schema",
-  description: "The contract a planner sends into the guardrail engine.",
+  title: "ActionRequest: What AgentGate Sees Before an Agent Acts",
+  description:
+    "The standard form an agent fills out before any action is evaluated.",
 };
 
-The input contract. One `ActionRequest` describes exactly one proposed action.
+#### Quick Summary
 
-An `ActionRequest` is produced before anything happens. It carries a
-*description* of the intended side effect, never its result — which is what
-makes the evaluation a pre-action check.
+Every time an AI agent wants to do something send an email, delete data,
+process a refund it doesn't execute it directly. The agent fills out a standard
+"form" called an ActionRequest, and that form is what AgentGate reads to decide:
+allow it, hold it for human approval, mask part of its content, ask the user for
+clarification, or block it entirely.
 
-## Fields
+This document summarizes what's in that form no code so it can be used for
+feature-completeness reviews or discussions with non-technical stakeholders.
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `schema_version` | `string` | yes | Contract version, e.g. `"0.1"` |
-| `run_id` | `string` | yes | Groups every action of one user task |
-| `action_id` | `string` | yes | Unique id for this action, used by the audit record |
-| `source` | `string` | yes | Where the action came from, e.g. `api`, `cli` |
-| `domain` | `string` | yes | `browser`, `api`, or `file` |
-| `action_type` | `string` | yes | The tool contract being invoked |
-| `target_system` | `string` | yes | `browser`, `gmail`, `calendar`, `github`, `stripe` |
-| `target` | `string` | yes | URL, recipient, endpoint, or file path |
-| `content_context` | `string` | no | Surrounding text the detectors should scan |
-| `payload_summary` | `string` | yes | Human readable summary of the side effect |
-| `browser_element` | `string \| null` | yes | Resolved element reference for browser actions |
-| `risk_hint` | `string` | yes | Planner's own guess, e.g. `low_risk`, `unknown` |
-| `rollback_available` | `boolean` | no | Whether the action can be undone |
-| `confidence` | `number` | no | Planner confidence between `0` and `1` |
-| `created_at` | `string` | yes | ISO 8601 timestamp |
+#### Why This Form Matters
 
-<DocCallout>
-  `risk_hint` is a **hint**, not a verdict. The gate re-derives risk from the
-  detectors and the policy packs, so a `low_risk` hint can still be blocked.
-</DocCallout>
+Without a standard structure, each type of action (email, code, booking) would
+send data in a different shape, and AgentGate couldn't evaluate them
+consistently. ActionRequest ensures every action, from any domain, can be
+assessed the same way.
 
-## Example
+#### 4 Groups of Information Inside It
 
-```json
-{
-  "schema_version": "0.1",
-  "run_id": "run_709c199e5cd6",
-  "action_id": "act_9d916fa9e390",
-  "source": "api",
-  "domain": "browser",
-  "action_type": "BROWSER_PROTOTYPE_ACTION",
-  "target_system": "browser",
-  "target": "https://youtube.com",
-  "content_context": "",
-  "payload_summary": "3 browser actions on https://youtube.com: fill, submit, screenshot",
-  "browser_element": null,
-  "risk_hint": "unknown",
-  "rollback_available": false,
-  "confidence": 1.0,
-  "created_at": "2026-08-07T07:18:59.587418Z"
-}
-```
+1\. Action Identity (always required)
 
-## Planned steps
+The baseline information that must always be present, regardless of the action
+type:
 
-A plan event carries several steps, each a planner-level view of an upcoming
-`ActionRequest`. Alongside the fields above, a planned step adds its position
-and lifecycle in the run:
+| Area | Include |
+| :---: | --- |
+| Which domain | Productivity, Internal Data & Code, or Reservation/Messaging |
+| Action category | Read data, send externally, bulk delete, financial action, etc. |
+| Target system | Gmail, GitHub, internal database, Stripe, etc. |
+| Specific action | "archive_emails", "process_refund", "push_commit" |
+| Reversible? | Yes / No |
+| Agent's confidence | How sure the agent is that this is the right action (0–100%) |
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `index` | `number` | Zero-based position of the step within the plan |
-| `status` | `string` | `pending`, `running`, `done`, or `declined` |
-| `payload` | `object` | Action specific payload, e.g. `action` and `path` |
-| `decision` | `DecisionResponse \| null` | Filled in once the gate has evaluated it |
-| `execution` | `object \| null` | Filled in only after a permitted execution |
+2\. Action-Specific Details (context-dependent)
 
-Browser steps carry a richer payload — `url`, `action_type`, `element_id`,
-`label`, `role`, and `value` — resolved from the accessibility snapshot. See
-[Browser Snapshot Builder](/docs/browser-snapshot-builder).
+This section is flexible its contents change depending on the action type. Some
+examples:
 
-## Rules
+- Email/messaging actions: who the recipient is, a summary of the message content, whether it's a template with auto-filled placeholders (customer name, time, etc.).
+- Bulk actions: how many items are affected (e.g. 320 emails, 2,400 emails, 12,000 data rows).
+- Code/repository actions: which repo and branch, a summary of the change (to detect credentials/secrets accidentally included in a commit).
+- Data actions: the sensitivity classification of the file (confidential/internal/public), and where that data is headed.
+- Booking/financial actions: booking number, customer name, refund amount, refund reason.
 
-- One action per request. Batched side effects are described through
-  `payload_summary` and expanded into individual actions by the executor.
-- `action_id` is stable across a pause. When a run resumes after approval,
-  sanitisation, or user input, the re-evaluated action keeps its id so the audit
-  trail stays linear.
-- Secrets are never placed in `target` or `payload_summary`. Values the user has
-  to supply are requested through `ASK_USER` instead.
+3\. Reserved Space
+
+Since only 3 domains and 27 action types have been mapped so far, this form has
+a "reserved column" to capture information from new action types that haven't
+been thought of yet — without needing to redesign the form's structure again.
+
+#### A Real Example
+
+Scenario: An agent wants to archive 320 emails containing the word "newsletter."
+
+What gets sent to AgentGate (simplified):
+
+- Domain: Productivity
+- Action category: Bulk modify
+- System: Gmail
+- Filter: emails with the word "newsletter"
+- Items affected: 320
+- Reversible: Yes
+- Agent confidence: 91%
+
+AgentGate's decision: Hold for approval because 320 emails exceeds the safe
+threshold (50), and the "newsletter" keyword filter risks also catching other
+important emails.

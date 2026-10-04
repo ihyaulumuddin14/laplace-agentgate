@@ -24,9 +24,9 @@ export function DocumentationLayout({ children }: DocumentationLayoutProps) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute -left-44 bottom-4 h-140 w-140 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.38)_0%,transparent_70%)]" />
-        <div className="absolute -right-36 top-6 h-120 w-120 rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.3)_0%,transparent_70%)]" />
-        <div className="absolute -right-24 bottom-24 h-100 w-100 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.18)_0%,transparent_70%)]" />
+        <div className="absolute -left-60 bottom-0 h-140 w-140 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.32)_0%,transparent_70%)]" />
+        <div className="absolute -right-56 top-0 h-120 w-120 rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.22)_0%,transparent_70%)]" />
+        <div className="absolute -right-44 bottom-12 h-100 w-100 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.12)_0%,transparent_70%)]" />
       </div>
 
       <div className="relative mx-auto flex max-w-[1680px] flex-col gap-4 lg:h-[calc(100svh-11.5rem)] lg:flex-row lg:gap-7">

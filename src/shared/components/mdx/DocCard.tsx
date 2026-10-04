@@ -13,7 +13,7 @@ export function DocCard({ title, children, accent, className }: DocCardProps) {
     <div
       style={accent ? ({ "--accent": accent } as CSSProperties) : undefined}
       className={cn(
-        "flex flex-col gap-4 rounded-2xl border border-white/20 bg-white/4 p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] backdrop-blur-md sm:p-6",
+        "flex flex-col gap-4 rounded-2xl border border-purple-200/15 bg-white/4 p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] backdrop-blur-md sm:p-6",
         className,
       )}
     >

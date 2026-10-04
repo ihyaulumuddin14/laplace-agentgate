@@ -1,86 +1,84 @@
 export const metadata = {
   title: "CLI Demo Guide",
-  description: "The developer path: scenario replay, detector debugging, benchmarks.",
+  description:
+    "The command-line path for replaying scenarios and running benchmarks.",
 };
 
-The console is for showing the guardrail. The CLI is for working on it.
+Alongside the web-based Demo Console, AgentGate ships a command-line interface
+so developers can replay scenarios and run benchmarks without going through the
+web UI — useful for scripting, CI-style runs, and quick iteration during
+development.
 
-Where the Demo Console renders one run for an audience, the CLI replays runs
-headlessly, prints the raw contracts, and executes benchmark batches — the three
-things you need when tuning detectors and policies.
+<DocCard title="What the CLI is for">
 
-<DocCallout>
-  **The CLI ships with AgentGate Core**, not with this frontend repository. The
-  workflows below describe what it covers; the exact command surface is
-  published with the Core release and linked here once it is public.
-</DocCallout>
+- Running a single test scenario (from the Domain Scenario Inventory) against the live Core Engine and inspecting the resulting decision.
+- Replaying a batch of scenarios in sequence — the same mechanism the evaluation benchmark (Section 12) uses to compute recall, false positive/negative rates, and latency percentiles.
+- Comparing raw execution time against guarded execution time for the same action, to produce the raw-vs-guarded overhead numbers used in the benchmark report.
 
-## What it covers
+</DocCard>
 
-| Workflow | Purpose |
+## Core commands
+
+| Command | Purpose |
 | --- | --- |
-| Scenario replay | Re-run a recorded scenario and diff the decisions |
-| Detector debugging | Print detected entities and spans for a given payload |
-| Policy inspection | Show which rules matched and which one decided |
-| Benchmark runs | Execute a batch and report the aggregate metrics |
+| `agentgate run <scenario_id>` | Executes a single scenario by ID (e.g. `agentgate run RSV-04`) and prints the resulting DecisionResponse |
+| `agentgate replay <scenario_file>` | Runs every scenario in a scenario inventory file sequentially and prints a summary table of decisions vs. expected outcomes |
+| `agentgate benchmark <scenario_file> --iterations N` | Runs the same scenario set N times, recording per-stage latency (detector, policy engine, risk scoring, decision) at P50/P95 |
+| `agentgate benchmark --compare-raw` | Runs each scenario both with and without AgentGate evaluation in the loop, and reports the added latency overhead as a percentage |
+| `agentgate inspect <scenario_id>` | Prints the full evaluation trace for a scenario — ActionRequest in, every detector's output, policy rules checked, and the final DecisionResponse — useful for debugging why a scenario didn't get the expected decision |
 
-## Scenario replay
+<DocCard title="Typical developer workflow">
 
-A replay feeds stored `ActionRequest` payloads back through the gate without
-touching an executor, then compares the resulting `DecisionResponse` against the
-expected one. Because `policy_version` and `detector_version` are recorded in
-every audit entry, a replay can tell you whether a decision changed *and* which
-component changed it.
+<DocSteps>
+<DocStep>
 
-The useful outputs are:
+Write or update a scenario in the Domain Scenario Inventory
 
-- the decision diff per action,
-- the reasons that appeared or disappeared,
-- the triggered policies before and after,
-- the guardrail latency delta.
+</DocStep>
 
-## Detector debugging
+<DocStep>
 
-Detector debugging runs detection alone on a payload and prints the entity
-classes it found. This separates the two failure modes that look identical from
-the console: a detector that missed an entity, and a policy that saw the entity
-and chose not to escalate.
+Run `agentgate inspect <scenario_id>` to confirm the ActionRequest is being built correctly and see exactly which detectors and policies fire.
 
-## Policy inspection
+</DocStep>
 
-Policy inspection lists every rule that matched an action, in precedence order,
-alongside the decision each one proposed. Only the most restrictive decision
-survives into the response, so inspection is the way to see rules that are
-matching far more often than intended.
+<DocStep>
 
-## Benchmark runs
+Run `agentgate run <scenario_id>` to confirm the final decision matches the Expected Guardrail Decision documented for that scenario.
 
-Benchmark runs execute a whole scenario set and emit the aggregate figures the
-[Benchmark and Evaluation](/docs/benchmark-evaluation) page defines — decision
-distribution, block and approval rates, P50 and P95 latency, and the guardrail
-overhead against an unguarded baseline.
+</DocStep>
 
-## When to reach for it
+<DocStep>
 
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="Use the CLI"
-    accent="#34d399"
-    items={[
-      "A policy change needs a regression check",
-      "A decision is wrong and you need the entity list",
-      "You are measuring guardrail overhead",
-      "You need reproducible numbers for a report",
-    ]}
-  />
-  <DocListCard
-    title="Use the console"
-    accent="#60a5fa"
-    items={[
-      "Demonstrating the guardrail to someone",
-      "Exercising an approval or input pause by hand",
-      "Checking how a decision is presented",
-      "Reading a single run's audit record",
-    ]}
-  />
-</div>
+Once individual scenarios pass, run `agentgate replay <scenario_file>` against the full inventory to catch regressions across all scenarios at once.
+
+</DocStep>
+
+<DocStep>
+
+Periodically run `agentgate benchmark --compare-raw` to confirm the guardrail overhead is still within the target latency budget (see Benchmark and Evaluation).
+
+</DocStep>
+</DocSteps>
+
+</DocCard>
+
+<DocCard title="Output format">
+
+Every CLI command prints machine-readable JSON by default (so it can be piped
+into other tooling or CI scripts) with an optional `--pretty` flag for a
+human-readable, colorized summary — the same underlying DecisionResponse schema
+is used in both cases, so CLI output and Demo Console decision cards never
+diverge in what information they represent.
+
+</DocCard>
+
+<DocCard title="Why this matters">
+
+The CLI exists so that validating AgentGate's behavior doesn't depend on someone
+manually clicking through the web console for every scenario. It is the same
+evaluation path — ActionRequest in, DecisionResponse out — just accessed without
+a browser, which makes it the natural tool for the batch replay and benchmarking
+work the evaluation deliverable depends on.
+
+</DocCard>

@@ -1,75 +1,102 @@
 export const metadata = {
-  title: "Benchmark & Evaluation",
-  description: "How guardrail quality and guardrail cost are measured.",
+  title:
+    "Benchmark And Evaluation: Metrics, Latency, Raw-Vs-Guarded Overhead, And Failure Analysis",
+  description:
+    "How guardrail speed, overhead, and failure modes are measured and scored.",
 };
 
-A guardrail has to be judged on two axes at once: does it catch the right
-actions, and does it stay cheap enough to live in the hot path.
+<DocCard title="Quick Summary">
 
-Optimising one alone is easy and useless. A gate that blocks everything is
-perfectly safe and unusable; a gate that allows everything is instant and
-pointless.
+Adding a guardrail layer in front of an AI agent only works if it's both safe
+and fast enough that people actually keep it turned on. This document covers how
+AgentGate's performance is measured, what counts as acceptable slowdown compared
+to running an agent unguarded, and a breakdown of the specific ways the
+guardrail can fail — either by being too cautious or not cautious enough.
 
-## Decision quality
+</DocCard>
 
-| Metric | Definition |
+<DocCard title="Why This Matters">
+
+A guardrail that blocks everything is safe but useless. A guardrail that's
+accurate but takes three seconds to respond will get disabled by frustrated
+users. Benchmarking exists to prove AgentGate hits both targets at once:
+catching what matters, fast enough not to be noticed.
+
+</DocCard>
+
+<DocCard title="Part 1: Core Evaluation Latency">
+
+Measures how long it takes AgentGate to evaluate a single action and return a
+decision, from receiving the ActionRequest to returning the DecisionResponse.
+Scored on P95 (95th percentile) latency:
+
+| Score | Band | P95 Latency | What it means |
+| --- | --- | --- | --- |
+| Auto-fail | Critical Failure | Above 2000 ms | API/executor starts timing out |
+| 1 | Poor | Above 1000 ms | Feels very slow, blocks workflow |
+| 3 | Acceptable (MVP minimum) | Up to 500 ms | Tolerable, especially for complex detectors |
+| 5 | Ideal | Up to 250 ms (rule-based) / up to 500 ms (complex detectors) | Barely noticeable |
+
+In plain terms: simple checks (keyword match, threshold comparison) should be
+near-instant. More expensive checks (secret scanning, sensitive-data
+classification) get more time, but still must stay under half a second at P95.
+
+</DocCard>
+
+<DocCard title="Part 2: Raw Vs Guarded Overhead">
+
+Measures how much slower an action becomes because it passed through AgentGate,
+versus the agent executing it directly with no guardrail.
+
+| Score | Band | Overhead | What it means |
+| --- | --- | --- | --- |
+| Auto-fail | Critical Failure | Above 100% on bulk actions (e.g. 1,000-row batch) | Doubling execution time is unacceptable |
+| 1 | Poor | Above 50% | Guardrail adds drastic execution time |
+| 3 | Acceptable (MVP minimum) | 20% – 35% | Tolerable for standard, non-bulk actions |
+| 5 | Ideal | 20% or below | Barely noticeable to the user |
+
+MVP pass bar ties these two together: evaluation latency P95 ≤ 250–500 ms, and
+raw-vs-guarded overhead ≤ 20% on standard actions (never exceeding 100% even on
+bulk actions).
+
+</DocCard>
+
+<DocCard title="Part 3: Failure Analysis">
+
+Failures split into two categories — not equally dangerous.
+
+**False Positives (guardrail too cautious)** — blocks, holds, or asks approval
+on an action that was actually safe. Hurts UX; agent feels paranoid.
+
+| ID | Pattern | Impact | Trigger |
+| --- | --- | --- | --- |
+| FP-01 | Over-Sensitive Keyword Detection | Medium | Sensitive-sounding word present, but no real sensitive value (e.g. subject "API Key Rotation Schedule" blocked for containing "API Key") |
+| FP-02 | Bulk Action Threshold Mismatch | Medium | Flat threshold doesn't account for domain context |
+| FP-03 | Misclassified Recipient (Internal vs. External) | High | Internal domain whitelist not configured |
+| FP-04 | Excessive Sanitization of Non-Sensitive Content | Medium | Placeholder/documentation text treated as a real credential |
+| FP-05 | Repeated Approval for an Identical Action | High-Critical | No session-level approval memory; stateless evaluation |
+
+False Negatives (guardrail not cautious enough) — allows an action that was
+actually dangerous, risky, or policy-violating. Far more dangerous than false
+positives: consequences can be real data leakage, financial loss, or a completed
+violation.
+
+| ID | Pattern | Impact | Root Risk |
+| --- | --- | --- | --- |
+| FN-01 | Obfuscated Secret Evades Detection | Critical | Encoded/disguised credential not recognized by detector |
+| FN-02 | Indirect Data Egress via Summarization | Critical | Sensitive data leaves as narrative/summary text, not recognized as the same conten |
+| FN-03 | Prompt Injection via External Content | Critical | Action originates from injected instruction, not a genuine user request |
+| FN-04 | Low-Confidence Action Executed Without Clarification | Hight | Agent's own low confidence score isn't used to trigger a clarifying question |
+| FN-05 | Multi-Step Action Chain Evades Individual Evaluation | Critical | Each step looks safe alone; cumulative risk of the chain is never evaluated together |
+
+</DocCard>
+
+<DocCard title="Part 4: Mvp Pass Bar">
+
+| Criterion | What it means |
 | --- | --- |
-| Decision distribution | Share of `ALLOW`, `BLOCK`, `NEED_APPROVAL`, `SANITIZE`, `ASK_USER` |
-| Catch rate | Risky actions correctly escalated or blocked |
-| False escalation rate | Safe actions sent to a reviewer unnecessarily |
-| Miss rate | Risky actions allowed through |
-| Decline rate | Escalations a reviewer refused, against all escalations |
+| Critical Safety Violations | Zero, across all test scenarios |
+| Average Dimension Score | At least 3.0 (including this performance dimension) |
+| Scenario Coverage | All test scenarios match expected output, with at most one non-critical edge case allowed to miss |
 
-<DocCallout>
-  False escalation is a safety metric, not only a convenience one. A reviewer who
-  approves out of habit is no longer reviewing, so an over-eager policy quietly
-  removes the protection it was meant to add.
-</DocCallout>
-
-The decline rate is the honest signal here. Escalations that a human almost
-always approves were probably not worth escalating, and the matching rule in
-[Policy Packs](/docs/policy-packs) should be tightened.
-
-## Latency
-
-| Metric | Definition |
-| --- | --- |
-| P50 total | Median end-to-end time for one action |
-| P95 total | Tail end-to-end time for one action |
-| P50 guardrail | Median evaluation time inside the gate |
-| P95 guardrail | Tail evaluation time inside the gate |
-| Guardrail overhead | Guarded time against the unguarded baseline, as a percentage |
-
-Guardrail and executor latency are reported separately — `latency_ms` on the
-decision, `latency_ms` on the execution, and the `latency` breakdown on the
-audit record. Overhead is measured against a raw run with the gate disabled, so
-the number reflects the guardrail alone rather than the speed of the target
-system.
-
-Latency is also broken down by domain, because the three behave differently:
-
-| Domain | Characteristic |
-| --- | --- |
-| `API` | Fast and predictable, dominated by the connector |
-| `FILE` | Fastest path, detection dominates |
-| `BROWSER` | Slowest and most variable, dominated by page load and snapshot |
-
-## Reporting rules
-
-- Report percentiles, never averages. A mean hides exactly the tail that makes a
-  guardrail feel slow.
-- Pin `policy_version` and `detector_version` with every result. A number without
-  its versions cannot be reproduced or compared.
-- Keep pauses out of the latency figures. Time spent waiting for a human is not
-  guardrail cost.
-- Record the baseline alongside the guarded run, from the same scenario set.
-
-## Live view
-
-The Latency Report in the Demo Console shows P50 and P95 totals, the guardrail
-share, and the per-domain breakdown for the current session. The Risk Dashboard
-shows the decision distribution together with total actions, approved, blocked,
-and pending review.
-
-Session figures are indicative — a handful of runs is not a benchmark. Use the
-[CLI benchmark runs](/docs/cli-demo-guide) for numbers you intend to quote.
+</DocCard>

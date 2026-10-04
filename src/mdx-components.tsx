@@ -1,6 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import { DocCallout } from "@/shared/components/mdx/DocCallout";
 import { DocCard } from "@/shared/components/mdx/DocCard";
+import { DocLabel } from "@/shared/components/mdx/DocLabel";
 import { DocListCard } from "@/shared/components/mdx/DocListCard";
 import { DocStep, DocSteps } from "@/shared/components/mdx/DocSteps";
 import { DocToken } from "@/shared/components/mdx/DocToken";
@@ -43,6 +44,7 @@ const components = {
 
   DocCallout,
   DocCard,
+  DocLabel,
   DocListCard,
   DocStep,
   DocSteps,

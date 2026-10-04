@@ -1,90 +1,72 @@
 export const metadata = {
   title: "Tool Contracts",
-  description: "The action types the guardrail engine knows how to evaluate.",
+  description:
+    "The fixed specification every API and browser tool must satisfy before it can be proposed.",
 };
 
-A tool contract is the vocabulary shared by the planner, the gate, and the executor.
+Every tool AgentGate can execute — whether an API call or a browser action — is
+defined by a **tool contract**: a fixed specification of what arguments the tool
+accepts, what it returns, and what execution rules apply to it. Contracts exist
+so that the DS-led function-calling loop, the AgentGate Core Engine, and the
+Hybrid Executor all agree on the exact shape of an action before it is ever
+proposed.
 
-`action_type` tells the gate *what kind of side effect* is being proposed, which
-in turn selects the detectors and policy rules that apply. An unknown
-`action_type` is never executed optimistically — it is treated as unevaluated
-risk.
+<DocCard title="Why contracts matter">
 
-## Browser domain
+Without a contract, a "tool call" is just a free-form instruction the agent
+generated — there is no guarantee the arguments are complete, well-typed, or
+even executable. A contract turns a tool call into something AgentGate can
+reason about: it can check whether required fields are present, whether the
+target matches an allowed pattern, and whether the action falls into a high-risk
+category before a single line of execution code runs.
 
-Executed through Playwright against the resolved element reference.
+</DocCard>
 
-| Action type | Side effect | Typical risk |
-| --- | --- | --- |
-| `BROWSER_OPEN` | Navigate to a URL | Low, unless the host is untrusted |
-| `BROWSER_SNAPSHOT` | Build an accessibility snapshot | None, read only |
-| `BROWSER_CLICK` | Click one element | Depends on the element's `risk_hint` |
-| `BROWSER_TYPE` | Enter text into a field | High when the field is a credential |
-| `BROWSER_SELECT` | Choose an option | Low to medium |
-| `BROWSER_SUBMIT` | Submit a form | High, usually irreversible |
-| `BROWSER_SCROLL` | Scroll the page | None, read only |
-| `BROWSER_SCREENSHOT` | Capture the viewport | Low, may capture sensitive content |
+<DocCard title="Two categories of tools in the MVP">
 
-## API domain
+<DocSteps>
+<DocStep>
 
-Executed through a connector rather than a browser.
+<DocLabel>API Tools</DocLabel> — thin, typed wrappers around a specific external API endpoint (Gmail, Google Calendar, GitHub, Stripe Sandbox, Telegram Bot API, local filesystem). Each API tool contract specifies: the underlying endpoint/method, required and optional arguments, the expected response shape, and whether the call is read-only or state-changing.
 
-| Target system | Example action | Notes |
-| --- | --- | --- |
-| `gmail` | Send, archive, or delete mail | Bulk operations cross approval thresholds |
-| `calendar` | Create, move, or cancel events | Cancellation is hard to undo |
-| `github` | Read repositories, open issues | Guards source and secret exposure |
-| `stripe` | Create a sandbox payment | Sandbox only in the MVP |
+</DocStep>
 
-`API_CALL` is the generic contract for these connectors. The connector resolves
-the concrete endpoint; the gate evaluates `target`, `payload_summary`, and the
-detected entities.
+<DocStep>
 
-## File domain
+<DocLabel>Browser Tools</DocLabel> — the fixed action space executed via Playwright (BROWSER_OPEN, BROWSER_SNAPSHOT, BROWSER_CLICK, BROWSER_TYPE, BROWSER_SELECT, BROWSER_SUBMIT, BROWSER_SCREENSHOT). Each browser tool contract specifies the minimal arguments needed to act on a snapshot element (element_id, and where relevant value or option) — never raw HTML or CSS selectors.
 
-| Action type | Side effect | Typical risk |
-| --- | --- | --- |
-| `FILE_READ` | Read a local file | High for `.env`, keys, and credential stores |
+</DocStep>
+</DocSteps>
 
-<DocCallout>
-  **Read is not safe by default.** A read that exposes an API key to the model
-  context is a leak, so `FILE_READ` is evaluated with the same seriousness as a
-  write.
-</DocCallout>
+</DocCard>
 
-## What every contract must supply
+## What a tool contract specifies
 
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="Required by the gate"
-    accent="#60a5fa"
-    items={[
-      "action_type from the vocabulary above",
-      "target_system and a resolved target",
-      "payload_summary describing the side effect",
-      "browser_element for element level actions",
-    ]}
-  />
-  <DocListCard
-    title="Rejected by the gate"
-    accent="#f87171"
-    items={[
-      "Unknown or free-form action types",
-      "Element actions without a snapshot reference",
-      "Raw credentials inside the payload",
-      "Several side effects in one action",
-    ]}
-  />
-</div>
+| Field | Purpose |
+| :---: | --- |
+| tool_name | Unique identifier the function-calling loop uses to propose this action |
+| arguments | Named, typed parameters the tool accepts (e.g. recipient, element_id, query_filter) |
+| read_or_write | Whether the call is read-only or state-changing — directly informs risk scoring |
+| execution_path | Which executor handles it: API Executor or Browser Executor |
+| rollback_available | Whether the effect of this specific tool call can be undone |
 
-## Adding a contract
+<DocCard title="Execution rules — the part that makes contracts a guardrail concern">
 
-1. Define the `action_type` and the domain it belongs to.
-2. Describe the side effect it produces and whether it is reversible.
-3. Declare which detectors must run before it can be allowed.
-4. Add the policy rules that can escalate or block it.
-5. Register the executor that performs it.
+A contract is not just a schema for convenience; it also encodes constraints
+AgentGate enforces before execution:
 
-Steps 3 to 5 live in AgentGate Core. The frontend only needs the vocabulary, so
-it can render a [Proposed Action Preview](/docs/demo-console-ui-states) for any
-contract the backend reports.
+- A tool call whose tool_name does not match any defined contract is rejected outright by the **Action Space Validator** — the function-calling loop cannot invent tools that fall outside the fixed action space described in the PRD.
+- A tool call missing a required argument, or supplying an argument of the wrong type, fails validation before it ever reaches the policy engine — this keeps malformed proposals from being evaluated as if they were well-formed and safe.
+- read_or_write and rollback_available are not just documentation — they are read directly by the Core Engine's risk scoring step, so a tool contract effectively pre-declares part of its own risk profile.
+
+</DocCard>
+
+<DocCard title="Why this matters">
+
+Tool contracts are the boundary between "the agent wants to do something" and
+"AgentGate has enough structured information to evaluate it." Every
+ActionRequest that reaches the Core Engine is only as trustworthy as the
+contract behind the tool call that generated it — a loose or incomplete contract
+weakens every downstream guardrail decision.
+
+</DocCard>

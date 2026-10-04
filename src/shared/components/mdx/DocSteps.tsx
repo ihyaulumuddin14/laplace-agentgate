@@ -8,7 +8,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 type DocStepProps = {
-  title: string;
+  title?: string;
   children: ReactNode;
   number?: number;
   className?: string;
@@ -26,10 +26,14 @@ export function DocStep({ title, children, number, className }: DocStepProps) {
         {number}.
       </span>
       <div className="min-w-0 flex-1">
-        <p className="font-poppins text-[15px] font-bold leading-snug text-purple-200 sm:text-base">
-          {title}
-        </p>
-        <div className="mt-1 flex flex-col gap-2">{children}</div>
+        {title && (
+          <p className="font-poppins text-[15px] font-bold leading-snug text-purple-200 sm:text-base">
+            {title}
+          </p>
+        )}
+        <div className={cn("flex flex-col gap-2", title && "mt-1")}>
+          {children}
+        </div>
       </div>
     </li>
   );

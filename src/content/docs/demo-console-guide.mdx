@@ -1,0 +1,79 @@
+export const metadata = {
+  title: "Demo Console Guide",
+  description: "Navigating the console: scenario, state view, and logs.",
+};
+
+The console is the MVP product surface. Three tabs, one run at a time.
+
+## Tabs
+
+| Tab | What it shows |
+| --- | --- |
+| **Scenario** | Web Chat, the Scenario Runner, and the conversational trace |
+| **State View** | The live pipeline: planning, proposed action, evaluation, decision |
+| **Logs** | Audit Log, Risk Dashboard, and Latency Report for the session |
+
+On desktop the Scenario and State View sit side by side so a decision can be
+read next to the message that triggered it. On mobile they are separate tabs.
+
+## Sessions
+
+A session is created as soon as you open the console, and every request carries
+it in the `X-AgentGate-Session` header.
+
+| Reason | When it fires |
+| --- | --- |
+| `reset` | You clear the console yourself |
+| `refresh` | The page is reloaded |
+| `pagehide` | You navigate away or close the tab |
+| `replaced` | A new session supersedes the current one |
+
+<DocCallout>
+  Sessions are ephemeral and expire after an idle timeout. Audit records belong
+  to the session, so a reset clears the Logs tab — export anything you need
+  before resetting.
+</DocCallout>
+
+## Running a task
+
+1. Type a task, or pick a preset from the
+   [Scenario Runner](/docs/demo-scenarios).
+2. The run starts streaming. Chat shows the narrative, State View shows the
+   pipeline.
+3. The gate evaluates each proposed step before the executor is invoked.
+4. When the run pauses, answer it in the panel on the right.
+5. The run finishes as completed, declined, blocked, or failed.
+
+## Answering a pause
+
+**Approval.** `NEED_APPROVAL` shows the proposed action with its risk level,
+reasons, and triggered policies. Approving resumes the run; declining ends it
+with status `declined`. The original verdict stays in `initial_decision`.
+
+**Input.** `ASK_USER` and `SANITIZE` ask for the specific fields the action
+needs — a password, an amount, a recipient. The values go straight to the
+executor for that step. The planner's payload keeps the sanitised version.
+
+## Logs
+
+| Panel | Contents |
+| --- | --- |
+| Audit Log | One row per action: timestamp, action, decision, risk, status, detail |
+| Risk Dashboard | Decision distribution plus total actions, approved, blocked, pending review |
+| Latency Report | P50 and P95 totals, guardrail share, and a breakdown by `BROWSER`, `FILE`, `API` |
+
+Each audit row expands into the full record: the request JSON, the decision
+JSON, the execution JSON, the policy and detector versions, and the latency
+split between guardrail and executor.
+
+## Reading a decision quickly
+
+- **Risk level and score** give the magnitude.
+- **Reasons** give the cause, in prose.
+- **Triggered policies** give the rule that escalated it.
+- **Sensitive entities** list what the detectors found.
+- **Next step** states what the router will do.
+
+For `ALLOW` the console collapses policies and entities — there is nothing to
+review. They reappear for every other decision. See
+[Demo Console UI States](/docs/demo-console-ui-states) for each card in detail.

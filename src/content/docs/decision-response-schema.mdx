@@ -1,0 +1,75 @@
+export const metadata = {
+  title:
+    "DecisionResponse: What Agentgate Sends Back After Evaluating An Action",
+  description:
+    "The structured verdict AgentGate returns for every evaluated action.",
+};
+
+<DocCard title="Quick Summary">
+
+After AgentGate reviews an ActionRequest, it doesn't just say "yes" or "no." It
+returns a structured verdict called DecisionResponse. This is what tells the
+system whether to execute the action right away, hold it for a human to approve,
+mask sensitive parts of it, ask the user a clarifying question, or block it
+outright — along with the reasoning behind that call.\
+This document summarizes what's inside that verdict, in plain language, for
+review purposes.
+
+</DocCard>
+
+<DocCard title="Why This Matters">
+
+A decision without an explanation is not auditable and not trustworthy. Every
+field in DecisionResponse exists so that a human reviewer, an audit log, or a
+compliance check can later answer: what was decided, why, based on which rule,
+and what happens next.
+
+</DocCard>
+
+<DocCard title="What's Inside">
+
+<DocSteps>
+<DocStep title="The Verdict Itself (always present).">
+
+- Decision: one of five outcomes — Allow, Need Approval, Block, Sanitize, or Ask User.
+- Risk level: a simple bucket — Low, Medium, High, or Critical.
+- Risk score: a number from 0 to 1, calculated as Severity times Likelihood.
+- Reasons: a plain-language list explaining why this decision was made. Example: "Bulk action affects 320 emails, exceeds threshold of 50."
+- Triggered policies: the specific rule names that fired, e.g. "bulk_action_threshold." This is the machine-readable version of the reasons above.
+- Next step: a plain instruction for what happens now, e.g. "Route to approval queue with preview of affected emails."
+
+</DocStep>
+
+<DocStep title="Flagged Details (only shown when something was actually found).">
+
+- Sensitive entities: the specific pieces of sensitive information the system detected, such as a customer's name, a dollar amount, or a credential pattern. This is left out entirely when nothing sensitive was found, so a clean, low-risk action doesn't get cluttered with an empty field.
+- Sanitized payload: a description of what the content looks like after sensitive parts are masked. This only appears when the decision is Sanitize.
+
+</DocStep>
+
+<DocStep title="Audit Trail Linkage (added, not in the original raw examples).">
+
+- Request ID: ties this decision back to the specific action request it was evaluating.
+- Evaluated at: a timestamp of when the decision was made.
+- These two are not something the AI model outputs on its own — they are added by the system because the audit logging requirements explicitly call for every decision to be traceable by request, decision, reasons, entities, and timestamp, together, as one unit.
+
+</DocStep>
+</DocSteps>
+
+</DocCard>
+
+<DocCard title="A Real Example">
+
+Scenario: an agent tries to archive 320 emails containing the word "newsletter."\
+What AgentGate returns:
+
+```text
+Decision: Need Approval
+Risk level: Medium
+Risk score: 0.72
+Reasons: Bulk action affects 320 emails, exceeds the safe threshold of 50. The keyword filter "newsletter" may also catch important transactional emails.
+Triggered policies: bulk_action_threshold, email_modify_scope
+Next step: Route to approval queue with a preview of the affected emails.
+```
+
+</DocCard>

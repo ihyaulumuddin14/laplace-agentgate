@@ -1,0 +1,51 @@
+export const metadata = {
+  title: "Policy Packs",
+  description:
+    "Domain-specific rule sets that let one core engine serve very different use cases.",
+};
+
+Policy Packs are collections of domain-specific rules that AgentGate applies
+when evaluating an ActionRequest. Each pack defines what kinds of actions and
+content are considered risky within its domain, which is what allows the same
+core engine (Section 2) to be reused across very different use cases without
+changing the guardrail flow itself.\
+The three MVP domains — Booking messaging, internal data/code, and productivity
+assistant — were chosen as evidence-based risk domains: they are used to
+demonstrate realistic risk patterns and are not a claim that AgentGate has
+production access to any real company's systems.
+
+| Policy Pack | Risk Coverage |
+| :---: | --- |
+| Booking messaging policy | External customer send, payment-related content, cancel booking, submit button, customer PII. |
+| Code/data protection policy | Source-code exposure, API keys, private keys, credentials, environment files, repository secrets. |
+| Productivity assistant policy | Bulk email archive, calendar creation/update, external email send, file access, repository access. |
+
+<DocCard title="Booking messaging policy">
+
+Governs agents operating in customer-facing booking/reservation contexts. It
+treats anything that reaches an external customer, touches payment information,
+or performs an irreversible action (like cancelling a booking or clicking a
+final submit button) as elevated risk, and flags customer PII appearing in
+outbound content.
+
+</DocCard>
+
+<DocCard title="Code/data protection policy">
+
+Governs agents with access to source code or infrastructure. It is focused on
+preventing secrets and sensitive data from being exposed or exfiltrated —
+including API keys, private keys, credentials, .env files, and anything else
+that grants access to repositories or systems.
+
+</DocCard>
+
+<DocCard title="Productivity assistant policy">
+
+Governs general-purpose productivity agents (inbox, calendar, files,
+repositories). It covers actions that are high-blast-radius because of scale or
+reach — bulk operations like archiving many emails at once, calendar changes
+that affect other people, messages sent externally, and access to files or
+repositories outside the current task's obvious scope.\
+Each policy pack maps its risk categories to specific decisions (<DocToken>ALLOW, NEED_APPROVAL, ASK_USER, or block</DocToken>) that the Decision Router enforces, and which route into the Approval Queue and Audit Log as described in Core Concept.
+
+</DocCard>

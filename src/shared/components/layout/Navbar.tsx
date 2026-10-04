@@ -9,9 +9,9 @@ import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 import { GuardedLink } from "../ui/GuardedLink";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Documentation", href: "/docs" },
-  { label: "Demo Console", href: "/demo" },
+  { label: "Home", href: "/", match: "/home" },
+  { label: "Documentation", href: "/docs", match: "/docs" },
+  { label: "Demo Console", href: "/demo", match: "/demo" },
 ] as const;
 
 export function Navbar() {
@@ -53,7 +53,9 @@ export function Navbar() {
           {/* Desktop navigation */}
           <ul className="hidden items-center gap-8 lg:flex xl:gap-12">
             {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.match ||
+                pathname.startsWith(`${item.match}/`);
 
               return (
                 <li key={item.label}>
@@ -62,7 +64,7 @@ export function Navbar() {
                     aria-current={isActive ? "page" : undefined}
                     className={`relative block pb-1 font-poppins font-semibold leading-[100%] text-base transition-colors duration-200 ${
                       isActive
-                        ? "text-purple-300"
+                        ? "text-purple-200"
                         : "text-purple-50 hover:text-purple-200"
                     }`}
                   >
@@ -112,7 +114,9 @@ export function Navbar() {
         {isMenuOpen && (
           <ul className="flex flex-col gap-1 border-t border-purple-200/10 px-5 py-3 lg:hidden">
             {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.match ||
+                pathname.startsWith(`${item.match}/`);
 
               return (
                 <li key={item.label}>
@@ -124,8 +128,8 @@ export function Navbar() {
                     }}
                     className={`block rounded-xl px-3 py-2 font-poppins text-base font-semibold transition-colors ${
                       isActive
-                        ? "bg-purple-500/15 text-purple-300"
-                        : "text-purple-50 hover:bg-white/5"
+                        ? "bg-white/5 text-purple-200"
+                        : "text-purple-50 hover:bg-white/5 hover:text-purple-200"
                     }`}
                   >
                     {item.label}

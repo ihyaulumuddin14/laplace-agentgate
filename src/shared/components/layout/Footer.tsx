@@ -10,7 +10,10 @@ import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 const FOOTER_LINKS = [
   { label: "Demo Console", href: "/demo" },
   { label: "Documentation", href: "/docs" },
-  { label: "Github Repository", href: "#github" },
+  {
+    label: "Github Repository",
+    href: "https://github.com/yukienjoyer7/agent-gate",
+  },
   { label: "PRD/Report", href: "#report" },
 ] as const;
 

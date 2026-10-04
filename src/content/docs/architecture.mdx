@@ -1,0 +1,59 @@
+export const metadata = {
+  title: "Architecture",
+  description:
+    "The layered design that routes every action through one mandatory checkpoint.",
+};
+
+AgentGate is a framework-agnostic Python guardrail engine placed between an
+agent's decision logic and the systems it wants to act on. The architecture is
+layered so that every action passes one mandatory checkpoint.
+
+#### Layered view
+
+| Layer | Name | What flows through it |
+| :---: | :---: | --- |
+| L1 | Interface | Web Chat / Demo Console and CLI. The user task enters here. |
+| L2 | Agent | DS-led custom function-calling loop proposes a tool call. |
+| L3 | Contract | Action Space Validator checks the tool call against tool contracts. |
+| L4 | Normalization | Runtime converts the validated call into an ActionRequest. |
+| L5 | Core Engine | Detectors → Policy Engine (Policy Packs) → Risk Scoring → Sanitizer → DecisionResponse. |
+| L6 | Enforcement | Decision Router, with the Approval Queue. Passes on only ALLOW, approved, or sanitized actions. |
+| L7 | Execution | Hybrid Executor: API Executor or Browser Executor (Playwright). |
+| L8 | Observability | Audit Log feeding the Risk Dashboard and Benchmark View. |
+
+#### Components
+
+| Layer | Component | Responsibility |
+| :---: | :---: | --- |
+| L1 | Web Demo Console | Chat, scenario runner, action preview, decision card, approval queue, audit view, dashboard, benchmark view |
+| L1 | CLI | run, replay, inspect, benchmark over the same evaluation path |
+| L2 | Function-calling loop | Decides which tool and arguments accomplish the task; does not enforce policy |
+| L3 | Action Space Validator | Rejects unknown tools and missing or mistyped arguments before policy evaluation |
+| L4 | ActionRequest builder | Normalizes any tool call into one schema (identity, action-specific details, reserved space) |
+| L5 | Detectors | PII/secret, source-code, phishing/payment-risk, path classifier, internal-domain classifier, bulk-action, query-scope, confidence check |
+| L5 | Policy Engine | Loads Policy Packs (YAML/JSON) and matches rules to ActionRequest fields |
+| L5 | Risk Scoring | Severity × Likelihood, 0–1 score mapped to Low/Medium/High/Critical; escalates on irreversibility |
+| L5 | Sanitizer | Redacts sensitive values while keeping structure (variable names, code logic) |
+| L6 | Decision Router | Single enforcement point; nothing downstream can bypass it |
+| L6 | Approval Queue | Holds actions with full preview, supports approve/reject, timeout auto-reject, exactly-once execution |
+| L7 | API Executor | Typed wrappers around official APIs, preferred where feasible |
+| L7 | Browser Executor | Playwright fallback with a fixed action space (open, snapshot, click, type, select, submit, screenshot) |
+| L7 | Snapshot Builder | Converts DOM into a compact snapshot, masks sensitive values, keeps the selector map internal |
+| L8 | Audit Log | Records request, decision, reasons, entities, timestamp, reviewer identity, execution result, latency |
+
+#### Policy Packs
+
+| Pack | Focus |
+| :---: | --- |
+| Booking messaging | External customer send, payment content, cancel, submit, customer PII |
+| Code/data protection | Source code, API keys, credentials, .env, repo secrets |
+| Productivity assistant | Bulk archive, calendar, external email, file and repo access |
+
+#### Design principles
+
+- Pre-action only. No API call or browser action executes before a DecisionResponse exists.
+- Single enforcement point. Only the Decision Router acts on decisions.
+- Same contract everywhere. API and browser actions both become ActionRequests, and future adapters (Chrome extension, MCP, LangGraph, OpenClaw) plug in at L4 without a parallel evaluation path.
+- Hybrid execution. API first; Playwright when no suitable API exists.
+- Minimal exposure. The LLM sees element_id and sanitized values, never raw HTML or raw secrets.
+- Nothing silent. Every evaluated action is logged, including ALLOW.

@@ -1,0 +1,72 @@
+export const metadata = {
+  title: "Tool Contracts",
+  description:
+    "The fixed specification every API and browser tool must satisfy before it can be proposed.",
+};
+
+Every tool AgentGate can execute — whether an API call or a browser action — is
+defined by a **tool contract**: a fixed specification of what arguments the tool
+accepts, what it returns, and what execution rules apply to it. Contracts exist
+so that the DS-led function-calling loop, the AgentGate Core Engine, and the
+Hybrid Executor all agree on the exact shape of an action before it is ever
+proposed.
+
+<DocCard title="Why contracts matter">
+
+Without a contract, a "tool call" is just a free-form instruction the agent
+generated — there is no guarantee the arguments are complete, well-typed, or
+even executable. A contract turns a tool call into something AgentGate can
+reason about: it can check whether required fields are present, whether the
+target matches an allowed pattern, and whether the action falls into a high-risk
+category before a single line of execution code runs.
+
+</DocCard>
+
+<DocCard title="Two categories of tools in the MVP">
+
+<DocSteps>
+<DocStep>
+
+<DocLabel>API Tools</DocLabel> — thin, typed wrappers around a specific external API endpoint (Gmail, Google Calendar, GitHub, Stripe Sandbox, Telegram Bot API, local filesystem). Each API tool contract specifies: the underlying endpoint/method, required and optional arguments, the expected response shape, and whether the call is read-only or state-changing.
+
+</DocStep>
+
+<DocStep>
+
+<DocLabel>Browser Tools</DocLabel> — the fixed action space executed via Playwright (BROWSER_OPEN, BROWSER_SNAPSHOT, BROWSER_CLICK, BROWSER_TYPE, BROWSER_SELECT, BROWSER_SUBMIT, BROWSER_SCREENSHOT). Each browser tool contract specifies the minimal arguments needed to act on a snapshot element (element_id, and where relevant value or option) — never raw HTML or CSS selectors.
+
+</DocStep>
+</DocSteps>
+
+</DocCard>
+
+## What a tool contract specifies
+
+| Field | Purpose |
+| :---: | --- |
+| tool_name | Unique identifier the function-calling loop uses to propose this action |
+| arguments | Named, typed parameters the tool accepts (e.g. recipient, element_id, query_filter) |
+| read_or_write | Whether the call is read-only or state-changing — directly informs risk scoring |
+| execution_path | Which executor handles it: API Executor or Browser Executor |
+| rollback_available | Whether the effect of this specific tool call can be undone |
+
+<DocCard title="Execution rules — the part that makes contracts a guardrail concern">
+
+A contract is not just a schema for convenience; it also encodes constraints
+AgentGate enforces before execution:
+
+- A tool call whose tool_name does not match any defined contract is rejected outright by the **Action Space Validator** — the function-calling loop cannot invent tools that fall outside the fixed action space described in the PRD.
+- A tool call missing a required argument, or supplying an argument of the wrong type, fails validation before it ever reaches the policy engine — this keeps malformed proposals from being evaluated as if they were well-formed and safe.
+- read_or_write and rollback_available are not just documentation — they are read directly by the Core Engine's risk scoring step, so a tool contract effectively pre-declares part of its own risk profile.
+
+</DocCard>
+
+<DocCard title="Why this matters">
+
+Tool contracts are the boundary between "the agent wants to do something" and
+"AgentGate has enough structured information to evaluate it." Every
+ActionRequest that reaches the Core Engine is only as trustworthy as the
+contract behind the tool call that generated it — a loose or incomplete contract
+weakens every downstream guardrail decision.
+
+</DocCard>

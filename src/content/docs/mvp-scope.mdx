@@ -1,0 +1,50 @@
+export const metadata = {
+  title: "MVP Scope",
+  description:
+    "What the MVP proves, what is deferred, and the limitations it documents.",
+};
+
+AgentGate MVP validates one claim end to end: **no real API or browser action
+runs before AgentGate evaluation.** The MVP proves this on three evidence-based
+domains through a `core-optimized path`, not through production integrations.
+
+#### Included in MVP
+
+| Area | Included |
+| :---: | --- |
+| Domains | Reservation Messaging (customer), Productivity Assistant, Internal Data & Source Code Protection |
+| Actions covered | 27 actions in the final Policy Matrix (8 reservation, 10 productivity, 9 internal data/code) |
+| Decisions | ALLOW, NEED_APPROVAL, BLOCK, SANITIZE, ASK_USER (NEED_APPROVAL escalates to CRITICAL for financial or irreversible actions) |
+| Agent logic | DS-led custom function-calling loop, evaluated by the core engine (not a generic agent framework) |
+| Core engine | Action Space Validator, detectors, policy engine, risk scoring, sanitizer, DecisionResponse builder |
+| Detectors | PII/secret, source-code, phishing/payment-risk, path classifier, internal-domain classifier, bulk-action and query-scope evaluators |
+| Enforcement | Decision Router, Approval Queue (with timeout and single execution), Audit Log |
+| Execution | Hybrid executor. APIs: Gmail, Google Calendar, GitHub REST, Stripe Sandbox, Telegram Bot API, local filesystem. Fallback: Playwright against a sandbox/mock booking dashboard |
+| Browser safety | Browser Snapshot Builder (element_id, role, label, text; no raw HTML) and internal selector map |
+| Interfaces | Web Demo Console (chat, scenario runner, proposed-action preview, decision card, approval queue, audit log, risk dashboard, latency benchmark view) and CLI (run, replay, inspect, benchmark) |
+| Evaluation | 15 test scenarios (TC-P/C/B), 26-scenario decision matrix, detector test cases, Policy QA examples, FP/FN taxonomy, 6-dimension rubric, 31-item QA checklist |
+| MVP pass bar | Zero critical safety violations, average dimension score ≥ 3.0, all 15 scenarios match expected output (max 1 non-critical edge-case miss), P95 latency ≤ 250–500 ms, overhead ≤ 20% on standard actions (never > 100% on bulk) |
+
+#### Explicitly out of MVP (Post-MVP)
+
+| Item | Note |
+| :---: | --- |
+| Chrome/Browser Extension | Live DOM reading, element highlighting, in-browser click interception |
+| MCP adapter | Reuses ActionRequest/DecisionResponse contracts |
+| LangGraph adapter | After core engine is stable and fast |
+| OpenClaw adapter | Optional; after engine quality is proven |
+| More API connectors | After auth, policy versioning, connector management |
+| Browser recorder, Policy pack marketplace | Ecosystem features, last |
+| Other domains | Finance, HR, Healthcare, Legal, Education, DevOps, Customer Support (from the Sprint 1 taxonomy) |
+| WhatsApp Cloud API | Paid and ban-prone; Telegram is used instead |
+| Real money and real customer systems | Stripe stays in sandbox; the booking dashboard is a mock |
+
+#### Known limitations (documented, not guaranteed in MVP)
+
+These come from the FP/FN taxonomy. They are mitigation directions, not shipped
+guarantees:
+
+- Session-level approval memory (FP-05) and contextual bulk thresholds (FP-02)
+- Session-level data provenance and cumulative risk tracking (FN-02, FN-05)
+- `action_origin` field for prompt-injection scrutiny (FN-03)
+- Base64/encoded secret decoding (FN-01)

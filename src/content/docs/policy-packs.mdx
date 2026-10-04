@@ -1,90 +1,51 @@
 export const metadata = {
   title: "Policy Packs",
-  description: "Bundled rule sets that turn detected risk into a decision.",
+  description:
+    "Domain-specific rule sets that let one core engine serve very different use cases.",
 };
 
-A policy pack is a versioned bundle of rules scoped to one kind of work.
+Policy Packs are collections of domain-specific rules that AgentGate applies
+when evaluating an ActionRequest. Each pack defines what kinds of actions and
+content are considered risky within its domain, which is what allows the same
+core engine (Section 2) to be reused across very different use cases without
+changing the guardrail flow itself.\
+The three MVP domains — Booking messaging, internal data/code, and productivity
+assistant — were chosen as evidence-based risk domains: they are used to
+demonstrate realistic risk patterns and are not a claim that AgentGate has
+production access to any real company's systems.
 
-Detectors answer *what is in this action*. Policy packs answer *what should
-happen about it*. Keeping them separate means a detector improvement does not
-silently change a decision, and a policy change does not require new detection.
+| Policy Pack | Risk Coverage |
+| :---: | --- |
+| Booking messaging policy | External customer send, payment-related content, cancel booking, submit button, customer PII. |
+| Code/data protection policy | Source-code exposure, API keys, private keys, credentials, environment files, repository secrets. |
+| Productivity assistant policy | Bulk email archive, calendar creation/update, external email send, file access, repository access. |
 
-## Packs shipped with the MVP
+<DocCard title="Booking messaging policy">
 
-| Pack | Scope | Typical decision |
-| --- | --- | --- |
-| Booking messaging policy | Customer-facing messages and confirmations | `NEED_APPROVAL` |
-| Code and data protection policy | Repositories, local files, secrets | `BLOCK` |
-| Productivity assistant policy | Bulk mailbox and calendar operations | `NEED_APPROVAL` |
+Governs agents operating in customer-facing booking/reservation contexts. It
+treats anything that reaches an external customer, touches payment information,
+or performs an irreversible action (like cancelling a booking or clicking a
+final submit button) as elevated risk, and flags customer PII appearing in
+outbound content.
 
-### Booking messaging policy
+</DocCard>
 
-Targets an external customer with a payment or confirmation pattern. Sending is
-legitimate work, but the recipient is outside the organisation and the message
-cannot be unsent — so a reviewer sees it first.
+<DocCard title="Code/data protection policy">
 
-### Code and data protection policy
+Governs agents with access to source code or infrastructure. It is focused on
+preventing secrets and sensitive data from being exposed or exfiltrated —
+including API keys, private keys, credentials, .env files, and anything else
+that grants access to repositories or systems.
 
-Covers source code exposure, API keys and private keys, and environment file
-access. These are blocked outright rather than escalated: there is no reviewer
-answer that makes leaking a key acceptable.
+</DocCard>
 
-### Productivity assistant policy
+<DocCard title="Productivity assistant policy">
 
-Covers bulk operations such as archiving or deleting several hundred messages.
-The rule is threshold based — a handful of items is routine, a few hundred is
-not — and undo difficulty raises the escalation.
+Governs general-purpose productivity agents (inbox, calendar, files,
+repositories). It covers actions that are high-blast-radius because of scale or
+reach — bulk operations like archiving many emails at once, calendar changes
+that affect other people, messages sent externally, and access to files or
+repositories outside the current task's obvious scope.\
+Each policy pack maps its risk categories to specific decisions (<DocToken>ALLOW, NEED_APPROVAL, ASK_USER, or block</DocToken>) that the Decision Router enforces, and which route into the Approval Queue and Audit Log as described in Core Concept.
 
-## Rule anatomy
-
-| Part | Purpose |
-| --- | --- |
-| Match | Which actions the rule applies to, by domain, action type, or target |
-| Condition | Detected entities, counts, thresholds, or element risk hints |
-| Decision | The verdict the rule proposes |
-| Reason | The explanation surfaced in `reasons` |
-| Identifier | The name reported in `triggered_policies` |
-
-When several rules match, the most restrictive decision wins:
-
-```text
-BLOCK  >  NEED_APPROVAL  >  ASK_USER  >  SANITIZE  >  ALLOW
-```
-
-<DocCallout>
-  Every matched rule is reported in `triggered_policies`, even when it did not
-  decide the outcome. A reviewer should see all the reasons an action was
-  escalated, not only the strongest one.
-</DocCallout>
-
-## Versioning
-
-Audit records store `policy_version` and `detector_version` next to the
-decision. A decision can therefore always be replayed against the exact rules
-that produced it, which is what makes the
-[benchmark](/docs/benchmark-evaluation) comparable across releases.
-
-## Design rules
-
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="A good rule"
-    accent="#34d399"
-    items={[
-      "Names one concrete risk",
-      "States a reason a human can read",
-      "Escalates when a human can actually judge it",
-      "Blocks only when no answer makes it safe",
-    ]}
-  />
-  <DocListCard
-    title="A bad rule"
-    accent="#f87171"
-    items={[
-      "Escalates everything, training reviewers to click approve",
-      "Matches on brittle selectors or exact wording",
-      "Returns a reason only an engineer can decode",
-      "Depends on an un-versioned detector",
-    ]}
-  />
-</div>
+</DocCard>

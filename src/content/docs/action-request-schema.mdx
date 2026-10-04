@@ -6,13 +6,13 @@ export const metadata = {
 
 #### Quick Summary
 
-Every time an AI agent wants to do something send an email, delete data,
-process a refund it doesn't execute it directly. The agent fills out a standard
+Every time an AI agent wants to do something — send an email, delete data,
+process a refund — it doesn't execute it directly. The agent fills out a standard
 "form" called an ActionRequest, and that form is what AgentGate reads to decide:
 allow it, hold it for human approval, mask part of its content, ask the user for
 clarification, or block it entirely.
 
-This document summarizes what's in that form no code so it can be used for
+This document summarizes what's in that form — no code — so it can be used for
 feature-completeness reviews or discussions with non-technical stakeholders.
 
 #### Why This Form Matters
@@ -29,7 +29,7 @@ assessed the same way.
 The baseline information that must always be present, regardless of the action
 type:
 
-| Area | Include |
+| Information | Example |
 | :---: | --- |
 | Which domain | Productivity, Internal Data & Code, or Reservation/Messaging |
 | Action category | Read data, send externally, bulk delete, financial action, etc. |
@@ -40,7 +40,7 @@ type:
 
 2\. Action-Specific Details (context-dependent)
 
-This section is flexible its contents change depending on the action type. Some
+This section is flexible — its contents change depending on the action type. Some
 examples:
 
 - Email/messaging actions: who the recipient is, a summary of the message content, whether it's a template with auto-filled placeholders (customer name, time, etc.).
@@ -69,6 +69,6 @@ What gets sent to AgentGate (simplified):
 - Reversible: Yes
 - Agent confidence: 91%
 
-AgentGate's decision: Hold for approval because 320 emails exceeds the safe
+AgentGate's decision: Hold for approval — because 320 emails exceeds the safe
 threshold (50), and the "newsletter" keyword filter risks also catching other
 important emails.

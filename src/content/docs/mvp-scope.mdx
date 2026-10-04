@@ -10,13 +10,13 @@ domains through a `core-optimized path`, not through production integrations.
 
 #### Included in MVP
 
-| Area | Include |
+| Area | Included |
 | :---: | --- |
 | Domains | Reservation Messaging (customer), Productivity Assistant, Internal Data & Source Code Protection |
 | Actions covered | 27 actions in the final Policy Matrix (8 reservation, 10 productivity, 9 internal data/code) |
 | Decisions | ALLOW, NEED_APPROVAL, BLOCK, SANITIZE, ASK_USER (NEED_APPROVAL escalates to CRITICAL for financial or irreversible actions) |
 | Agent logic | DS-led custom function-calling loop, evaluated by the core engine (not a generic agent framework) |
-| Core Engine | Action Space Validator, detectors, policy engine, risk scoring, sanitizer, DecisionResponse builder |
+| Core engine | Action Space Validator, detectors, policy engine, risk scoring, sanitizer, DecisionResponse builder |
 | Detectors | PII/secret, source-code, phishing/payment-risk, path classifier, internal-domain classifier, bulk-action and query-scope evaluators |
 | Enforcement | Decision Router, Approval Queue (with timeout and single execution), Audit Log |
 | Execution | Hybrid executor. APIs: Gmail, Google Calendar, GitHub REST, Stripe Sandbox, Telegram Bot API, local filesystem. Fallback: Playwright against a sandbox/mock booking dashboard |
@@ -27,7 +27,7 @@ domains through a `core-optimized path`, not through production integrations.
 
 #### Explicitly out of MVP (Post-MVP)
 
-| Area | Include |
+| Item | Note |
 | :---: | --- |
 | Chrome/Browser Extension | Live DOM reading, element highlighting, in-browser click interception |
 | MCP adapter | Reuses ActionRequest/DecisionResponse contracts |
@@ -42,7 +42,7 @@ domains through a `core-optimized path`, not through production integrations.
 #### Known limitations (documented, not guaranteed in MVP)
 
 These come from the FP/FN taxonomy. They are mitigation directions, not shipped
-guarantees :
+guarantees:
 
 - Session-level approval memory (FP-05) and contextual bulk thresholds (FP-02)
 - Session-level data provenance and cumulative risk tracking (FN-02, FN-05)

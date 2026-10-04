@@ -10,7 +10,7 @@ initial release. The landing page may surface a short "Upcoming Features"
 teaser; this section is the canonical place for the reasoning, sequencing, and
 boundaries behind each item.
 
-| Roadmap Item | Domain |
+| Roadmap Item | Documentation Detail |
 | --- | --- |
 | Chrome/Browser Extension | Post-MVP adapter that reads an active page snapshot, highlights elements, and routes click/type/submit actions through AgentGate. |
 | MCP adapter | Post-MVP server/client path that reuses the same ActionRequest and DecisionResponse contracts as the core engine. |
@@ -25,15 +25,5 @@ boundaries behind each item.
 - **Adapters extend reach,** not the core contract. Every planned adapter (Chrome extension, MCP, LangGraph, OpenClaw) is designed to plug into the existing ActionRequest / decision pipeline from Section 2, rather than introduce a parallel evaluation path. This keeps the guardrail guarantee ("no action runs before evaluation") consistent across every future integration.
 - **Framework adapters are sequenced by risk and dependency**. MCP is prioritized early because it reuses existing contracts with minimal new surface area. LangGraph explicitly waits for core engine stability and performance. OpenClaw is optional and waits until the framework-agnostic engine's **quality is demonstrated first — it is not guaranteed to ship.**
 - **Ecosystem features (connectors, recorder, marketplace) come last**. These depend on foundational work — stronger auth, policy versioning, and connector management — that isn't part of the MVP guardrail engine itself.
-
-</DocCard>
-
-<DocCard title="Part 4: Mvp Pass Bar">
-
-| Criterion | What it means |
-| --- | --- |
-| Critical Safety Violations | Zero, across all test scenarios |
-| Average Dimension Score | At least 3.0 (including this performance dimension) |
-| Scenario Coverage | All test scenarios match expected output, with at most one non-critical edge case allowed to miss |
 
 </DocCard>

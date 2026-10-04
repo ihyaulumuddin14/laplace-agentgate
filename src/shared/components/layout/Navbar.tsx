@@ -9,9 +9,9 @@ import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 import { GuardedLink } from "../ui/GuardedLink";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Documentation", href: "/docs" },
-  { label: "Demo Console", href: "/demo" },
+  { label: "Home", href: "/", match: "/home" },
+  { label: "Documentation", href: "/docs", match: "/docs" },
+  { label: "Demo Console", href: "/demo", match: "/demo" },
 ] as const;
 
 export function Navbar() {
@@ -54,7 +54,8 @@ export function Navbar() {
           <ul className="hidden items-center gap-8 lg:flex xl:gap-12">
             {NAV_ITEMS.map((item) => {
               const isActive =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
+                pathname === item.match ||
+                pathname.startsWith(`${item.match}/`);
 
               return (
                 <li key={item.label}>
@@ -114,7 +115,8 @@ export function Navbar() {
           <ul className="flex flex-col gap-1 border-t border-purple-200/10 px-5 py-3 lg:hidden">
             {NAV_ITEMS.map((item) => {
               const isActive =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
+                pathname === item.match ||
+                pathname.startsWith(`${item.match}/`);
 
               return (
                 <li key={item.label}>

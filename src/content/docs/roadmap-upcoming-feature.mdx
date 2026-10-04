@@ -1,71 +1,39 @@
 export const metadata = {
-  title: "Roadmap / Upcoming Feature",
-  description: "What comes after the MVP, and the order it arrives in.",
+  title: "Roadmap / Upcoming Features",
+  description:
+    "Post-MVP work, why it is sequenced this way, and what it deliberately is not.",
 };
 
-Four post-MVP tracks, deliberately sequenced behind a stable core.
+The items below are **post-MVP**: they build on top of the core guardrail engine
+described in this documentation once it is stable, but are not part of the
+initial release. The landing page may surface a short "Upcoming Features"
+teaser; this section is the canonical place for the reasoning, sequencing, and
+boundaries behind each item.
 
-Every item below reuses the same two contracts. Nothing on this roadmap changes
-what `ActionRequest` or `DecisionResponse` mean — adapters translate into them,
-they do not extend them.
+| Roadmap Item | Domain |
+| --- | --- |
+| Chrome/Browser Extension | Post-MVP adapter that reads an active page snapshot, highlights elements, and routes click/type/submit actions through AgentGate. |
+| MCP adapter | Post-MVP server/client path that reuses the same ActionRequest and DecisionResponse contracts as the core engine. |
+| LangGraph adapter | Post-MVP workflow integration, planned after the core engine is stable and fast. |
+| OpenClaw adapter | Optional adapter, planned after the framework-agnostic engine's quality is proven. |
+| More API connectors | Future expansion, planned after auth, policy versioning, and connector management are stronger. |
+| Browser recorder | Future tool to record repeatable browser workflows. |
+| Policy pack marketplace | Future distribution model for reusable policy packs across domains. |
 
-<DocCallout>
-  **Order matters.** The engine's decision quality and latency are proven first.
-  An adapter built on an unstable gate only multiplies the surface area of every
-  remaining bug.
-</DocCallout>
+<DocCard title="Sequencing and non-goals">
 
-## 01 — Chrome / browser extension
+- **Adapters extend reach,** not the core contract. Every planned adapter (Chrome extension, MCP, LangGraph, OpenClaw) is designed to plug into the existing ActionRequest / decision pipeline from Section 2, rather than introduce a parallel evaluation path. This keeps the guardrail guarantee ("no action runs before evaluation") consistent across every future integration.
+- **Framework adapters are sequenced by risk and dependency**. MCP is prioritized early because it reuses existing contracts with minimal new surface area. LangGraph explicitly waits for core engine stability and performance. OpenClaw is optional and waits until the framework-agnostic engine's **quality is demonstrated first — it is not guaranteed to ship.**
+- **Ecosystem features (connectors, recorder, marketplace) come last**. These depend on foundational work — stronger auth, policy versioning, and connector management — that isn't part of the MVP guardrail engine itself.
 
-Guard the browser the user is already in, instead of a Playwright instance.
+</DocCard>
 
-- Snapshot the active page directly from the extension
-- Highlight the element an action targets before it is clicked
-- Extension-based control, no Playwright dependency
-- Same snapshot and selector contract as the
-  [snapshot builder](/docs/browser-snapshot-builder)
+<DocCard title="Part 4: Mvp Pass Bar">
 
-## 02 — MCP compatible path
+| Criterion | What it means |
+| --- | --- |
+| Critical Safety Violations | Zero, across all test scenarios |
+| Average Dimension Score | At least 3.0 (including this performance dimension) |
+| Scenario Coverage | All test scenarios match expected output, with at most one non-critical edge case allowed to miss |
 
-A server and client adapter that carries the existing contracts over MCP, so
-any MCP-aware host can route its tool calls through the gate without knowing
-anything about AgentGate internals.
-
-## 03 — LangGraph adapter
-
-Workflow graph integration, scheduled after the core evaluation engine is
-stable, fast, and well benchmarked. Each node's tool call becomes an
-`ActionRequest`; the returned decision controls the edge the graph takes.
-
-## 04 — OpenClaw adapter
-
-Optional integration, taken on incrementally once the framework-agnostic engine
-has proven itself in production.
-
-## Not on the roadmap
-
-<div className="grid gap-4 sm:grid-cols-2">
-  <DocListCard
-    title="Planned"
-    accent="#34d399"
-    items={[
-      "Adapters that reuse the existing contracts",
-      "Extension-based browser snapshots",
-      "Broader API connector coverage",
-      "Policy pack versioning and replay tooling",
-    ]}
-  />
-  <DocListCard
-    title="Out of scope"
-    accent="#f87171"
-    items={[
-      "Becoming a conversational agent",
-      "Replacing the planner or the executor",
-      "Post-hoc moderation of completed actions",
-      "Framework-specific forks of the contracts",
-    ]}
-  />
-</div>
-
-AgentGate stays one thing: the checkpoint in front of the executor. See
-[Core Concept](/docs/core-concept) for why that boundary is the whole design.
+</DocCard>

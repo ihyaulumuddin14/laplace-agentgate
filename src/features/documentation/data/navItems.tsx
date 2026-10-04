@@ -63,7 +63,7 @@ export const DOC_NAV_ITEMS: DocNavItem[] = [
   },
   {
     id: "roadmap-upcoming-feature",
-    label: "Roadmap / Upcoming Feature",
+    label: "Roadmap / Upcoming Features",
     Icon: MdOutlineAccountTree,
   },
 ];

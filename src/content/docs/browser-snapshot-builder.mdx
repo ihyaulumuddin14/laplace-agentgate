@@ -1,0 +1,91 @@
+export const metadata = {
+  title: "Browser Snapshot Builder",
+  description:
+    "How a live web page becomes a compact, LLM-readable set of element references.",
+};
+
+When no suitable API exists for a target system, AgentGate falls back to browser
+automation — but it never hands the agent raw HTML. **The Browser Snapshot
+Builder** is the component that turns a live web page into a compact,
+LLM-readable representation the agent can act on safely.
+
+<DocCard title="The problem it solves">
+
+A real web page can contain thousands of DOM nodes, most of them irrelevant to
+the task at hand. Passing raw HTML to an LLM planner is expensive (token cost),
+unreliable (the model has to guess which element is "the Send button" from a
+wall of markup), and risky (sensitive values sitting in the DOM — pre-filled
+forms, hidden fields — could leak into the LLM's context with no filtering at
+all). The Browser Snapshot Builder exists specifically to remove all three
+problems at once.
+
+</DocCard>
+
+<DocCard title="How it works, step by step">
+
+<DocSteps>
+<DocStep>
+
+**Open the page.** Playwright navigates to the target URL (`BROWSER_OPEN`) and the page finishes loading.
+
+</DocStep>
+
+<DocStep>
+
+**Capture the raw DOM.** The Snapshot Builder walks the page's interactive elements — buttons, inputs, links, selects, and other elements a user could plausibly act on.
+
+</DocStep>
+
+<DocStep>
+
+**Simplify each element.** For every interactive element, the builder extracts only what the agent actually needs to decide and act:
+
+| Field | What it holds |
+| :---: | --- |
+| element_id | A short, stable identifier the agent uses to reference this element (never a raw CSS selector) |
+| role | The element's functional role (button, textbox, link, checkbox, etc.) |
+| type | The underlying input type, where relevant |
+| label | Visible or accessible label text |
+| text | Visible text content, if any |
+| value_preview | A truncated or masked preview of the current value, not the full raw value |
+| risk_hint | An early signal if the element looks like it triggers a sensitive action (e.g. a "Send" or "Delete" button) |
+
+</DocStep>
+
+<DocStep>
+
+**Maintain an internal selector map.** The mapping from `element_id` back to the actual DOM selector is kept internally by the Browser Executor — the LLM planner only ever sees the short `element_id`, never the underlying selector or markup.
+
+</DocStep>
+
+<DocStep>
+
+**Redact or summarize sensitive values.** Any value that looks sensitive (long alphanumeric strings, values in fields labeled "password," "token," "key," etc.) is masked or summarized before the snapshot is handed to the LLM — this happens at snapshot-build time, before the content ever reaches the function-calling loop.
+
+</DocStep>
+
+<DocStep>
+
+**Return the simplified snapshot.** The agent receives a compact list of elements it can reference by `element_id` in subsequent `BROWSER_CLICK`, `BROWSER_TYPE`, `BROWSER_SELECT`, or `BROWSER_SUBMIT` calls.
+
+</DocStep>
+</DocSteps>
+
+</DocCard>
+
+<DocCard title="What this guarantees">
+
+- The agent never sees full page markup — only a curated, minimal view of what it can interact with.
+- Every subsequent browser action the agent proposes is expressed in terms of element_id, which keeps the ActionRequest schema (see Tool Contracts) consistent whether the target is an element on a page or a field in an API call.
+- Sensitive values already visible on the page (pre-filled tokens, masked account numbers, etc.) don't get a second, unfiltered exposure through the LLM's context window.
+
+</DocCard>
+
+<DocCard title="Why this matters">
+
+The Browser Snapshot Builder is what makes browser automation viable as a
+fallback path rather than a liability. It ensures that even when AgentGate has
+no API to rely on, the same principle from Section 2 still holds: nothing
+reaches execution based on information the agent wasn't supposed to see in full.
+
+</DocCard>

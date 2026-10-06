@@ -1,0 +1,29 @@
+export const metadata = {
+  title: "Roadmap / Upcoming Features",
+  description:
+    "Post-MVP work, why it is sequenced this way, and what it deliberately is not.",
+};
+
+The items below are **post-MVP**: they build on top of the core guardrail engine
+described in this documentation once it is stable, but are not part of the
+initial release. The landing page may surface a short "Upcoming Features"
+teaser; this section is the canonical place for the reasoning, sequencing, and
+boundaries behind each item.
+
+| Roadmap Item | Documentation Detail |
+| --- | --- |
+| Chrome/Browser Extension | Post-MVP adapter that reads an active page snapshot, highlights elements, and routes click/type/submit actions through AgentGate. |
+| MCP adapter | Post-MVP server/client path that reuses the same ActionRequest and DecisionResponse contracts as the core engine. |
+| LangGraph adapter | Post-MVP workflow integration, planned after the core engine is stable and fast. |
+| OpenClaw adapter | Optional adapter, planned after the framework-agnostic engine's quality is proven. |
+| More API connectors | Future expansion, planned after auth, policy versioning, and connector management are stronger. |
+| Browser recorder | Future tool to record repeatable browser workflows. |
+| Policy pack marketplace | Future distribution model for reusable policy packs across domains. |
+
+<DocCard title="Sequencing and non-goals">
+
+- **Adapters extend reach,** not the core contract. Every planned adapter (Chrome extension, MCP, LangGraph, OpenClaw) is designed to plug into the existing ActionRequest / decision pipeline from Section 2, rather than introduce a parallel evaluation path. This keeps the guardrail guarantee ("no action runs before evaluation") consistent across every future integration.
+- **Framework adapters are sequenced by risk and dependency**. MCP is prioritized early because it reuses existing contracts with minimal new surface area. LangGraph explicitly waits for core engine stability and performance. OpenClaw is optional and waits until the framework-agnostic engine's **quality is demonstrated first — it is not guaranteed to ship.**
+- **Ecosystem features (connectors, recorder, marketplace) come last**. These depend on foundational work — stronger auth, policy versioning, and connector management — that isn't part of the MVP guardrail engine itself.
+
+</DocCard>

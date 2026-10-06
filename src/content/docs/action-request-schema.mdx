@@ -1,0 +1,74 @@
+export const metadata = {
+  title: "ActionRequest: What AgentGate Sees Before an Agent Acts",
+  description:
+    "The standard form an agent fills out before any action is evaluated.",
+};
+
+#### Quick Summary
+
+Every time an AI agent wants to do something — send an email, delete data,
+process a refund — it doesn't execute it directly. The agent fills out a standard
+"form" called an ActionRequest, and that form is what AgentGate reads to decide:
+allow it, hold it for human approval, mask part of its content, ask the user for
+clarification, or block it entirely.
+
+This document summarizes what's in that form — no code — so it can be used for
+feature-completeness reviews or discussions with non-technical stakeholders.
+
+#### Why This Form Matters
+
+Without a standard structure, each type of action (email, code, booking) would
+send data in a different shape, and AgentGate couldn't evaluate them
+consistently. ActionRequest ensures every action, from any domain, can be
+assessed the same way.
+
+#### 4 Groups of Information Inside It
+
+1\. Action Identity (always required)
+
+The baseline information that must always be present, regardless of the action
+type:
+
+| Information | Example |
+| :---: | --- |
+| Which domain | Productivity, Internal Data & Code, or Reservation/Messaging |
+| Action category | Read data, send externally, bulk delete, financial action, etc. |
+| Target system | Gmail, GitHub, internal database, Stripe, etc. |
+| Specific action | "archive_emails", "process_refund", "push_commit" |
+| Reversible? | Yes / No |
+| Agent's confidence | How sure the agent is that this is the right action (0–100%) |
+
+2\. Action-Specific Details (context-dependent)
+
+This section is flexible — its contents change depending on the action type. Some
+examples:
+
+- Email/messaging actions: who the recipient is, a summary of the message content, whether it's a template with auto-filled placeholders (customer name, time, etc.).
+- Bulk actions: how many items are affected (e.g. 320 emails, 2,400 emails, 12,000 data rows).
+- Code/repository actions: which repo and branch, a summary of the change (to detect credentials/secrets accidentally included in a commit).
+- Data actions: the sensitivity classification of the file (confidential/internal/public), and where that data is headed.
+- Booking/financial actions: booking number, customer name, refund amount, refund reason.
+
+3\. Reserved Space
+
+Since only 3 domains and 27 action types have been mapped so far, this form has
+a "reserved column" to capture information from new action types that haven't
+been thought of yet — without needing to redesign the form's structure again.
+
+#### A Real Example
+
+Scenario: An agent wants to archive 320 emails containing the word "newsletter."
+
+What gets sent to AgentGate (simplified):
+
+- Domain: Productivity
+- Action category: Bulk modify
+- System: Gmail
+- Filter: emails with the word "newsletter"
+- Items affected: 320
+- Reversible: Yes
+- Agent confidence: 91%
+
+AgentGate's decision: Hold for approval — because 320 emails exceeds the safe
+threshold (50), and the "newsletter" keyword filter risks also catching other
+important emails.

@@ -1,0 +1,52 @@
+export const metadata = {
+  title: "Demo Console UI States",
+  description:
+    "Every visual state the console must render so no evaluation is silent.",
+};
+
+The Demo Console (the web-based interface described in the Introduction) needs
+to visibly represent every possible outcome of an AgentGate evaluation — not
+just "it worked" or "it failed." This section defines the required UI states so
+Front End (`FE`) and Product Design (`PD`) can implement a consistent,
+predictable interface without guessing at what state should look like what.
+
+<DocCard title="Why explicit UI states matter">
+
+AgentGate's core value is that every action passes through evaluation before
+execution — but that value is invisible to the user unless the interface
+actually shows what's happening at each step. If the UI only had a generic
+"loading" spinner followed by "done," the user would have no way to tell the
+difference between an action that was silently allowed and one that was blocked
+for their protection. Each decision type needs its own visual state.
+
+</DocCard>
+
+## Required UI states
+
+| State | Triggered by | What the user sees |
+| --- | --- | --- |
+| Proposed Action Preview | Function-calling loop generates a tool call, before AgentGate evaluation completes | The action about to be evaluated: tool name, target, and a human-readable summary of what it intends to do |
+| Allowed / Executing | Decision = ALLOW | A lightweight, low-friction indicator that the action is proceeding automatically — no user action required |
+| Blocked | Decision = BLOCK | A clear stop state showing the action was prevented, along with the reason(s) and triggered policy — never a silent failure |
+| Needs Approval | Decision = NEED_APPROVAL | The action added to the Approval Queue, with enough context (reasons, risk level, affected items) for the user to make an informed approve/reject decision |
+| Sanitized | Decision = SANITIZE | An indicator that the action proceeded, but with specific sensitive values redacted — the user should be able to see that sanitization happened, not necessarily the redacted values themselves |
+| Ask User / Clarification Needed | Decision = ASK_USER | A conversational prompt asking the user to clarify or narrow their original request, before AgentGate re-evaluates |
+| Execution Result | Executor completes (success, failure, or not executed) | Final outcome of the action, tied back to the original decision card, so the user can trace request → decision → result in one place |
+
+<DocCard title="Cross-cutting requirements for every state">
+
+- **Decision Card content.** Every non-ALLOW state must surface: the decision, the risk level/score, the reason(s) AgentGate gave, and the specific policy or policies triggered — this is the same information structure the Audit Log stores, just rendered for a human.
+- **Traceability.** Every state must be linkable back to its entry in the Audit Log, so a user (or a developer debugging the demo) can go from "what I saw in the console" to "what was actually recorded."
+- **No silent states.** There is no UI state in which an action is evaluated and the user sees nothing — even an ALLOW decision produces a (minimal) visible trace, consistent with the Audit Log's "every evaluated action is logged" guarantee.
+
+</DocCard>
+
+<DocCard title="Why this matters">
+
+The Demo Console is where the team validates that the Core Engine's decisions
+are not just correct internally, but legible to a human watching them happen. A
+guardrail that works perfectly but is invisible in the UI cannot be
+demonstrated, tested, or trusted by anyone outside the DS team — these UI states
+are what make Sections 2 and 4's guarantees observable.
+
+</DocCard>

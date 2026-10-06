@@ -1,0 +1,102 @@
+import { BsArchive } from "react-icons/bs";
+import { MdLockOutline, MdOutlineChatBubbleOutline } from "react-icons/md";
+import {
+  ScenarioCard,
+  type ScenarioCardProps,
+} from "@/features/landing/components/misc/ScenarioCard";
+import { CoverflowCarousel } from "@/shared/components/ui/CoverflowCarousel";
+import { Reveal } from "@/shared/components/ui/Reveal";
+
+const SCENARIOS: ScenarioCardProps[] = [
+  {
+    Icon: MdOutlineChatBubbleOutline,
+    title: "Booking Messaging Safety",
+    tag: "booking_style",
+    description: "Agent proposes to send a payment confirmation to a customer.",
+    risks: [
+      "External customer target",
+      "Payment confirmation pattern",
+      "Browser submit action",
+    ],
+    decision: "Need_Approval",
+    policy: "Booking messaging policy",
+    accent: "#fff600",
+  },
+  {
+    Icon: MdLockOutline,
+    title: "Internal Data & Code Protection",
+    tag: "Code_Security",
+    description:
+      "Agent accesses repositories and local files containing sensitive code and data.",
+    risks: [
+      "Source code exposure",
+      "API keys / private keys",
+      "Environment file access",
+    ],
+    decision: "Block",
+    policy: "Code/data protection policy",
+    accent: "#ff0c0c",
+  },
+  {
+    Icon: BsArchive,
+    title: "Productivity Assistant Safety",
+    tag: "productivity",
+    description:
+      "Agent proposes bulk archiving of 320+ emails while preserving important messages.",
+    risks: [
+      "Bulk email operation",
+      "Affected items > threshold",
+      "Difficult to undo",
+    ],
+    decision: "Need_Approval",
+    policy: "Productivity assistant policy",
+    accent: "#00d4ff",
+  },
+];
+
+export function ScenariosSection() {
+  return (
+    <section className="relative overflow-hidden px-6 py-20 sm:px-10 lg:py-28">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-40 top-1/4 h-130 w-160 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.22)_0%,transparent_70%)]"
+      />
+
+      <div className="relative mx-auto max-w-[1680px]">
+        <Reveal>
+          <header className="mx-auto max-w-3xl text-center">
+            <h2 className="font-poppins text-4xl font-bold leading-tight tracking-tight text-purple-50 sm:text-5xl lg:text-[54px]">
+              Real <span className="heading-gradient-text">Risk</span>, Real{" "}
+              <span className="heading-gradient-text">Protection.</span>
+            </h2>
+          </header>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="mt-14 md:hidden">
+            <CoverflowCarousel
+              items={SCENARIOS.map((s) => ({
+                id: s.tag,
+                node: <ScenarioCard {...s} />,
+              }))}
+            />
+            <p className="mt-2 text-center font-inter text-xs text-purple-100/50">
+              Swipe left or right to explore the scenarios
+            </p>
+          </div>
+
+          <div className="mt-14 hidden flex-wrap justify-center gap-6 md:flex">
+            {SCENARIOS.map((s) => (
+              <div
+                key={s.tag}
+                className="w-full md:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
+              >
+                <ScenarioCard {...s} />
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}

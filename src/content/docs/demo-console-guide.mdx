@@ -1,79 +1,177 @@
 export const metadata = {
   title: "Demo Console Guide",
-  description: "Navigating the console: scenario, state view, and logs.",
+  description:
+    "How to run a scenario, read a decision, act as reviewer, and inspect the results.",
 };
 
-The console is the MVP product surface. Three tabs, one run at a time.
+<DocCard title="Purpose">
 
-## Tabs
+The AgentGate Demo Console is the web app where you can watch AgentGate check an
+AI agent's actions before they run. You can run a scenario, see what the agent
+proposes, read AgentGate's decision, act as the human reviewer, and check the
+audit log and latency results.
 
-| Tab | What it shows |
-| --- | --- |
-| **Scenario** | Web Chat, the Scenario Runner, and the conversational trace |
-| **State View** | The live pipeline: planning, proposed action, evaluation, decision |
-| **Logs** | Audit Log, Risk Dashboard, and Latency Report for the session |
+All scenarios run on sandbox and mock environments with dummy data. Nothing
+touches production systems.
 
-On desktop the Scenario and State View sit side by side so a decision can be
-read next to the message that triggered it. On mobile they are separate tabs.
+</DocCard>
 
-## Sessions
+## How to Open the Console
 
-A session is created as soon as you open the console, and every request carries
-it in the `X-AgentGate-Session` header.
+<DocSteps>
+<DocStep>
 
-| Reason | When it fires |
-| --- | --- |
-| `reset` | You clear the console yourself |
-| `refresh` | The page is reloaded |
-| `pagehide` | You navigate away or close the tab |
-| `replaced` | A new session supersedes the current one |
+Open the AgentGate website.
 
-<DocCallout>
-  Sessions are ephemeral and expire after an idle timeout. Audit records belong
-  to the session, so a reset clears the Logs tab — export anything you need
-  before resetting.
-</DocCallout>
+</DocStep>
 
-## Running a task
+<DocStep>
 
-1. Type a task, or pick a preset from the
-   [Scenario Runner](/docs/demo-scenarios).
-2. The run starts streaming. Chat shows the narrative, State View shows the
-   pipeline.
-3. The gate evaluates each proposed step before the executor is invoked.
-4. When the run pauses, answer it in the panel on the right.
-5. The run finishes as completed, declined, blocked, or failed.
+Click Demo Console in the top navigation bar. The tab is underlined when it is active.
 
-## Answering a pause
+</DocStep>
+</DocSteps>
 
-**Approval.** `NEED_APPROVAL` shows the proposed action with its risk level,
-reasons, and triggered policies. Approving resumes the run; declining ends it
-with status `declined`. The original verdict stays in `initial_decision`.
+The top bar also has Home, Documentation (setup guide, policy packs, API
+matrix), and a GitHub icon for the repository.
 
-**Input.** `ASK_USER` and `SANITIZE` ask for the specific fields the action
-needs — a password, an amount, a recipient. The values go straight to the
-executor for that step. The planner's payload keeps the sanitised version.
+## Console Layout
 
-## Logs
+The console has three panels.
 
-| Panel | Contents |
-| --- | --- |
-| Audit Log | One row per action: timestamp, action, decision, risk, status, detail |
-| Risk Dashboard | Decision distribution plus total actions, approved, blocked, pending review |
-| Latency Report | P50 and P95 totals, guardrail share, and a breakdown by `BROWSER`, `FILE`, `API` |
+| Panel | Location | What it does |
+| --- | :---: | --- |
+| Scenario Runner and Chat | Left | Ready-made scenario cards at the top, and a task input box at the bottom ("Type a task…") with a send button |
+| Action and Decision Area | Center | Shows the agent's progress: the proposed action, the AgentGate decision, and any approval controls. It stays empty until you run a task |
+| Insights Panel | Right | Three tabs: Audit Log, Risk Dashboard, and Latency Report. Audit Log is open by default and shows "No audit logs found" until the first run |
 
-Each audit row expands into the full record: the request JSON, the decision
-JSON, the execution JSON, the policy and detector versions, and the latency
-split between guardrail and executor.
+## Step-by-Step Guide
 
-## Reading a decision quickly
+<DocSteps>
+<DocStep title="Select or type a scenario">
 
-- **Risk level and score** give the magnitude.
-- **Reasons** give the cause, in prose.
-- **Triggered policies** give the rule that escalated it.
-- **Sensitive entities** list what the detectors found.
-- **Next step** states what the router will do.
+- In the Scenario Runner, click a scenario card. Each card has a colored icon and a short name:
+  - **Open Youtube**: a browser task
+  - **Payment**: a payment-related action
+  - **Send an email**: an external email send
+  - **Login (Sanitize…)**: a task whose content contains credentials that must be masked
+  - **Inbox Cleanup**: a bulk email action
+- Scroll the list for more scenarios.
+- Or type your own request in the Type a task… box and press the send arrow, for example "Archive old unimportant emails."
+- The chat area shows "Pick a scenario above or type a task" until you start.
 
-For `ALLOW` the console collapses policies and entities — there is nothing to
-review. They reappear for every other decision. See
-[Demo Console UI States](/docs/demo-console-ui-states) for each card in detail.
+</DocStep>
+
+<DocStep title="Run the agent">
+
+- Clicking a card or sending a task starts the agent.
+- The agent plans one tool call at a time. It only proposes each action, and nothing executes before AgentGate evaluates it.
+- For browser tasks, the agent sees a simplified snapshot of the page (visible elements with short IDs) instead of raw HTML.
+
+</DocStep>
+
+<DocStep title="Review the proposed action">
+
+Before reading the verdict, check what the agent wants to do:
+
+- **Tool or action**, for example browser_click, gmail_archive, or a payment call.
+- **Target**: a website, an external recipient, a file, or an element ID.
+- **Payload summary**: what would be sent or changed.
+- **Scale**: for bulk actions, how many items are affected.
+
+</DocStep>
+
+<DocStep title="Read the AgentGate decision">
+
+The decision card appears in the center panel. Each action gets one of five
+decisions:
+
+| Decision | Meaning | What happens next |
+| :---: | --- | --- |
+| ALLOW | Low risk, no policy triggered | The action executes automatically |
+| BLOCK | Violates a hard policy, such as confidential file access or source-code egress | The action is stopped and never executes |
+| NEED_APPROVAL | High impact, such as an external send, payment, bulk archive, or submit | The action waits for a human reviewer |
+| SANITIZE | Contains PII, tokens, passwords, or API keys that can be masked | The payload is rewritten, then the safe version continues |
+| ASK_USER | Low confidence or missing information | The agent asks you a question before continuing |
+
+The decision card also shows:
+
+- **Risk score and level** (LOW, MEDIUM, or HIGH).
+- **Reasons** in plain language, such as "external customer target" or "bulk email operation."
+- **Triggered policies**: which rules fired.
+- **Sensitive entities**: what the detectors found.
+- **Sanitized payload**, if masking applied.
+- **Next step**: what the system will do now.
+
+</DocStep>
+
+<DocStep title="Approve, reject, edit, or continue">
+
+What you do depends on the decision:
+
+- **ALLOW**: nothing to approve. The agent continues on its own.
+- **BLOCK**: the action cannot be overridden. Read the reason, then try a different scenario or rephrase the task.
+- **NEED_APPROVAL**: review the action summary, risk reasons, and sanitized preview, then choose one:
+  - **Approve**: the action executes.
+  - **Reject**: the action is cancelled and the agent is told why.
+  - **Edit**: change the payload or scope, then resubmit. The edited action is evaluated again.
+- **SANITIZE**: check the masked version, then continue with it.
+- **ASK_USER**: answer in the task box. The agent re-plans, and the new action is evaluated again.
+
+Every reviewer choice is recorded in the audit log.
+
+</DocStep>
+
+<DocStep title="Inspect the audit log and latency result">
+
+Use the three tabs in the right panel:
+
+- **Audit Log**: one entry per evaluated action, with the request, decision, reasons, detected entities, reviewer status, execution status, and timestamp. Open the entry for your latest run to verify the full record.
+- **Risk Dashboard**: the overall mix of decisions (ALLOW, BLOCK, NEED_APPROVAL, SANITIZE, ASK_USER), risk levels, and trends across runs.
+- **Latency Report**: time spent in each stage (detectors, policy matching, risk scoring, decision, audit write), shown as P50 and P95. It also compares raw execution with AgentGate-protected execution and shows the overhead percentage.
+
+</DocStep>
+</DocSteps>
+
+## Scenario Reference
+
+The decisions below are what each scenario is designed to show. Confirm them
+against the final scenario inventory.
+
+| Scenario | What it demonstrates | Expected decision |
+| :---: | --- | --- |
+| Open Youtube | A harmless browser task | ALLOW |
+| Payment | A payment or payment-link action | NEED_APPROVAL (or BLOCK, depending on policy) |
+| Send an email | An external send that needs human review | NEED_APPROVAL |
+| Login (Sanitize…) | Credentials in the payload get masked | SANITIZE |
+| Inbox Cleanup | Bulk email action (e.g., 320 emails) | NEED_APPROVAL |
+
+<DocCard title="What Good Looks Like">
+
+Use the PRD targets when checking a run:
+
+- Every proposed action receives a decision.
+- No critical unsafe action is auto-allowed.
+- Rule-based evaluation stays within P95 ≤ 250 ms, or ≤ 500 ms including detectors and the audit write.
+- Protected API actions add at most about 20% overhead compared with raw execution, where feasible.
+- Every audit entry has the request, decision, reasons, status, and timestamp.
+
+</DocCard>
+
+<DocCard title="Tips and Troubleshooting">
+
+- **The right panel says "No audit logs found."** This is normal before the first run. Run a scenario and the entry appears.
+- **The center panel is empty.** You have not started a task yet. Pick a scenario or type one.
+- **The agent seems stuck.** It is probably waiting for your approval or an answer to an ASK_USER question.
+- **A safe action was blocked.** Read the triggered policies and reasons, and note it as a false block for the evaluation report.
+- **Latency looks high on one run.** The first run can include warm-up time. Run it again and compare P50/P95.
+
+</DocCard>
+
+<DocCard title="Safety Notes">
+
+- Use only the provided sandbox accounts, mock dashboards, and dummy data.
+- Never enter real customer data, real payment details, or proprietary source code.
+- High-risk external, destructive, financial, or bulk actions always need a human decision.
+
+</DocCard>

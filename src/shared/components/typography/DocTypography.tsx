@@ -97,7 +97,7 @@ export function UnorderedList({ className, ...props }: ComponentProps<"ul">) {
   return (
     <ul
       className={cn(
-        "flex list-disc flex-col gap-2.5 pl-5 font-poppins text-[15px] leading-relaxed text-white marker:text-purple-200 sm:text-base",
+        "flex list-disc flex-col gap-2.5 pl-5 font-poppins text-[15px] leading-relaxed text-white marker:text-purple-200 sm:text-base [&_ul]:mt-2.5 [&_ul]:list-[circle]",
         className,
       )}
       {...props}

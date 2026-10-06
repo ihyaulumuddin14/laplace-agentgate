@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { DOC_NAV_ITEMS } from "@/features/documentation/data/navItems";
 import { GlassPanel } from "@/shared/components/ui/GlassPanel";
+import { GlowBackdrop } from "@/shared/components/ui/GlowBackdrop";
 import { DocMobileNav } from "./DocMobileNav";
 import { DocSidebar } from "./DocSidebar";
 
@@ -20,14 +21,7 @@ export function DocumentationLayout({ children }: DocumentationLayoutProps) {
 
   return (
     <div className="relative bg-surface px-4 pb-10 pt-32 sm:px-6 sm:pt-36 lg:px-10">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -left-60 bottom-0 h-140 w-140 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.32)_0%,transparent_70%)]" />
-        <div className="absolute -right-56 top-0 h-120 w-120 rounded-full bg-[radial-gradient(circle,rgba(92,0,225,0.22)_0%,transparent_70%)]" />
-        <div className="absolute -right-44 bottom-12 h-100 w-100 rounded-full bg-[radial-gradient(circle,rgba(129,51,241,0.12)_0%,transparent_70%)]" />
-      </div>
+      <GlowBackdrop />
 
       <div className="relative mx-auto flex max-w-[1680px] flex-col gap-4 lg:h-[calc(100svh-11.5rem)] lg:flex-row lg:gap-7">
         <DocMobileNav

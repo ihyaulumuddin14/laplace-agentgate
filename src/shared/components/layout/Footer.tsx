@@ -1,10 +1,5 @@
 import Link from "next/link";
-import {
-  FaInstagram,
-  FaLinkedinIn,
-  FaTiktok,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaInstagram, FaLinkedinIn, FaTiktok } from "react-icons/fa6";
 import { BrandWordmark } from "@/shared/components/ui/BrandWordmark";
 
 const FOOTER_LINKS = [
@@ -14,15 +9,36 @@ const FOOTER_LINKS = [
     label: "Github Repository",
     href: "https://github.com/yukienjoyer7/agent-gate",
   },
-  { label: "PRD/Report", href: "#report" },
+  {
+    label: "PRD/Report",
+    href: "https://docs.google.com/document/d/1MY9S3BbOTH9dxAKXBRei7SS3ncu8a_Rab-9dAvP_ps4/edit?usp=sharing",
+  },
 ] as const;
 
 const SOCIAL_LINKS = [
-  { label: "X", href: "#x", Icon: FaXTwitter },
-  { label: "LinkedIn", href: "#linkedin", Icon: FaLinkedinIn },
-  { label: "TikTok", href: "#tiktok", Icon: FaTiktok },
-  { label: "Instagram", href: "#instagram", Icon: FaInstagram },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/bccfilkomub",
+    Icon: FaLinkedinIn,
+  },
+  {
+    label: "TikTok",
+    href: "https://www.tiktok.com/@bccfilkom",
+    Icon: FaTiktok,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/bccfilkom",
+    Icon: FaInstagram,
+  },
 ] as const;
+
+const isExternal = (href: string) => href.startsWith("http");
+
+const externalProps = (href: string) =>
+  isExternal(href)
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : undefined;
 
 export function Footer() {
   return (
@@ -44,6 +60,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
+                    {...externalProps(link.href)}
                     className="font-inter text-sm font-normal leading-[150%] text-purple-50 transition-colors duration-200 hover:text-purple-200 sm:text-base xl:text-lg"
                   >
                     {link.label}
@@ -59,6 +76,7 @@ export function Footer() {
               <li key={label}>
                 <Link
                   href={href}
+                  {...externalProps(href)}
                   aria-label={label}
                   className="grid size-8 place-items-center rounded-full bg-purple-50 text-purple-800 transition-all duration-200 hover:-translate-y-0.5 hover:bg-purple-200"
                 >

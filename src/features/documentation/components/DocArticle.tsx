@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 type DocArticleProps = {
-  number: number;
   title: string;
   children: ReactNode;
 };
 
-export function DocArticle({ number, title, children }: DocArticleProps) {
+export function DocArticle({ title, children }: DocArticleProps) {
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
 
@@ -28,7 +27,7 @@ export function DocArticle({ number, title, children }: DocArticleProps) {
         transition={{ duration: 0.45, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
         className="font-poppins text-[30px] font-bold leading-tight text-white sm:text-[34px] lg:text-4xl xl:text-[40px] 2xl:text-[44px]"
       >
-        {number}. {title}
+        {title}
       </motion.h1>
 
       <motion.div

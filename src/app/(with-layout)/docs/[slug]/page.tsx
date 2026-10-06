@@ -28,10 +28,9 @@ export async function generateMetadata({
 export default async function DocPage({ params }: DocPageProps) {
   const { slug } = await params;
   const { Content, metadata } = await loadDoc(slug);
-  const index = DOC_NAV_ITEMS.findIndex((item) => item.id === slug);
 
   return (
-    <DocArticle number={index + 1} title={metadata.title}>
+    <DocArticle title={metadata.title}>
       <Content />
     </DocArticle>
   );

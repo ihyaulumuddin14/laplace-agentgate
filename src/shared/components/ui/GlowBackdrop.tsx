@@ -4,19 +4,22 @@ import { cn } from "@/shared/lib/utils";
 
 type GlowProps = {
   className?: string;
+  imageClassName?: string;
 };
 
-export function Glow({ className }: GlowProps) {
+export function Glow({ className, imageClassName }: GlowProps) {
   return (
-    <Image
-      src={glasmorph}
-      alt=""
-      aria-hidden="true"
-      className={cn(
-        "pointer-events-none absolute h-auto max-w-none select-none [mix-blend-mode:plus-lighter]",
-        className,
-      )}
-    />
+    <span className={cn("pointer-events-none absolute block", className)}>
+      <Image
+        src={glasmorph}
+        alt=""
+        aria-hidden="true"
+        className={cn(
+          "absolute left-0 top-0 h-auto max-w-none -translate-x-[24%] -translate-y-[75%] select-none [mix-blend-mode:plus-lighter]",
+          imageClassName,
+        )}
+      />
+    </span>
   );
 }
 
@@ -29,9 +32,18 @@ export function GlowBackdrop({ className }: GlowProps) {
         className,
       )}
     >
-      <Glow className="-bottom-20 -left-52 w-[34rem] sm:w-[42rem] lg:w-[48rem]" />
-      <Glow className="-right-40 -top-28 w-[26rem] -rotate-90 sm:w-[32rem] lg:w-[38rem]" />
-      <Glow className="-right-32 bottom-10 w-[20rem] rotate-90 sm:w-[25rem] lg:w-[30rem]" />
+      <Glow
+        className="left-[13%] top-[71%]"
+        imageClassName="w-[34rem] sm:w-[42rem] lg:w-[48rem]"
+      />
+      <Glow
+        className="left-[89%] top-[38%] -rotate-90"
+        imageClassName="w-[26rem] sm:w-[32rem] lg:w-[38rem]"
+      />
+      <Glow
+        className="left-[85%] top-[77%] rotate-90"
+        imageClassName="w-[20rem] sm:w-[25rem] lg:w-[30rem]"
+      />
     </div>
   );
 }
